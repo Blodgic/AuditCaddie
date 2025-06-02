@@ -57,17 +57,21 @@ AuditCaddie addresses the complexities of regulatory compliance by offering:
 ---
 
 ## 🗂️ Repository Structure
+
+```text
 auditcaddie/
 ├── templates/
-│ ├── gaming/
-│ ├── fintech/
-│ └── critical_infrastructure/
+│   ├── gaming/
+│   ├── fintech/
+│   └── critical_infrastructure/
 ├── analyzers/
-│ ├── soc2_analyzer/
-│ └── dora_analyzer/
+│   ├── soc2_analyzer/
+│   └── dora_analyzer/
 ├── docs/
-│ └── CONTRIBUTING.md
+│   └── CONTRIBUTING.md
 ├── LICENSE
+└── README.md
+
 └── README.md
 
 
