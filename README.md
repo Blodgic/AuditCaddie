@@ -2,7 +2,7 @@
 
 # 🛡️ AuditCaddie: Open Compliance Templates & AI-Powered Gap Analysis
 
-![CADDIE AI Logo](assets/caddie_AI.jpeg)
+<img src="assets/caddie_AI.jpeg" alt="CADDIE AI Logo" width="120"/>
 
 **AuditCaddie** is an open-source initiative aimed at simplifying compliance for organizations by providing:
 
