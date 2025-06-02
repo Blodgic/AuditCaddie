@@ -96,6 +96,7 @@ Report Issues: Use the Issues tab to report bugs or suggest features.
 Please refer to our Contributing Guide for detailed instructions.
 
 ## 📄 License
-This project is licensed under the Creative Commons Attribution-NonCommercial 4.0 International License [https://creativecommons.org/licenses/by-nc/4.0/](url).
+This project is licensed under the [![License: CC BY-NC 4.0](https://img.shields.io/badge/License-BY--NC%204.0-lightgrey.svg)](https://creativecommons.org/licenses/by-nc/4.0/)
+
 
 Note: Commercial use of this project is strictly prohibited.
