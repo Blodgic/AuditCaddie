@@ -1,6 +1,6 @@
 # AuditCaddie
 
-# AuditCaddie: Open Compliance Templates & AI-Powered Gap Analysis
+## Open Compliance Templates & AI-Powered Gap Analysis
 
 <img src="assets/caddie_AI.jpeg" alt="CADDIE AI Logo" width="120"/>
 
