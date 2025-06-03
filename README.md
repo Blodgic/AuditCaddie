@@ -103,30 +103,29 @@ This project is licensed under the [![License: CC BY-NC 4.0](https://img.shields
 Note: Commercial use of this project is strictly prohibited.
 
 ## 🛠️ Architecture: Data Sources, MCP Orchestration & Analyst Workflow
-
 ```mermaid
-flowchart TD
+graph TD
     %% Data Sources
-    TEMPLATES[Industry Templates (Gaming, Fintech, Infra)]
-    POLICIES[Org Policy Docs]
-    REGULATIONS[Regulatory Frameworks (SOC2, DORA, GDPR)]
-    CONTRIBUTIONS[Community Submissions]
+    TEMPLATES["Industry Templates (Gaming, Fintech, Infra)"]
+    POLICIES["Org Policy Docs"]
+    REGULATIONS["Regulatory Frameworks (SOC2, DORA, GDPR)"]
+    CONTRIBUTIONS["Community Submissions"]
 
     %% MCP Orchestration
-    MCP1[Data Ingestion & Preprocessing]
-    MCP2[Vectorization & Embedding (BERT)]
-    MCP3[Central Indexing (Vector DB)]
-    MCP4[Contextual Retrieval]
+    MCP1["Data Ingestion & Preprocessing"]
+    MCP2["Vectorization & Embedding (BERT)"]
+    MCP3["Central Indexing (Vector DB)"]
+    MCP4["Contextual Retrieval"]
 
     %% AuditCaddie Analyzers
-    SOC2[SOC2 Analyzer]
-    DORA[DORA Analyzer]
-    OTHER[Other Analyzer Plugins]
+    SOC2["SOC2 Analyzer"]
+    DORA["DORA Analyzer"]
+    OTHER["Other Analyzer Plugins"]
 
     %% Analyst Notebook
-    NB1[Jupyter or Colab Notebook]
-    NB2[Interactive Queries]
-    NB3[Review & Export Results]
+    NB1["Jupyter or Colab Notebook"]
+    NB2["Interactive Queries"]
+    NB3["Review & Export Results"]
 
     %% Connections
     TEMPLATES --> MCP1
