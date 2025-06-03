@@ -102,7 +102,6 @@ This project is licensed under the [![License: CC BY-NC 4.0](https://img.shields
 
 Note: Commercial use of this project is strictly prohibited.
 
-```mermaid
 flowchart TD
     %% Data Sources
     TEMPLATES[Industry Templates (Gaming, Fintech, Infra)]
