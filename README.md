@@ -102,6 +102,9 @@ This project is licensed under the [![License: CC BY-NC 4.0](https://img.shields
 
 Note: Commercial use of this project is strictly prohibited.
 
+## 🛠️ Architecture: Data Sources, MCP Orchestration & Analyst Workflow
+
+```mermaid
 flowchart TD
     %% Data Sources
     TEMPLATES[Industry Templates (Gaming, Fintech, Infra)]
@@ -146,4 +149,4 @@ flowchart TD
     NB1 --> NB2
     NB2 --> NB3
     NB3 --> CONTRIBUTIONS
-
+```
