@@ -83,6 +83,59 @@ auditcaddie/
 
    ```bash
    git clone https://github.com/yourusername/auditcaddie.git
+   ```
+
+## flowchart 
+```mermaid
+flowchart TD
+    subgraph A[Compliance Data Sources]
+        TEMPLATES[Industry Templates<br/>(Gaming, Fintech, Critical Infra)]
+        POLICIES[Org Policy Docs]
+        REGULATIONS[Regulatory Frameworks<br/>(SOC 2, DORA, GDPR)]
+        CONTRIBUTIONS[Community Submissions]
+    end
+
+    subgraph B[MCP (Model Context Protocol) Orchestration]
+        MCP1[Data Ingestion & Preprocessing]
+        MCP2[Vectorization & Embedding<br/>(e.g., BERT)]
+        MCP3[Central Indexing<br/> (Vector DB/Chroma/FAISS)]
+        MCP4[Contextual Retrieval<br/>(Prompt & Query Routing)]
+    end
+
+    subgraph C[AuditCaddie Analyzers]
+        SOC2[SOC 2 Analyzer<br/>(Gap Detection)]
+        DORA[DORA Analyzer<br/>(Policy Mapping)]
+        OTHER[Other Analyzer Plugins]
+    end
+
+    subgraph D[Analyst Notebook]
+        NB1[Jupyter/Colab/Custom Notebook]
+        NB2[Interactive Queries<br/>(Prompt LLMs)]
+        NB3[Review & Export Results]
+    end
+
+    %% Connections
+    TEMPLATES --> MCP1
+    POLICIES --> MCP1
+    REGULATIONS --> MCP1
+    CONTRIBUTIONS --> MCP1
+
+    MCP1 --> MCP2
+    MCP2 --> MCP3
+    MCP3 --> MCP4
+
+    MCP4 --> SOC2
+    MCP4 --> DORA
+    MCP4 --> OTHER
+
+    SOC2 --> NB1
+    DORA --> NB1
+    OTHER --> NB1
+
+    NB1 --> NB2
+    NB2 --> NB3
+    NB3 -->|Feedback / Contributions| CONTRIBUTIONS
+```mermaid
 
  ## 🤝 Contributing
 We welcome contributions from compliance professionals, developers, and enthusiasts.
