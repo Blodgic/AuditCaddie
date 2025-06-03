@@ -86,7 +86,7 @@ auditcaddie/
    ```
 
 ## flowchart 
-flowchart TD
+```flowchart TD
     subgraph A[Compliance Data Sources]
         TEMPLATES[Industry Templates<br/>(Gaming, Fintech, Critical Infra)]
         POLICIES[Org Policy Docs]
@@ -134,7 +134,7 @@ flowchart TD
     NB1 --> NB2
     NB2 --> NB3
     NB3 -->|Feedback / Contributions| CONTRIBUTIONS
-
+```
 
  ## 🤝 Contributing
 We welcome contributions from compliance professionals, developers, and enthusiasts.
