@@ -1,0 +1,62 @@
+﻿CC 1.1 COSO Principle 1: Integrity and ethical values
+CC 1.2 COSO Principle 2: Board independence and oversight
+"CC 1.3 COSO Principle 3: Structures, reporting lines, and authorities"
+CC 1.4 COSO Principle 4: Attracting and retaining competent individuals
+CC 1.5 COSO Principle 5: Accountability for internal control
+CC 2.1 COSO Principle 13: Quality information for internal control
+CC 2.2 COSO Principle 14: Internal communication of control information
+CC 2.3 COSO Principle 15: External communication on control matters
+CC 3.1 COSO Principle 6: Clarity in objectives for risk identification
+CC 3.2 COSO Principle 7: Risk identification and management
+CC 3.3 COSO Principle 8: Fraud risk assessment
+CC 3.4 COSO Principle 9: Assessment of impactful changes
+CC 4.1 COSO Principle 16: Evaluation of internal control
+CC 4.2 COSO Principle 17: Communication of control deficiencies
+CC 5.1 COSO Principle 10: Development of control activities
+CC 5.2 COSO Principle 11: Technology control activities
+CC 5.3 COSO Principle 12: Deployment of control activities
+CC 6.1 Logical access security implementation
+CC 6.2 User registration and access control
+CC 6.3 Role-based access management
+CC 6.4 Physical access restrictions
+CC 6.5 Decommissioning of logical and physical assets
+CC 6.6 External threat protection
+CC 6.7 Information transmission security
+CC 6.8 Malware prevention and detection
+CC 7.1 Vulnerability detection and monitoring
+CC 7.2 System anomaly monitoring
+CC 7.3 Security event evaluation
+CC 7.4 Incident response program
+CC 7.5 Security incident recovery
+CC 8.1 Change management process
+CC 9.1 Business disruption risk mitigation
+CC 9.2 Vendor and partner risk management
+A 1.1 Capacity management
+A 1.2 Environmental and recovery infrastructure
+A 1.3 Recovery plan testing
+C 1.1 Confidential information identification
+C 1.2 Confidential information disposal
+PI 1.1 Quality information for processing objectives
+PI 1.2 Input controls policies and procedures
+PI 1.3 Processing controls policies and procedures
+PI 1.4 Output delivery controls
+"PI 1.5 Storage policies for inputs, processing, and outputs"
+P 1.1 Privacy notice to data subjects
+P 1.2 Privacy commitments communication
+P 2.1 Privacy choices and consent
+P 3.1 Personal information collection
+P 3.2 Consent communication and collection
+P 4.1 Limited use of personal information
+P 4.2 Personal information retention
+P 4.3 Secure disposal of personal information
+P 5.1 Data subject access to personal information
+P 5.2 Personal information correction and amendment
+P 6.1 Personal information disclosure
+P 6.2 Record of authorized disclosures
+P 6.3 Record of unauthorized disclosures
+P 6.4 Privacy commitments from vendors and third parties
+P 6.5 Third-party breach notification commitment
+P 6.6 Breach and incident notification
+P 6.7 Personal information accounting
+P 7.1 Accurate and complete personal information
+P 8.1 Privacy inquiry and dispute resolution
