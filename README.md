@@ -191,7 +191,7 @@ Unlike keyword scanners or basic rule-based tools, this uses a **fine-tuned vers
 The analyzer can be tailored to any framework or jurisdiction—state, country, or sector-specific.  
 If you’d like a walkthrough or a custom integration for your environment:
 
-📧 **[blodge@blodgic.com](mailto:blodge at blodgic dot com)**
+📧 **[blodge at blodgic dot com](mailto:blodge at blodgic dot com)**
 
 ---
 
@@ -199,5 +199,5 @@ If you’d like a walkthrough or a custom integration for your environment:
 
 - Add explainability: *Why* did a policy match a regulation?
 - Expand support for **financial**, **healthcare**, and **AI risk** laws
-- Integrate into **Slack** or **GRC platforms** as a plug-and-play tool
+- Integrate into **Slack** as a plug-and-play tool
 
