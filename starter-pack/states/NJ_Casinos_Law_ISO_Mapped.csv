@@ -1,0 +1,6 @@
+Control Number,Control Title,Implementation Guideline,Category,Regulation Source
+1.01,Physical Access Controls,Control and monitor physical access to casino areas where data is handled.,Physical Security,Merged_NJ_Casinos_Law
+1.02,Revenue System Protection,Secure the casino revenue tracking and reporting systems.,Operational Resilience,Merged_NJ_Casinos_Law
+1.03,Incident Disclosure,Mandate timely notification to regulators upon a security incident.,Incident Response,Merged_NJ_Casinos_Law
+1.04,Vendor Oversight,Require third-party service providers to comply with cybersecurity standards.,Supplier Risk Management,Merged_NJ_Casinos_Law
+1.05,Customer Data Management,Handle PII of patrons with encryption and retention policies.,Data Privacy,Merged_NJ_Casinos_Law

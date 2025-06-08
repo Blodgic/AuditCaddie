@@ -1,0 +1,6 @@
+Control Number,Control Title,Implementation Guideline,Category,Regulation Source
+1.01,Breach Notification to Residents,Notify affected CT residents within statutory timeframes.,Incident Notification,Conn_Breaches_Act
+1.02,Attorney General Disclosure,Report large breaches to Connecticut AG’s office as required.,Regulatory Compliance,Conn_Breaches_Act
+1.03,Credit Monitoring Services,Offer no-cost identity monitoring to affected individuals.,Post-Incident Response,Conn_Breaches_Act
+1.04,Breach Documentation,Maintain a record of breach causes and mitigation efforts.,Audit and Logging,Conn_Breaches_Act
+1.05,Encryption Practices,Encrypt sensitive data at rest and in transit.,Cryptography,Conn_Breaches_Act

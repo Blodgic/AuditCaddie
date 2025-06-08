@@ -1,0 +1,6 @@
+Control Number,Control Title,Implementation Guideline,Category,Regulation Source
+1.01,Consumer Rights Enablement,"Support access, correction, and deletion requests from data subjects.",Data Subject Rights,Conn_Data_Privacy
+1.02,Opt-Out Mechanism,Provide consumers with mechanisms to opt out of data sales or processing.,Consent Management,Conn_Data_Privacy
+1.03,Privacy Notices,Publish clear and comprehensive privacy policies.,Privacy Governance,Conn_Data_Privacy
+1.04,Data Minimization,Collect only the minimum data necessary for specified purposes.,Data Lifecycle,Conn_Data_Privacy
+1.05,Purpose Limitation,Use personal data strictly in accordance with the disclosed purpose.,Purpose Governance,Conn_Data_Privacy

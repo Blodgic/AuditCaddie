@@ -1,0 +1,6 @@
+Control Number,Control Title,Implementation Guideline,Category,Regulation Source
+1.01,Licensee Security Requirements,Implement access and surveillance controls per casino operational mandates.,Access Management,NJ_Casino_Control_Act
+1.02,Audit Trails,Maintain logs of financial systems and sensitive activities for regulatory oversight.,Monitoring and Logging,NJ_Casino_Control_Act
+1.03,Employee Background Checks,Conduct vetting for staff with access to casino systems and customer data.,Human Resource Security,NJ_Casino_Control_Act
+1.04,Game System Integrity,Ensure technical systems for games are protected from tampering or manipulation.,System Integrity,NJ_Casino_Control_Act
+1.05,Data Handling in Gaming Operations,Restrict and protect storage and transmission of sensitive gaming data.,Information Classification,NJ_Casino_Control_Act
