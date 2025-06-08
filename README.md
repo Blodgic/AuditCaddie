@@ -14,7 +14,7 @@
 
 ---
 
-## 📚 Table of Contents
+##  Table of Contents
 
 - [Overview](#overview)
 - [Features](#features)
@@ -26,7 +26,7 @@
 
 ---
 
-## 📖 Overview
+##  Overview
 
 AuditCaddie addresses the complexities of regulatory compliance by offering:
 
@@ -36,7 +36,7 @@ AuditCaddie addresses the complexities of regulatory compliance by offering:
 
 ---
 
-## ✨ Features
+##  Features
 
 ### 1. Industry-Specific Templates
 
@@ -56,7 +56,7 @@ AuditCaddie addresses the complexities of regulatory compliance by offering:
 
 ---
 
-## 🗂️ Repository Structure
+##  Repository Structure
 
 ```text
 auditcaddie/
@@ -88,7 +88,7 @@ auditcaddie/
    git clone https://github.com/yourusername/auditcaddie.git
    ```
 
-## 🤝 Contributing
+##  Contributing
 We welcome contributions from compliance professionals, developers, and enthusiasts.
 
 Submit Templates: Add new templates under the appropriate industry directory.
@@ -99,7 +99,7 @@ Report Issues: Use the Issues tab to report bugs or suggest features.
 
 Please refer to our Contributing Guide for detailed instructions.
 
-## 📄 License
+##  License
 This project is licensed under the [![License: CC BY-NC 4.0](https://img.shields.io/badge/License-BY--NC%204.0-lightgrey.svg)](https://creativecommons.org/licenses/by-nc/4.0/)
 
 
@@ -132,11 +132,11 @@ Instead of manually reading policies and comparing them to hundreds of pages of 
 
 Today’s compliance teams are overwhelmed. Regulations evolve fast, and every new state law or industry framework demands attention. The BERT GRC Policy Analyzer helps organizations:
 
-- ✅ **Identify compliance gaps** in existing policies  
-- ✅ **Save time** with automated policy-to-regulation comparisons  
-- ✅ **Generate audit-ready reports** with confidence scores  
-- ✅ **Improve internal governance** by showing how aligned you are  
-- ✅ **Scale** across departments, frameworks, and geographies  
+-  **Identify compliance gaps** in existing policies  
+-  **Save time** with automated policy-to-regulation comparisons  
+-  **Generate audit-ready reports** with confidence scores  
+-  **Improve internal governance** by showing how aligned you are  
+-  **Scale** across departments, frameworks, and geographies  
 
 ---
 
@@ -186,7 +186,7 @@ Unlike keyword scanners or basic rule-based tools, this uses a **fine-tuned vers
 
 ---
 
-## 📬 Want a Demo or Custom Use Case?
+##  Want a Demo or Custom Use Case?
 
 The analyzer can be tailored to any framework or jurisdiction—state, country, or sector-specific.  
 If you’d like a walkthrough or a custom integration for your environment:
@@ -195,7 +195,7 @@ If you’d like a walkthrough or a custom integration for your environment:
 
 ---
 
-## 🧩 Future Vision
+##  Future Vision
 
 - Add explainability: *Why* did a policy match a regulation?
 - Expand support for **financial**, **healthcare**, and **AI risk** laws
