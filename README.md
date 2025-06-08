@@ -64,6 +64,9 @@ auditcaddie/
 │   ├── gaming/
 │   ├── fintech/
 │   └── critical_infrastructure/
+├── starter pack/
+    ├── policies/
+    ├── awareness/
 ├── analyzers/
 │   ├── soc2_analyzer/
 │   └── dora_analyzer/
