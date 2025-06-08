@@ -1,0 +1,109 @@
+﻿Domain,Body
+ASSET_MANAGEMENT,Physical Device Inventory Physical devices and systems within the organization are inventoried
+ASSET_MANAGEMENT,Software and Application Inventory Software platforms and applications within the organization are inventoried
+ASSET_MANAGEMENT,Communication and Data Flows Mapped Organizational communication and data flows are mapped
+ASSET_MANAGEMENT,External System Connections Catalogued External information systems are catalogued
+ASSET_MANAGEMENT,"Assets (resources) are prioritized Resources (e.g., hardware, devices, data, time, personnel, and software) are prioritized based on their classification, criticality, and business value"
+ASSET_MANAGEMENT,"Asset Lifecycle Formally Managed Assets are formally managed throughout removal, transfers, and disposition"
+BUSINESS_CONTINUITY_DISASTER_RECOVERY,"Resilience Requirements of Critical Services Understood Resilience requirements to support delivery of critical services are established for all operating states (e.g. under duress/attack, during recovery, normal operations)"
+BUSINESS_CONTINUITY_DISASTER_RECOVERY,"Backup Lifecycle Maintained Backups of information are conducted, maintained, and tested"
+BUSINESS_CONTINUITY_DISASTER_RECOVERY,"Resilience Requirements can be Met Mechanisms (e.g., failsafe, load balancing, hot swap) are implemented to achieve resilience requirements in normal and adverse situations"
+BUSINESS_CONTINUITY_DISASTER_RECOVERY,Recovery Plans are Executed Recovery plan is executed during or after a cybersecurity incident
+BUSINESS_CONTINUITY_DISASTER_RECOVERY,Recovery Plans Incorporate Lessons Learned Recovery plans incorporate lessons learned
+BUSINESS_CONTINUITY_DISASTER_RECOVERY,Recovery Strategies are Updated Recovery strategies are updated
+CAPACITY_PERFORMANCE_PLANNING,Capacity Management Adequate capacity to ensure availability is maintained
+CHANGE_MANAGEMENT,Configuration Change Control in Place Configuration change control processes are in place
+COMPLIANCE,"Legal and Regulatory Requirements Legal and regulatory requirements regarding cybersecurity, including privacy and civil liberties obligations, are understood and managed"
+COMPLIANCE,Physical Operating Environment Documented Policy and regulations regarding the physical operating environment for organizational assets are met
+COMPLIANCE,Data Protection Improvements Protection processes are improved
+COMPLIANCE,Detection Processes Improved Continuously Detection processes are continuously improved
+CONFIGURATION_MANAGEMENT,Least Functionality Driven System Configurations The principle of least functionality is incorporated by configuring systems to provide only essential capabilities
+CONTINUOUS_MONITORING,"Audit Logs Adequate, Implemented and Reviewed Audit/log records are determined, documented, implemented, and reviewed in accordance with policy"
+CONTINUOUS_MONITORING,Network Operations and Flows Baseline for Users and Systems A baseline of network operations and expected data flows for users and systems is established and managed
+CONTINUOUS_MONITORING,Network Monitoring In Place The network is monitored to detect potential cybersecurity events
+CONTINUOUS_MONITORING,Personnel Activity Monitoring In Place Personnel activity is monitored to detect potential cybersecurity events
+CONTINUOUS_MONITORING,Service Provider Activity Monitoried External service provider activity is monitored to detect potential cybersecurity events
+CONTINUOUS_MONITORING,"Unauthorized Activity is Monitoried Monitoring for unauthorized personnel, connections, devices, and software is performed"
+CONTINUOUS_MONITORING,Detection Activities are Effective Detection activities comply with all applicable requirements
+CONTINUOUS_MONITORING,Detection Information is Communicated Event detection information is communicated
+CRYPTOGRAPHIC_PROTECTIONS,Protect Data at Rest Data-at-rest is protected
+CRYPTOGRAPHIC_PROTECTIONS,Protect Data in Transit Data-in-transit is protected
+DATA_CLASSIFICATION_HANDLING,Data Leak Protections Protections against data leaks are implemented
+DATA_CLASSIFICATION_HANDLING,Data Destruction is Effective Data is destroyed according to policy
+DATA_CLASSIFICATION_HANDLING,Removable Media Protected and Restricted Removable media is protected and its use restricted according to policy
+ENDPOINT_SECURITY,"Software/Firmware/Data Integrity Checking Performed Integrity checking mechanisms are used to verify software, firmware, and information integrity"
+ENDPOINT_SECURITY,Malicious Code is Detected Malicious code is detected
+ENDPOINT_SECURITY,Unauthorized mobile code is detected Unauthorized mobile code is detected
+HUMAN_RESOURCES_SECURITY,"HR Practices Include Security Needs Cybersecurity is included in human resources practices (e.g., deprovisioning, personnel screening)"
+IDENTIFICATION_AUTHENTICATION,"Identity and Credential Management Identities and credentials are issued, managed, verified, revoked, and audited for authorized devices, users and processes"
+IDENTIFICATION_AUTHENTICATION,"Comprehensive Access Management In Place Access permissions and authorizations are managed, incorporating the principles of least privilege and separation of duties"
+IDENTIFICATION_AUTHENTICATION,Valid Identities Required for Access and Interaction Identities are proofed and bound to credentials and asserted in interactions
+IDENTIFICATION_AUTHENTICATION,"Authentication Rigor Matches Risk of Transaction Users, devices, and other assets are authenticated (e.g., single-factor, multi-factor) commensurate with the risk of the transaction (e.g., individuals‚Äô security and privacy risks and other organizational risks)"
+INCIDENT_RESPONSE,Response and Recovery Plans Managed Response plans (Incident Response and Business Continuity) and recovery plans (Incident Recovery and Disaster Recovery) are in place and managed
+INCIDENT_RESPONSE,Response and Recovery Plans Tested Response and recovery plans are tested
+INCIDENT_RESPONSE,Detected Events Analyzed Detected events are analyzed to understand attack targets and methods
+INCIDENT_RESPONSE,Event Impact Determined Impact of events is determined
+INCIDENT_RESPONSE,Alert Thresholds Established Incident alert thresholds are established
+INCIDENT_RESPONSE,Detection Processes are Tested Detection processes are tested
+INCIDENT_RESPONSE,Incident Response Plan Executed Response plan is executed during or after an incident
+INCIDENT_RESPONSE,Roles and Processes During Response Personnel know their roles and order of operations when a response is needed
+INCIDENT_RESPONSE,Incident Reporting Incidents are reported consistent with established criteria
+INCIDENT_RESPONSE,Information Sharing Information is shared consistent with response plans
+INCIDENT_RESPONSE,Stakeholder Coordination Coordination with stakeholders occurs consistent with response plans
+INCIDENT_RESPONSE,External Information Sharing Voluntary information sharing occurs with external stakeholders to achieve broader cybersecurity situational awareness
+INCIDENT_RESPONSE,Notifications from Detection Systems Notifications from detection systems are investigated
+INCIDENT_RESPONSE,Incident Impact is Understood The impact of the incident is understood
+INCIDENT_RESPONSE,Forensics are performed Forensics are performed
+INCIDENT_RESPONSE,Incidents are Categorized Incidents are categorized consistent with response plans
+INCIDENT_RESPONSE,Incidents are Contained Incidents are contained
+INCIDENT_RESPONSE,Incidents are Mitigated Incidents are mitigated
+INCIDENT_RESPONSE,Response Plans Incorporate Lessons Learned Response plans incorporate lessons learned
+INCIDENT_RESPONSE,Response Strategies are Updated Response strategies are updated
+INCIDENT_RESPONSE,Public Relations are Managed Public relations are managed
+INCIDENT_RESPONSE,Post-Incident Reputation Repair 
+INCIDENT_RESPONSE,Recovery Activities Communicated 
+MAINTENANCE,"Maintenance and Repair is Performed and Logged with Approved Tools Maintenance and repair of organizational assets are performed and logged, with approved and controlled tools"
+MAINTENANCE,"Remote maintenance is follows change management Remote maintenance of organizational assets is approved, logged, and performed in a manner that prevents unauthorized access"
+NETWORK_SECURITY,Remote Access Managed Remote access is managed
+NETWORK_SECURITY,"Network Integrity Enforced Network integrity is protected (e.g., network segregation, network segmentation)"
+NETWORK_SECURITY,Communication and Control Networks Protected Communications and control networks are protected
+PHYSICAL_ENVIRONMENTAL_SECURITY,Physical Asset Access Physical access to assets is managed and protected
+PHYSICAL_ENVIRONMENTAL_SECURITY,Physical Environment Monitoring In Place The physical environment is monitored to detect potential cybersecurity events
+PROJECT_RESOURCE_MANAGEMENT,"Priorities for organizational mission, objectives, and activities are established and communicated Priorities for organizational mission, objectives, and activities are established and communicated"
+PROJECT_RESOURCE_MANAGEMENT,Critical Dependencies Established Dependencies and critical functions for delivery of critical services are established
+PROJECT_RESOURCE_MANAGEMENT,SDLC for Systems in Place A System Development Life Cycle to manage systems is implemented
+RISK_MANAGEMENT,Cybersecurity Governance and Risk Management Governance and risk management processes address cybersecurity risks
+RISK_MANAGEMENT,"Threats Identified and Documented Threats, both internal and external, are identified and documented"
+RISK_MANAGEMENT,Business Impact Risk Identified Potential business impacts and likelihoods are identified
+RISK_MANAGEMENT,"Risk Analysis Follows Standard Process Threats, vulnerabilities, likelihoods, and impacts are used to determine risk"
+RISK_MANAGEMENT,Risk Responses Understood Risk responses are identified and prioritized
+RISK_MANAGEMENT,"Risk Management Standardized Across Stakeholders Risk management processes are established, managed, and agreed to by organizational stakeholders"
+RISK_MANAGEMENT,Risk Tolerance Determined and Expressed Organizational risk tolerance is determined and clearly expressed
+RISK_MANAGEMENT,Risk Tolerance Based on Organizations Role/Industry The organization‚Äôs determination of risk tolerance is informed by its role in critical infrastructure and sector specific risk analysis
+RISK_MANAGEMENT,"Supply Chain Risk Effectively Managed Cyber supply chain risk management processes are identified, established, assessed, managed, and agreed to by organizational stakeholders"
+SECURE_ENGINEERING_ARCHITECTURE,Hardware Integrity Checking Performed Integrity checking mechanisms are used to verify hardware integrity
+SECURE_ENGINEERING_ARCHITECTURE,Baseline Configurations Created and Maintained A baseline configuration of information technology/industrial control systems is created and maintained incorporating security principles (e.g. concept of least functionality)
+SECURITY_AWARENESS_TRAINING,Users Informed and Trained All users are informed and trained
+SECURITY_AWARENESS_TRAINING,Privileged Users Acknowledges Privileged users understand their roles and responsibilities
+SECURITY_AWARENESS_TRAINING,Executive Leadership Acknowledges Senior executives understand their roles and responsibilities
+SECURITY_AWARENESS_TRAINING,Security Staff Acknowledge Physical and cybersecurity personnel understand their roles and responsibilities
+SECURITY_OPERATIONS,Event Data is Correlated Event data are collected and correlated from multiple sources and sensors
+SECURITY_PRIVACY_GOVERNANCE,"Comprehensive Roles and Responsibilities Established Cybersecurity roles and responsibilities for the entire workforce and third-party stakeholders (e.g., suppliers, customers, partners) are established"
+SECURITY_PRIVACY_GOVERNANCE,Supply Chain Role/Status Identified and Communicated The organization‚Äôs role in the supply chain is identified and communicated
+SECURITY_PRIVACY_GOVERNANCE,Critical Infrastructure Role/Status Identified and Communicated The organization‚Äôs place in critical infrastructure and its industry sector is identified and communicated
+SECURITY_PRIVACY_GOVERNANCE,Cybersecurity Policy is Established and Communicated Organizational cybersecurity policy is established and communicated
+SECURITY_PRIVACY_GOVERNANCE,Roles and Responsibilities Coordinated Cybersecurity roles and responsibilities are coordinated and aligned with internal roles and external partners
+SECURITY_PRIVACY_GOVERNANCE,Protection Technologies Effectiveness Validated and Shared Effectiveness of protection technologies is shared
+SECURITY_PRIVACY_GOVERNANCE,Roles and Responsibilities for Detection are Specific and Accountable Roles and responsibilities for detection are well defined to ensure accountability
+TECHNOLOGY_DEVELOPMENT_ACQUISITION,Separate Development and Test from Production The development and testing environment(s) are separate from the production environment
+THIRD_PARTY_MANAGEMENT,"Third Party Risk Is Managed Suppliers and third party partners of information systems, components, and services are identified, prioritized, and assessed using a cyber supply chain risk assessment process"
+THIRD_PARTY_MANAGEMENT,Third Party Contracts Enforce Established Risk Tolerance Contracts with suppliers and third-party partners are used to implement appropriate measures designed to meet the objectives of an organization‚Äôs cybersecurity program and Cyber Supply Chain Risk Management Plan.
+THIRD_PARTY_MANAGEMENT,"Third Parties Subject to Audit, Testing, or Other Assurance Validation Suppliers and third-party partners are routinely assessed using audits, test results, or other forms of evaluations to confirm they are meeting their contractual obligations."
+THIRD_PARTY_MANAGEMENT,Response and Recovery Plans Include Third Parties Response and recovery planning and testing are conducted with suppliers and third-party providers
+THIRD_PARTY_MANAGEMENT,"Third Parties Acknowledges Third-party stakeholders (e.g., suppliers, customers, partners) understand their roles and responsibilities"
+THREAT_MANAGEMENT,Cyber Threat Intelligence Cyber threat intelligence is received from information sharing forums and sources
+THREAT_MANAGEMENT,"External Vulnerability Notification Process Processes are established to receive, analyze and respond to vulnerabilities disclosed to the organization from internal and external sources (e.g. internal testing, security bulletins, or security researchers)"
+VULNERABILITY_PATCH_MANAGEMENT,Asset Vulnerabilities Asset vulnerabilities are identified and documented
+VULNERABILITY_PATCH_MANAGEMENT,Vulnerability Management Plan Developed and Implemented A vulnerability management plan is developed and implemented
+VULNERABILITY_PATCH_MANAGEMENT,Vulnerability Scanning Vulnerability scans are performed
+VULNERABILITY_PATCH_MANAGEMENT,Identified Vulnerabilities are Managed Newly identified vulnerabilities are mitigated or documented as accepted risks
