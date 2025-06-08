@@ -191,7 +191,7 @@ Unlike keyword scanners or basic rule-based tools, this uses a **fine-tuned vers
 The analyzer can be tailored to any framework or jurisdiction—state, country, or sector-specific.  
 If you’d like a walkthrough or a custom integration for your environment:
 
-📧 **[blodge at blodgic dot com](mailto:blodge at blodgic dot com)**
+📧 **[blodge at blodgic dot com]**
 
 ---
 
