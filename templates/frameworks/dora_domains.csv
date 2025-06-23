@@ -1,0 +1,48 @@
+code,article,domain,requirement
+RM 1.1,Art. 5,ICT Risk Management,Governance and strategy for ICT risk
+RM 1.2,Art. 6,ICT Risk Management,ICT risk management framework implementation
+RM 1.3,Art. 6,ICT Risk Management,Protection and prevention measures
+RM 1.4,Art. 6,ICT Risk Management,Detection mechanisms and processes
+RM 1.5,Art. 6,ICT Risk Management,Response and recovery procedures
+RM 1.6,Art. 6,ICT Risk Management,Communication strategies and protocols
+RM 2.1,Art. 7,ICT Risk Management,Identification of critical or important functions
+RM 2.2,Art. 7,ICT Risk Management,Mapping of ICT dependencies
+RM 2.3,Art. 7,ICT Risk Management,Risk assessment processes
+IM 1.1,Art. 17,ICT Incident Management,ICT incident management process implementation
+IM 1.2,Art. 17,ICT Incident Management,Early warning indicators for incidents
+IM 1.3,Art. 17,ICT Incident Management,Incident detection procedures
+IM 2.1,Art. 18,ICT Incident Management,Classification of major ICT incidents
+IM 2.2,Art. 19,ICT Incident Management,Major incident reporting to authorities
+IM 2.3,Art. 20,ICT Incident Management,Harmonized reporting templates and timelines
+IM 3.1,Art. 21,ICT Incident Management,Incident response coordination
+IM 3.2,Art. 22,ICT Incident Management,Incident notification to clients and counterparties
+DT 1.1,Art. 23,Digital Testing,Basic testing program requirements
+DT 1.2,Art. 23,Digital Testing,Testing of ICT tools and systems
+DT 1.3,Art. 24,Digital Testing,Advanced testing using TLPT for significant entities
+DT 2.1,Art. 25,Digital Testing,Requirements for testers for TLPT
+DT 2.2,Art. 26,Digital Testing,Recognition of TLPT test results within EU
+TP 1.1,Art. 28,Third-Party Risk,General principles for third-party risk management
+TP 1.2,Art. 28,Third-Party Risk,Risk assessment of ICT third-party service providers
+TP 1.3,Art. 28,Third-Party Risk,Contractual agreements with ICT providers
+TP 2.1,Art. 29,Third-Party Risk,Key contractual provisions with ICT providers
+TP 2.2,Art. 30,Third-Party Risk,Sub-outsourcing of critical functions
+TP 3.1,Art. 31,Third-Party Risk,Designation of critical ICT third-party service providers
+TP 3.2,Art. 32,Third-Party Risk,Structure of the oversight framework for critical providers
+IS 1.1,Art. 40,Information Sharing,Information sharing arrangements on cyber threats
+IS 1.2,Art. 40,Information Sharing,Participation in information sharing arrangements
+IS 1.3,Art. 40,Information Sharing,Processing of personal data in sharing arrangements
+CA 1.1,Art. 46,Competent Authorities,Cooperation with competent authorities
+CA 1.2,Art. 46,Competent Authorities,Notification requirements to authorities
+BC 1.1,Art. 11,Business Continuity,ICT business continuity policy
+BC 1.2,Art. 11,Business Continuity,Implementation of business continuity plans
+BC 1.3,Art. 11,Business Continuity,Backup policies and procedures
+BC 2.1,Art. 12,Business Continuity,Business impact analysis of ICT disruptions
+BC 2.2,Art. 12,Business Continuity,Scenario-based contingency plans
+BC 2.3,Art. 13,Business Continuity,Testing of ICT continuity plans
+BC 2.4,Art. 14,Business Continuity,Crisis communication plans
+AT 1.1,Art. 13,Awareness & Training,Digital operational resilience awareness programs
+AT 1.2,Art. 13,Awareness & Training,Regular ICT security training
+AT 1.3,Art. 13,Awareness & Training,Security training for management
+GO 1.1,Art. 5,Governance & Oversight,Management body responsibility for ICT risk
+GO 1.2,Art. 5,Governance & Oversight,Governance arrangements for ICT risk management
+GO 1.3,Art. 5,Governance & Oversight,Risk tolerance statements for ICT risk
