@@ -1,0 +1,22 @@
+services:
+  auditcaddie:
+    image: ghcr.io/blodgic/auditcaddie:latest
+    # To build locally instead: comment image line above, uncomment build below
+    # build: .
+    container_name: audit-caddie-oss
+    restart: unless-stopped
+    ports:
+      - "${PORT:-8080}:8080"
+    volumes:
+      - ./data:/data
+    env_file:
+      - .env
+    environment:
+      - DATA_DIR=/data
+      - PORT=8080
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8080/api/health')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s

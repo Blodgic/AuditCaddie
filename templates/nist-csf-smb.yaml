@@ -1,0 +1,357 @@
+# ─────────────────────────────────────────────────────────────────────────────
+#  AuditCaddie OSS — Compliance Template
+#  Template:    NIST CSF 2.0 — Small Business Baseline
+#  Version:     1.0
+#  Generated:   auditcaddie.com | github.com/Blodgic/caddie-oss
+#  License:     MIT — free to use, share, and modify
+#  Attribution: If you share this template, please keep this header intact.
+#               Every shared template helps grow the open source GRC community.
+# ─────────────────────────────────────────────────────────────────────────────
+
+name: "NIST CSF 2.0 — Small Business Baseline"
+slug: nist-csf-smb
+version: "1.0"
+author: "AuditCaddie OSS | auditcaddie.com"
+framework: nist_csf
+framework_version: "2.0"
+target_audience: "SMBs, 10–100 employees, AWS-hosted workloads, no dedicated security team"
+estimated_hours_manual: 120
+estimated_hours_with_caddie: 12
+description: >
+  A practical NIST Cybersecurity Framework 2.0 baseline for small businesses.
+  Maps the six CSF Functions (Govern, Identify, Protect, Detect, Respond,
+  Recover) to the most actionable controls for teams without a full security
+  org. Designed to be achievable in 30 days with AWS-native tooling.
+
+  Generated and maintained by AuditCaddie OSS — the free, open source
+  compliance engine. Learn more: github.com/Blodgic/caddie-oss
+
+attribution:
+  product: "AuditCaddie OSS"
+  url: "https://github.com/Blodgic/caddie-oss"
+  commercial: "https://auditcaddie.com"
+  tagline: "Free compliance infrastructure for everyone."
+
+# ── AWS Scan Configuration ────────────────────────────────────────────────────
+aws_checks:
+  - iam_mfa_all_users
+  - iam_password_policy_strength
+  - iam_no_root_access_keys
+  - iam_access_key_rotation_90days
+  - s3_bucket_encryption_at_rest
+  - s3_bucket_public_access_blocked
+  - s3_bucket_versioning_enabled
+  - cloudtrail_enabled_all_regions
+  - cloudwatch_alarms_configured
+  - guardduty_enabled
+  - config_enabled
+  - rds_encryption_enabled
+  - rds_automated_backups_enabled
+  - vpc_flow_logs_enabled
+  - ec2_no_public_ips_unnecessary
+  - security_hub_enabled
+
+# ── Controls ──────────────────────────────────────────────────────────────────
+controls:
+
+  # ── GOVERN ────────────────────────────────────────────────────────────────
+
+  - id: GV.OC-1
+    name: "Organizational Context — Cybersecurity Risk Strategy"
+    category: "Govern"
+    priority: high
+    description: >
+      The organizational mission is understood and informs cybersecurity risk
+      management decisions.
+    required_evidence:
+      - type: policy_doc
+        name: "Information Security Policy"
+        ai_generate: true
+        template_prompt: >
+          Generate an Information Security Policy for a small business. Include
+          sections on: policy scope, roles and responsibilities, acceptable use,
+          data classification, incident reporting, and annual review cadence.
+          Keep it practical — under 4 pages.
+      - type: policy_doc
+        name: "Cybersecurity Risk Register"
+        ai_generate: true
+        template_prompt: >
+          Generate a simple Cybersecurity Risk Register template for a small
+          business. Include 8–10 common risks (phishing, ransomware, data breach,
+          insider threat, vendor compromise) with likelihood, impact, and
+          mitigation columns.
+    ai_hint: >
+      For a small business, a written Information Security Policy and a basic
+      risk register are sufficient to demonstrate organizational context.
+      Look for evidence that leadership has reviewed and signed the policy.
+
+  - id: GV.RM-1
+    name: "Risk Management Strategy"
+    category: "Govern"
+    priority: medium
+    description: >
+      Risk management objectives are established and agreed to by
+      organizational stakeholders.
+    required_evidence:
+      - type: policy_doc
+        name: "Risk Management Policy"
+        ai_generate: true
+    ai_hint: >
+      A brief Risk Management Policy that defines risk tolerance, review
+      frequency, and who owns risk decisions satisfies this for an SMB.
+      It does not need to be elaborate — one page is fine.
+
+  # ── IDENTIFY ──────────────────────────────────────────────────────────────
+
+  - id: ID.AM-1
+    name: "Asset Management — Software Inventory"
+    category: "Identify"
+    priority: high
+    description: >
+      Inventories of hardware assets, software, services, and data are
+      maintained and used to guide security decisions.
+    aws_checks:
+      - config_enabled
+    required_evidence:
+      - type: aws_scan
+        checks: [config_enabled]
+        label: "AWS Config inventory evidence"
+      - type: manual_upload
+        label: "SaaS and software inventory spreadsheet"
+    ai_hint: >
+      AWS Config provides a continuous hardware and software inventory for
+      cloud assets. For SaaS tools (Slack, Google Workspace, GitHub), a
+      maintained spreadsheet is sufficient. Config being enabled is the
+      minimum bar.
+    remediation:
+      fail_guidance: >
+        Enable AWS Config: AWS Console → Config → Get started → Enable recording
+        (records all AWS resource types by default; costs ~$0.003 per resource/month)
+
+  - id: ID.RA-1
+    name: "Risk Assessment"
+    category: "Identify"
+    priority: high
+    description: >
+      Vulnerabilities in assets are identified, validated, and recorded.
+    aws_checks:
+      - guardduty_enabled
+      - security_hub_enabled
+    required_evidence:
+      - type: aws_scan
+        checks: [guardduty_enabled, security_hub_enabled]
+        label: "GuardDuty and Security Hub findings"
+      - type: policy_doc
+        name: "Vulnerability Management Policy"
+        ai_generate: true
+    ai_hint: >
+      GuardDuty and Security Hub together provide continuous threat detection
+      and vulnerability assessment. Security Hub aggregates findings from
+      multiple AWS security services into a single view.
+    remediation:
+      fail_guidance: >
+        1. Enable GuardDuty: GuardDuty → Get started → Enable GuardDuty
+        2. Enable Security Hub: Security Hub → Go to Security Hub → Enable Security Hub
+        Both integrate automatically with no agents required.
+
+  # ── PROTECT ───────────────────────────────────────────────────────────────
+
+  - id: PR.AA-1
+    name: "Identity Management and Access Control"
+    category: "Protect"
+    priority: critical
+    description: >
+      Identities and credentials for authorized users, services, and hardware
+      are managed by the organization.
+    aws_checks:
+      - iam_mfa_all_users
+      - iam_password_policy_strength
+      - iam_no_root_access_keys
+      - iam_access_key_rotation_90days
+    required_evidence:
+      - type: aws_scan
+        checks: [iam_mfa_all_users, iam_password_policy_strength, iam_no_root_access_keys]
+        label: "IAM configuration evidence"
+      - type: policy_doc
+        name: "Access Control Policy"
+        ai_generate: true
+    ai_hint: >
+      The four IAM checks (MFA, password policy, no root keys, key rotation)
+      together demonstrate strong identity management. Root access key deletion
+      is especially important — this is frequently the first thing auditors check.
+    remediation:
+      fail_guidance: >
+        1. Enable MFA: IAM → Users → select user → Security credentials → Assign MFA device
+        2. Set password policy: IAM → Account settings → minimum 14 chars, complexity required
+        3. Delete root access keys: IAM Dashboard → Security credentials → Access keys → Delete
+        4. Rotate old access keys: IAM → Users → Security credentials → create new, delete old
+
+  - id: PR.DS-1
+    name: "Data Security — Encryption"
+    category: "Protect"
+    priority: critical
+    description: >
+      The confidentiality, integrity, and availability of data-at-rest are
+      protected.
+    aws_checks:
+      - s3_bucket_encryption_at_rest
+      - rds_encryption_enabled
+      - s3_bucket_public_access_blocked
+    required_evidence:
+      - type: aws_scan
+        checks: [s3_bucket_encryption_at_rest, rds_encryption_enabled, s3_bucket_public_access_blocked]
+        label: "Data encryption and access evidence"
+      - type: policy_doc
+        name: "Data Classification and Handling Policy"
+        ai_generate: true
+    ai_hint: >
+      All S3 buckets should have default encryption and public access blocked.
+      All RDS instances should have storage encryption. These are AWS defaults
+      for new resources — the scan identifies any legacy unencrypted resources.
+    remediation:
+      fail_guidance: >
+        S3 encryption: S3 → select bucket → Properties → Default encryption → Enable SSE-S3
+        S3 public access: S3 → Block Public Access settings → Block all public access → Save
+        RDS: Encryption must be set at creation. Migrate by creating encrypted snapshot and restore.
+
+  - id: PR.DS-2
+    name: "Data Security — Encryption in Transit"
+    category: "Protect"
+    priority: critical
+    description: >
+      The confidentiality, integrity, and availability of data-in-transit
+      are protected.
+    required_evidence:
+      - type: manual_upload
+        label: "Screenshot showing HTTPS enforcement on all public endpoints"
+      - type: policy_doc
+        name: "Encryption in Transit Policy"
+        ai_generate: true
+    ai_hint: >
+      All web-facing endpoints should use HTTPS with TLS 1.2 or higher.
+      Load balancers and API gateways should enforce HTTPS. Internal service
+      communication should also be encrypted where technically feasible.
+
+  - id: PR.IR-1
+    name: "Technology Infrastructure Resilience"
+    category: "Protect"
+    priority: medium
+    description: >
+      Security architectures are managed with the organization's risk strategy
+      to protect asset confidentiality, integrity, and availability.
+    aws_checks:
+      - vpc_flow_logs_enabled
+      - ec2_no_public_ips_unnecessary
+    required_evidence:
+      - type: aws_scan
+        checks: [vpc_flow_logs_enabled]
+        label: "VPC flow logs evidence"
+      - type: manual_upload
+        label: "Network architecture diagram"
+    ai_hint: >
+      VPC flow logs provide network-level audit trails. Minimizing public IPs
+      reduces attack surface. A simple network diagram showing security group
+      boundaries and public/private subnet separation is sufficient.
+    remediation:
+      fail_guidance: >
+        Enable VPC flow logs: VPC → Your VPCs → select VPC → Flow logs → Create flow log
+        (Route to CloudWatch Logs or S3; costs ~$0.50/GB for ingestion)
+
+  # ── DETECT ────────────────────────────────────────────────────────────────
+
+  - id: DE.CM-1
+    name: "Continuous Monitoring"
+    category: "Detect"
+    priority: critical
+    description: >
+      Assets are monitored to find anomalies, indicators of compromise,
+      and other potentially adverse events.
+    aws_checks:
+      - cloudtrail_enabled_all_regions
+      - cloudwatch_alarms_configured
+      - guardduty_enabled
+    required_evidence:
+      - type: aws_scan
+        checks: [cloudtrail_enabled_all_regions, cloudwatch_alarms_configured, guardduty_enabled]
+        label: "CloudTrail, CloudWatch, and GuardDuty evidence"
+      - type: policy_doc
+        name: "Security Monitoring and Logging Policy"
+        ai_generate: true
+    ai_hint: >
+      CloudTrail in all regions + CloudWatch alarms + GuardDuty enabled is
+      the AWS-native continuous monitoring baseline. At minimum, CloudWatch
+      should alert on root account usage and unauthorized API calls.
+    remediation:
+      fail_guidance: >
+        1. CloudTrail: CloudTrail → Create trail → Apply to all regions → Log to S3
+        2. CloudWatch alarm for root usage: CloudWatch → Alarms → create metric filter on CloudTrail logs
+        3. GuardDuty: GuardDuty → Get started → Enable
+
+  # ── RESPOND ───────────────────────────────────────────────────────────────
+
+  - id: RS.MA-1
+    name: "Incident Management"
+    category: "Respond"
+    priority: high
+    description: >
+      Incidents are contained and eradicated. Notifications are made as
+      required by applicable laws and regulations.
+    required_evidence:
+      - type: policy_doc
+        name: "Incident Response Plan"
+        ai_generate: true
+        template_prompt: >
+          Generate an Incident Response Plan for a small business. Include:
+          incident classification levels, response team roles, detection and
+          escalation procedures, containment steps for common incident types
+          (phishing, ransomware, data breach), communication templates, and
+          post-incident review process. Keep it practical and under 5 pages.
+    ai_hint: >
+      For a small business, a written Incident Response Plan with clear
+      roles, escalation paths, and basic playbooks for common incidents
+      (phishing, ransomware) satisfies this control. The plan should be
+      reviewed and tested at least annually.
+
+  # ── RECOVER ───────────────────────────────────────────────────────────────
+
+  - id: RC.RP-1
+    name: "Incident Recovery Plan"
+    category: "Recover"
+    priority: medium
+    description: >
+      The integrity of backups and other restoration assets is verified before
+      using them in restoration.
+    aws_checks:
+      - rds_automated_backups_enabled
+      - s3_bucket_versioning_enabled
+    required_evidence:
+      - type: aws_scan
+        checks: [rds_automated_backups_enabled, s3_bucket_versioning_enabled]
+        label: "Backup configuration evidence"
+      - type: policy_doc
+        name: "Backup and Disaster Recovery Policy"
+        ai_generate: true
+    ai_hint: >
+      RDS automated backups with 7+ day retention and S3 versioning on critical
+      buckets are the minimum backup controls. Document your RTO and RPO targets
+      and confirm backups are tested at least quarterly.
+    remediation:
+      fail_guidance: >
+        RDS backups: RDS → select DB instance → Modify → Backup retention period → set to 7+ days
+        S3 versioning: S3 → select bucket → Properties → Bucket Versioning → Enable
+
+# ── Report Configuration ──────────────────────────────────────────────────────
+report:
+  title: "NIST CSF 2.0 Baseline Assessment"
+  subtitle: "Powered by AuditCaddie OSS"
+  footer: "Generated by AuditCaddie OSS | auditcaddie.com | github.com/Blodgic/caddie-oss"
+  include_remediation: true
+  include_evidence_citations: true
+  include_auddie_attribution: true
+  sections:
+    - executive_summary
+    - readiness_score
+    - control_results
+    - evidence_summary
+    - remediation_roadmap
+    - about_auditcaddie

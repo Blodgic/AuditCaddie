@@ -1,0 +1,25 @@
+# Environment & secrets
+.env
+*.env.*
+
+# Data directory (SQLite, reports, cache)
+data/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+dist/
+build/
+.venv/
+venv/
+.pytest_cache/
+
+# Editor
+.DS_Store
+.idea/
+.vscode/
+*.swp

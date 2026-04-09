@@ -1,0 +1,298 @@
+# ─────────────────────────────────────────────────────────────────────────────
+#  AuditCaddie OSS — Compliance Template
+#  Template:    SOC 2 Type I — Startup Readiness
+#  Version:     1.0
+#  Generated:   auditcaddie.com | github.com/Blodgic/caddie-oss
+#  License:     MIT — free to use, share, and modify
+#  Attribution: If you share this template, please keep this header intact.
+#               Every shared template helps grow the open source GRC community.
+# ─────────────────────────────────────────────────────────────────────────────
+
+name: "SOC 2 Type I — Startup Readiness"
+slug: soc2-startup
+version: "1.0"
+author: "AuditCaddie OSS | auditcaddie.com"
+framework: soc2
+framework_version: "2017"
+target_audience: "AWS-native startups, 5–50 employees, seeking first SOC 2 Type I"
+estimated_hours_manual: 80
+estimated_hours_with_caddie: 8
+description: >
+  A focused SOC 2 Type I readiness template for early-stage startups running
+  on AWS. Covers the 10 highest-priority Trust Services Criteria controls that
+  auditors check first. Designed to get you from zero to audit-ready in days,
+  not months.
+
+  Generated and maintained by AuditCaddie OSS — the free, open source
+  compliance engine. Learn more: github.com/Blodgic/caddie-oss
+
+attribution:
+  product: "AuditCaddie OSS"
+  url: "https://github.com/Blodgic/caddie-oss"
+  commercial: "https://auditcaddie.com"
+  tagline: "Free compliance infrastructure for everyone."
+
+# ── AWS Scan Configuration ────────────────────────────────────────────────────
+aws_checks:
+  - iam_mfa_all_users
+  - iam_password_policy_strength
+  - iam_access_key_rotation_90days
+  - iam_no_root_access_keys
+  - s3_bucket_encryption_at_rest
+  - s3_bucket_public_access_blocked
+  - cloudtrail_enabled_all_regions
+  - cloudwatch_alarms_configured
+  - guardduty_enabled
+  - rds_encryption_enabled
+  - rds_automated_backups_enabled
+  - vpc_flow_logs_enabled
+  - acm_certificates_valid
+  - kms_key_rotation_enabled
+
+# ── Controls ──────────────────────────────────────────────────────────────────
+controls:
+
+  - id: CC6.1
+    name: "Logical Access Controls"
+    category: "Common Criteria"
+    priority: critical
+    description: >
+      The entity implements logical access security software, infrastructure,
+      and architectures over protected information assets to protect them from
+      security events.
+    aws_checks:
+      - iam_mfa_all_users
+      - iam_password_policy_strength
+      - iam_no_root_access_keys
+    required_evidence:
+      - type: aws_scan
+        checks: [iam_mfa_all_users, iam_password_policy_strength]
+        label: "AWS IAM configuration evidence"
+      - type: policy_doc
+        name: "Access Control Policy"
+        ai_generate: true
+        template_prompt: >
+          Generate an Access Control Policy for a startup. Include sections on:
+          user provisioning, MFA requirements, password standards, privileged
+          access, and access review cadence. Keep it practical and under 3 pages.
+    ai_hint: >
+      Look for evidence that MFA is enforced for all IAM users with console
+      access, that a password policy meeting NIST 800-63B standards is in place,
+      and that root account access keys do not exist.
+    remediation:
+      fail_guidance: >
+        1. Enable MFA for all IAM users: AWS Console → IAM → Users → select user → Security credentials → Assign MFA
+        2. Set password policy: IAM → Account settings → Password policy (min 14 chars, require uppercase, number, symbol)
+        3. Delete root access keys: IAM → Security credentials (root) → Access keys → Delete
+
+  - id: CC6.2
+    name: "Access Provisioning and Deprovisioning"
+    category: "Common Criteria"
+    priority: high
+    description: >
+      Prior to issuing system credentials and granting system access, the
+      entity registers and authorizes new internal and external users.
+    aws_checks:
+      - iam_access_key_rotation_90days
+    required_evidence:
+      - type: aws_scan
+        checks: [iam_access_key_rotation_90days]
+        label: "IAM access key age report"
+      - type: policy_doc
+        name: "User Access Review Procedure"
+        ai_generate: true
+    ai_hint: >
+      Look for evidence of a formal process for creating and revoking user
+      access. Access keys older than 90 days indicate a gap in provisioning
+      hygiene. HR offboarding process should include IAM deactivation.
+    remediation:
+      fail_guidance: >
+        1. Rotate access keys older than 90 days: IAM → Users → Security credentials → Create new key, then deactivate old
+        2. Document your onboarding/offboarding checklist to include IAM steps
+        3. Consider AWS IAM Identity Center for centralized access management
+
+  - id: CC6.3
+    name: "Role-Based Access Control"
+    category: "Common Criteria"
+    priority: high
+    description: >
+      The entity authorizes, modifies, or removes access to data, software,
+      functions, and other protected information assets based on roles.
+    aws_checks:
+      - iam_mfa_all_users
+    required_evidence:
+      - type: policy_doc
+        name: "Access Control Policy"
+        ai_generate: true
+      - type: aws_scan
+        checks: [iam_mfa_all_users]
+    ai_hint: >
+      Look for evidence that IAM roles follow least privilege — no wildcard
+      Action or Resource permissions in attached policies. Check that users
+      are assigned roles, not direct policies.
+
+  - id: CC7.1
+    name: "Vulnerability Management"
+    category: "Common Criteria"
+    priority: high
+    description: >
+      The entity identifies and evaluates vulnerabilities and security threats
+      that could affect achieving objectives.
+    aws_checks:
+      - guardduty_enabled
+    required_evidence:
+      - type: aws_scan
+        checks: [guardduty_enabled]
+        label: "GuardDuty status"
+      - type: policy_doc
+        name: "Vulnerability Management Policy"
+        ai_generate: true
+    ai_hint: >
+      GuardDuty being enabled is the minimum bar. Look for evidence that
+      findings are reviewed regularly. Inspector findings for EC2 and ECR
+      are a bonus for a Type I.
+    remediation:
+      fail_guidance: >
+        Enable GuardDuty: AWS Console → GuardDuty → Get started → Enable GuardDuty
+        (takes 30 minutes to begin producing findings, costs ~$4/month for most startups)
+
+  - id: CC7.2
+    name: "Monitoring for Security Events"
+    category: "Common Criteria"
+    priority: critical
+    description: >
+      The entity monitors system components and the operation of those controls
+      for anomalies that are indicative of malicious acts, natural disasters,
+      and errors affecting the entity's ability to meet its objectives.
+    aws_checks:
+      - cloudtrail_enabled_all_regions
+      - cloudwatch_alarms_configured
+    required_evidence:
+      - type: aws_scan
+        checks: [cloudtrail_enabled_all_regions, cloudwatch_alarms_configured]
+        label: "CloudTrail and CloudWatch evidence"
+      - type: policy_doc
+        name: "Security Monitoring Policy"
+        ai_generate: true
+    ai_hint: >
+      CloudTrail must be enabled in all regions, not just us-east-1.
+      CloudWatch should have at least one alarm configured for unauthorized
+      API calls or root account usage.
+    remediation:
+      fail_guidance: >
+        1. Enable CloudTrail in all regions: CloudTrail → Create trail → Apply to all regions
+        2. Create a CloudWatch alarm for root usage: CloudWatch → Alarms → Create alarm on CloudTrail metric filter
+
+  - id: CC8.1
+    name: "Change Management"
+    category: "Common Criteria"
+    priority: medium
+    description: >
+      The entity authorizes, designs, develops or acquires, configures,
+      documents, tests, approves, and implements changes to infrastructure,
+      data, software, and procedures.
+    required_evidence:
+      - type: policy_doc
+        name: "Change Management Policy"
+        ai_generate: true
+      - type: manual_upload
+        label: "GitHub branch protection screenshot or CI/CD pipeline evidence"
+    ai_hint: >
+      For a startup, a documented PR review process in GitHub satisfies this
+      in a Type I. Branch protection rules requiring at least one reviewer
+      before merge is the minimum bar.
+
+  - id: A1.1
+    name: "Availability — System Backup"
+    category: "Availability"
+    priority: medium
+    description: >
+      Current processing capacity and usage are maintained, monitored, and
+      evaluated to manage capacity and meet availability commitments.
+    aws_checks:
+      - rds_automated_backups_enabled
+    required_evidence:
+      - type: aws_scan
+        checks: [rds_automated_backups_enabled]
+        label: "RDS backup configuration"
+      - type: policy_doc
+        name: "Backup and Recovery Policy"
+        ai_generate: true
+    ai_hint: >
+      RDS automated backups should be enabled with a retention period of
+      at least 7 days. S3 versioning on critical buckets also contributes
+      to this control.
+
+  - id: C1.1
+    name: "Encryption at Rest"
+    category: "Confidentiality"
+    priority: critical
+    description: >
+      Confidential information is protected during storage.
+    aws_checks:
+      - s3_bucket_encryption_at_rest
+      - rds_encryption_enabled
+      - kms_key_rotation_enabled
+    required_evidence:
+      - type: aws_scan
+        checks: [s3_bucket_encryption_at_rest, rds_encryption_enabled]
+        label: "Encryption at rest evidence"
+    ai_hint: >
+      All S3 buckets should have default encryption enabled (SSE-S3 or SSE-KMS).
+      All RDS instances should have storage encryption enabled. KMS key rotation
+      should be enabled for any customer-managed keys.
+    remediation:
+      fail_guidance: >
+        S3: Select bucket → Properties → Default encryption → Enable (SSE-S3 is fine for Type I)
+        RDS: Encryption can only be enabled at creation — create encrypted snapshot and restore
+
+  - id: C1.2
+    name: "Encryption in Transit"
+    category: "Confidentiality"
+    priority: critical
+    description: >
+      Confidential information is protected during transmission.
+    aws_checks:
+      - acm_certificates_valid
+    required_evidence:
+      - type: aws_scan
+        checks: [acm_certificates_valid]
+        label: "ACM certificate and HTTPS evidence"
+      - type: manual_upload
+        label: "Screenshot of HTTPS enforcement on all public endpoints"
+    ai_hint: >
+      All public endpoints should use HTTPS with valid certificates.
+      ACM certificates should be current (not expired or expiring within 30 days).
+      Load balancers should redirect HTTP to HTTPS.
+
+  - id: P6.1
+    name: "Privacy — Data Retention and Disposal"
+    category: "Privacy"
+    priority: low
+    description: >
+      Personal information is retained for no longer than necessary to fulfill
+      the stated purposes or as required by laws or regulations.
+    required_evidence:
+      - type: policy_doc
+        name: "Data Retention Policy"
+        ai_generate: true
+    ai_hint: >
+      For a Type I, a written data retention policy is sufficient.
+      Specify how long you keep customer data and what happens when
+      you delete it.
+
+# ── Report Configuration ──────────────────────────────────────────────────────
+report:
+  title: "SOC 2 Type I Readiness Assessment"
+  subtitle: "Powered by AuditCaddie OSS"
+  footer: "Generated by AuditCaddie OSS | auditcaddie.com | github.com/Blodgic/caddie-oss"
+  include_remediation: true
+  include_evidence_citations: true
+  include_auddie_attribution: true
+  sections:
+    - executive_summary
+    - readiness_score
+    - control_results
+    - evidence_summary
+    - remediation_roadmap
+    - about_auditcaddie

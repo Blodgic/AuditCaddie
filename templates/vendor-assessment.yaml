@@ -1,0 +1,412 @@
+# ─────────────────────────────────────────────────────────────────────────────
+#  AuditCaddie OSS — Compliance Template
+#  Template:    Third-Party Vendor Security Assessment
+#  Version:     1.0
+#  Generated:   auditcaddie.com | github.com/Blodgic/caddie-oss
+#  License:     MIT — free to use, share, and modify
+#  Attribution: If you share this template, please keep this header intact.
+#               Every shared template helps grow the open source GRC community.
+# ─────────────────────────────────────────────────────────────────────────────
+
+name: "Third-Party Vendor Security Assessment"
+slug: vendor-assessment
+version: "1.0"
+author: "AuditCaddie OSS | auditcaddie.com"
+framework: vendor_security
+framework_version: "1.0"
+target_audience: "Security and procurement teams assessing SaaS vendors, subprocessors, and third-party integrations"
+estimated_hours_manual: 8
+estimated_hours_with_caddie: 1
+description: >
+  A structured vendor security assessment template for evaluating the security
+  posture of third-party SaaS providers, subprocessors, and technology vendors.
+  Covers the key domains that enterprise security teams and auditors look for
+  in vendor due diligence: data handling, access controls, incident response,
+  compliance certifications, and business continuity.
+
+  Designed to be sent to vendors as a questionnaire or used to evaluate
+  vendor-provided documentation (SOC 2 reports, ISO certificates, security
+  pages). Maps to SOC 2 Common Criteria and ISO 27001 Annex A vendor controls.
+
+  Generated and maintained by AuditCaddie OSS — the free, open source
+  compliance engine. Learn more: github.com/Blodgic/caddie-oss
+
+attribution:
+  product: "AuditCaddie OSS"
+  url: "https://github.com/Blodgic/caddie-oss"
+  commercial: "https://auditcaddie.com"
+  tagline: "Free compliance infrastructure for everyone."
+
+# ── Assessment Metadata ───────────────────────────────────────────────────────
+assessment_type: vendor_questionnaire
+risk_tiers:
+  - id: tier1
+    name: "Critical"
+    description: "Vendors with access to sensitive data, production systems, or customer PII/PHI"
+    review_frequency: annual
+    required_certifications: [soc2_type2, iso27001]
+  - id: tier2
+    name: "High"
+    description: "Vendors with access to internal data or systems but not customer data"
+    review_frequency: annual
+    required_certifications: [soc2_type1]
+  - id: tier3
+    name: "Standard"
+    description: "Vendors with no access to sensitive data (productivity tools, etc.)"
+    review_frequency: biennial
+    required_certifications: []
+
+# ── Controls / Assessment Domains ─────────────────────────────────────────────
+controls:
+
+  # ── DOMAIN 1: COMPLIANCE AND CERTIFICATIONS ───────────────────────────────
+
+  - id: VA-1.1
+    name: "Security Certifications"
+    category: "Compliance and Certifications"
+    priority: critical
+    description: >
+      Vendor holds current, independently audited security certifications
+      appropriate to their data handling responsibilities.
+    required_evidence:
+      - type: manual_upload
+        label: "SOC 2 Type II report (within 12 months) or ISO 27001 certificate"
+      - type: manual_upload
+        label: "Bridge letter if SOC 2 report is older than 6 months"
+    vendor_questions:
+      - "Do you have a current SOC 2 Type II report? If so, which Trust Services Criteria are covered?"
+      - "Do you hold an ISO 27001 certification? What is the scope and expiry date?"
+      - "Do you have any other relevant certifications (PCI DSS, HIPAA, FedRAMP)?"
+      - "Can you provide a copy of your most recent audit report under NDA?"
+    ai_hint: >
+      A SOC 2 Type II report (not Type I) covering the Security criterion is
+      the minimum bar for Tier 1 vendors. Read the auditor's opinion letter —
+      any qualified opinions or exceptions should be reviewed. The period of
+      the report matters: a report older than 12 months needs a bridge letter.
+    scoring:
+      pass: "Valid SOC 2 Type II within 12 months OR ISO 27001 certificate in scope"
+      warn: "SOC 2 Type I only, or report older than 12 months without bridge letter"
+      fail: "No third-party certification or audit report available"
+
+  - id: VA-1.2
+    name: "Legal and Regulatory Compliance"
+    category: "Compliance and Certifications"
+    priority: high
+    description: >
+      Vendor demonstrates compliance with applicable data protection regulations
+      (GDPR, CCPA, HIPAA where applicable).
+    required_evidence:
+      - type: manual_upload
+        label: "Vendor DPA (Data Processing Agreement) or privacy policy"
+      - type: manual_upload
+        label: "BAA (if vendor handles PHI) or GDPR Article 28 processor agreement"
+    vendor_questions:
+      - "Are you GDPR compliant? Do you offer a Data Processing Agreement (DPA)?"
+      - "Are you CCPA compliant? How do you handle data subject requests?"
+      - "If applicable, do you offer a HIPAA Business Associate Agreement (BAA)?"
+      - "What data residency options do you offer?"
+    ai_hint: >
+      For vendors processing EU personal data, a signed DPA is legally required
+      under GDPR Article 28. For PHI-handling vendors, a BAA is legally required
+      under HIPAA. These are contractual requirements — not optional.
+
+  # ── DOMAIN 2: DATA HANDLING AND PROTECTION ────────────────────────────────
+
+  - id: VA-2.1
+    name: "Data Classification and Inventory"
+    category: "Data Handling"
+    priority: critical
+    description: >
+      Vendor has documented what data they collect, process, and store on
+      behalf of customers.
+    vendor_questions:
+      - "What categories of data do you collect and process on behalf of customers?"
+      - "Where is customer data stored (regions/countries)?"
+      - "How is customer data logically separated from other customers (multi-tenancy model)?"
+      - "What is your data retention policy? How long is customer data stored after contract termination?"
+      - "What is your data destruction/deletion process and timeline?"
+    required_evidence:
+      - type: manual_upload
+        label: "Vendor's data flow diagram or data processing addendum"
+    ai_hint: >
+      Multi-tenancy isolation is critical — confirm whether your data is logically
+      separated (row-level security in a shared DB) or physically separated
+      (dedicated infrastructure). Physical separation is stronger but rarer.
+      Data residency is increasingly important for regulated industries.
+    scoring:
+      pass: "Documented data inventory, clear retention policy, confirmed isolation model"
+      warn: "Partial documentation — missing retention policy or isolation details"
+      fail: "No data inventory or unable to confirm isolation model"
+
+  - id: VA-2.2
+    name: "Encryption"
+    category: "Data Handling"
+    priority: critical
+    description: >
+      Vendor encrypts customer data at rest and in transit using industry-
+      standard algorithms.
+    vendor_questions:
+      - "How is customer data encrypted at rest? What algorithm and key length?"
+      - "How is customer data encrypted in transit? What TLS version minimum?"
+      - "How are encryption keys managed? Do you offer customer-managed keys (BYOK/HYOK)?"
+      - "Are backups encrypted?"
+    required_evidence:
+      - type: manual_upload
+        label: "Vendor security page or encryption section from SOC 2 report"
+    ai_hint: >
+      Minimum bar: AES-256 at rest, TLS 1.2+ in transit. For Tier 1 vendors
+      handling sensitive data, customer-managed keys (BYOK) are preferred.
+      Backup encryption is often overlooked but required.
+    scoring:
+      pass: "AES-256 at rest, TLS 1.2+ in transit, documented key management"
+      warn: "AES-128 or TLS 1.1 — should require upgrade commitment"
+      fail: "No encryption at rest, or plain HTTP for any data transmission"
+
+  - id: VA-2.3
+    name: "Subprocessors"
+    category: "Data Handling"
+    priority: high
+    description: >
+      Vendor discloses and manages their own subprocessors appropriately.
+    vendor_questions:
+      - "Do you use subprocessors (third parties) who may access customer data?"
+      - "Can you provide your current subprocessor list?"
+      - "How do you notify customers of subprocessor changes?"
+      - "Do your subprocessors have equivalent security requirements?"
+    required_evidence:
+      - type: manual_upload
+        label: "Vendor's subprocessor list or DPA subprocessor annex"
+    ai_hint: >
+      Under GDPR, vendors must provide a subprocessor list and notify customers
+      of changes. Review the subprocessor list — any subprocessors in high-risk
+      countries or with concerning security postures should be flagged.
+
+  # ── DOMAIN 3: ACCESS CONTROLS ─────────────────────────────────────────────
+
+  - id: VA-3.1
+    name: "Access to Customer Data"
+    category: "Access Controls"
+    priority: critical
+    description: >
+      Vendor limits and controls employee access to customer data with
+      appropriate technical and procedural controls.
+    vendor_questions:
+      - "Which of your employees can access customer data? How many?"
+      - "What controls govern employee access to customer data (approval process, logging)?"
+      - "Do you require customer consent before accessing customer environments for support?"
+      - "How do you audit and review employee access to customer data?"
+    required_evidence:
+      - type: manual_upload
+        label: "Relevant section from SOC 2 report (CC6 — Logical Access) or vendor security page"
+    ai_hint: >
+      Customer data access by vendor employees should be: limited to those who
+      need it, require explicit approval, be logged, and be auditable. Support
+      access that requires entering customer environments should require customer
+      authorization or at least notification.
+    scoring:
+      pass: "Documented access controls, logging, and approval workflow for customer data access"
+      warn: "Access controls documented but no customer notification/consent process"
+      fail: "No controls on employee access to customer data"
+
+  - id: VA-3.2
+    name: "Authentication Requirements"
+    category: "Access Controls"
+    priority: high
+    description: >
+      Vendor enforces strong authentication for employees accessing internal
+      systems that store or process customer data.
+    vendor_questions:
+      - "Do you require MFA for all employee access to production systems?"
+      - "What is your password policy?"
+      - "Do you use SSO for internal system access?"
+      - "How do you manage privileged access (admin accounts)?"
+    ai_hint: >
+      MFA for all employees with production access is the baseline. SSO with
+      MFA is preferred. Privileged access management (PAM) for admin accounts
+      (time-limited, session-recorded) is a positive signal for Tier 1 vendors.
+
+  # ── DOMAIN 4: INCIDENT RESPONSE ───────────────────────────────────────────
+
+  - id: VA-4.1
+    name: "Security Incident Notification"
+    category: "Incident Response"
+    priority: critical
+    description: >
+      Vendor has a documented process for detecting, responding to, and
+      notifying customers of security incidents.
+    vendor_questions:
+      - "What is your security incident notification SLA? (How quickly will you notify us?)"
+      - "What constitutes a 'security incident' requiring customer notification?"
+      - "Who do we contact to report a suspected security incident involving your platform?"
+      - "What information will you provide us in a breach notification?"
+    required_evidence:
+      - type: manual_upload
+        label: "Vendor's incident response policy or relevant DPA clauses"
+    ai_hint: >
+      GDPR requires 72-hour notification of data breaches to supervisory authorities.
+      Enterprise customers typically expect 24-48 hour notification of incidents
+      affecting their data. Vendors who can't provide a clear notification SLA
+      are a red flag.
+    scoring:
+      pass: "Documented notification SLA ≤ 72 hours, clear contact escalation path"
+      warn: "Notification process documented but SLA unclear or > 72 hours"
+      fail: "No documented incident notification process or no SLA commitment"
+
+  - id: VA-4.2
+    name: "Security Incident History"
+    category: "Incident Response"
+    priority: high
+    description: >
+      Vendor discloses past security incidents and demonstrates learning
+      from them.
+    vendor_questions:
+      - "Have you experienced any security incidents or data breaches in the past 3 years?"
+      - "If so, what happened and what remediation steps were taken?"
+      - "Have you had any SOC 2 audit exceptions or qualified opinions?"
+    ai_hint: >
+      A vendor who has had a past incident and handled it well (transparent
+      disclosure, clear remediation) is often more trustworthy than one claiming
+      a perfect record. Look at how they respond to this question — evasiveness
+      is a red flag. Check HaveIBeenPwned and news searches for the vendor name.
+
+  # ── DOMAIN 5: BUSINESS CONTINUITY AND AVAILABILITY ───────────────────────
+
+  - id: VA-5.1
+    name: "Uptime SLA and Availability"
+    category: "Business Continuity"
+    priority: high
+    description: >
+      Vendor provides contractual SLA commitments and demonstrates they can
+      meet availability requirements.
+    vendor_questions:
+      - "What is your contractual uptime SLA?"
+      - "What is your historical uptime over the past 12 months? (provide status page link)"
+      - "What is your RTO/RPO in the event of a major outage?"
+      - "Do you have a status page? How do you communicate outages?"
+    required_evidence:
+      - type: manual_upload
+        label: "Vendor status page screenshot or uptime report"
+    ai_hint: >
+      99.9% uptime = ~8.7 hours/year downtime. 99.99% = ~52 minutes/year.
+      For critical vendors, check their actual status page history (StatusPage.io,
+      Statuspal, etc.) — contractual SLAs and actual uptime often diverge.
+      Ask about their disaster recovery architecture (multi-region, failover time).
+
+  - id: VA-5.2
+    name: "Business Continuity Planning"
+    category: "Business Continuity"
+    priority: medium
+    description: >
+      Vendor has a documented business continuity and disaster recovery plan.
+    vendor_questions:
+      - "Do you have a Business Continuity Plan and Disaster Recovery Plan?"
+      - "How often are these plans tested?"
+      - "What is your recovery time objective (RTO) and recovery point objective (RPO)?"
+      - "What happens to customer data if you cease operations?"
+    ai_hint: >
+      BCP/DRP documentation is covered in SOC 2 (Availability criterion) —
+      check for this in their SOC 2 report if available. The "what happens if
+      you go out of business" question is especially important for startups.
+      Data export capability and data portability are key exit criteria.
+
+  # ── DOMAIN 6: VULNERABILITY MANAGEMENT ────────────────────────────────────
+
+  - id: VA-6.1
+    name: "Penetration Testing"
+    category: "Vulnerability Management"
+    priority: high
+    description: >
+      Vendor conducts regular penetration testing by independent third parties.
+    vendor_questions:
+      - "Do you conduct annual penetration tests? By an independent third party?"
+      - "Can you share the executive summary of your most recent pen test?"
+      - "What is your process for remediating pen test findings?"
+      - "Do you have a bug bounty program? If so, what is the scope?"
+    required_evidence:
+      - type: manual_upload
+        label: "Pen test executive summary or letter of attestation (within 12 months)"
+    ai_hint: >
+      Annual third-party penetration testing is standard for SOC 2 Type II
+      vendors. A pentest executive summary (redacted) is often shareable under
+      NDA. Bug bounty programs (HackerOne, Bugcrowd) are a positive signal of
+      security maturity.
+    scoring:
+      pass: "Annual third-party pen test with documented remediation process"
+      warn: "Internal pen test only, or test older than 18 months"
+      fail: "No penetration testing conducted"
+
+  - id: VA-6.2
+    name: "Patch Management"
+    category: "Vulnerability Management"
+    priority: medium
+    description: >
+      Vendor has documented processes for identifying and remediating
+      known software vulnerabilities.
+    vendor_questions:
+      - "What is your SLA for patching critical vulnerabilities?"
+      - "How do you track CVEs and vulnerabilities in your dependencies?"
+      - "Do you use automated vulnerability scanning?"
+    ai_hint: >
+      Industry standard patching SLAs: critical CVEs within 7 days, high within
+      30 days, medium within 90 days. Automated scanning (Snyk, Dependabot,
+      AWS Inspector) is expected. Manual-only patching processes are a risk indicator.
+
+  # ── DOMAIN 7: PHYSICAL SECURITY ───────────────────────────────────────────
+
+  - id: VA-7.1
+    name: "Data Center Security"
+    category: "Physical Security"
+    priority: medium
+    description: >
+      Vendor's infrastructure is hosted in physically secure facilities with
+      appropriate controls.
+    vendor_questions:
+      - "Where is your infrastructure hosted? Which cloud providers or data centers?"
+      - "If cloud-hosted, which compliance certifications does your cloud provider hold?"
+      - "Do your employees have physical access to any hardware storing customer data?"
+    ai_hint: >
+      If the vendor uses AWS, GCP, or Azure, those providers' physical security
+      controls (accessible via their compliance documentation) satisfy this.
+      For vendors with their own data centers, ask for ISO 27001 or SOC 2
+      coverage that includes physical controls.
+
+  # ── VENDOR RISK RATING ────────────────────────────────────────────────────
+
+  - id: VA-RATING
+    name: "Overall Vendor Risk Rating"
+    category: "Assessment Summary"
+    priority: critical
+    description: >
+      Aggregate risk rating based on all assessment domains.
+    scoring_rubric:
+      low_risk: "Passes all critical controls, SOC 2 Type II current, no exceptions"
+      medium_risk: "Passes most controls with minor gaps; acceptable with documented compensating controls"
+      high_risk: "Fails one or more critical controls; requires remediation plan before approval"
+      unacceptable: "Fails multiple critical controls or refuses to provide documentation"
+    required_evidence:
+      - type: policy_doc
+        name: "Vendor Risk Assessment Report"
+        ai_generate: true
+        template_prompt: >
+          Generate a Vendor Risk Assessment Report template. Include: vendor name,
+          assessment date, assessor, overall risk rating, summary table of each
+          domain score, key findings, risk acceptance rationale if applicable,
+          required remediation items with owner and deadline, and approval signatures.
+
+# ── Report Configuration ──────────────────────────────────────────────────────
+report:
+  title: "Third-Party Vendor Security Assessment"
+  subtitle: "Powered by AuditCaddie OSS"
+  footer: "Generated by AuditCaddie OSS | auditcaddie.com | github.com/Blodgic/caddie-oss"
+  include_remediation: true
+  include_evidence_citations: true
+  include_auddie_attribution: true
+  output_format: questionnaire_and_scorecard
+  sections:
+    - vendor_summary
+    - risk_rating
+    - domain_scores
+    - findings_and_gaps
+    - remediation_requirements
+    - approval_record
+    - about_auditcaddie

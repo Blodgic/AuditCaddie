@@ -1,0 +1,1194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AuditCaddie OSS</title>
+<style>
+:root {
+  --bg:      #0f172a;
+  --bg2:     #1e293b;
+  --bg3:     #0d1526;
+  --border:  #334155;
+  --text:    #e2e8f0;
+  --muted:   #64748b;
+  --subtle:  #94a3b8;
+  --blue:    #3b82f6;
+  --blue-l:  #60a5fa;
+  --green:   #22c55e;
+  --red:     #ef4444;
+  --amber:   #f59e0b;
+  --purple:  #a78bfa;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-size: 14px; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+
+/* ── Header ───────────────────────────────────────────────────────────────── */
+.header {
+  background: var(--bg3);
+  border-bottom: 1px solid var(--border);
+  padding: 0 20px;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-shrink: 0;
+  z-index: 100;
+}
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 700;
+  font-size: 15px;
+  color: var(--text);
+  text-decoration: none;
+}
+.logo-badge {
+  background: var(--blue);
+  color: #fff;
+  font-size: 9px;
+  font-weight: 700;
+  padding: 1px 5px;
+  border-radius: 4px;
+  letter-spacing: .05em;
+}
+.header-spacer { flex: 1; }
+.upgrade-link {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: linear-gradient(135deg, #1e3a5f, #1e2d4a);
+  border: 1px solid #3b5998;
+  color: var(--blue-l);
+  padding: 5px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all .15s;
+}
+.upgrade-link:hover { border-color: var(--blue); color: #93c5fd; }
+.status-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--muted); }
+.status-dot.ok { background: var(--green); }
+
+/* ── Layout ───────────────────────────────────────────────────────────────── */
+.body { display: flex; flex: 1; overflow: hidden; }
+.sidebar {
+  width: 260px;
+  background: var(--bg3);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  flex-shrink: 0;
+}
+.main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+.content { flex: 1; overflow-y: auto; padding: 24px; }
+
+/* ── Sidebar ──────────────────────────────────────────────────────────────── */
+.sidebar-section { padding: 16px; border-bottom: 1px solid var(--border); }
+.sidebar-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); margin-bottom: 10px; }
+.framework-btn {
+  width: 100%;
+  text-align: left;
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--subtle);
+  padding: 8px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+  transition: all .15s;
+  display: block;
+  margin-bottom: 2px;
+}
+.framework-btn:hover { background: var(--bg2); color: var(--text); border-color: var(--border); }
+.framework-btn.active { background: var(--bg2); color: var(--blue-l); border-color: var(--blue); font-weight: 600; }
+.framework-meta { font-size: 10px; color: var(--muted); margin-top: 2px; }
+
+.sidebar-actions { padding: 16px; margin-top: auto; }
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: all .15s;
+  text-decoration: none;
+}
+.btn-primary { background: var(--blue); color: #fff; }
+.btn-primary:hover { background: #2563eb; }
+.btn-primary:disabled { background: #1e3a5f; color: var(--muted); cursor: not-allowed; }
+.btn-secondary { background: var(--bg2); color: var(--text); border: 1px solid var(--border); }
+.btn-secondary:hover { border-color: var(--blue); color: var(--blue-l); }
+.btn-danger { background: transparent; color: var(--red); border: 1px solid #7f1d1d; }
+.btn-danger:hover { background: #450a0a; }
+.btn-sm { padding: 5px 10px; font-size: 12px; }
+.btn-full { width: 100%; justify-content: center; }
+
+/* ── Tabs ─────────────────────────────────────────────────────────────────── */
+.tabs {
+  display: flex;
+  border-bottom: 1px solid var(--border);
+  padding: 0 24px;
+  background: var(--bg3);
+  flex-shrink: 0;
+}
+.tab {
+  padding: 12px 16px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--muted);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: all .15s;
+  white-space: nowrap;
+}
+.tab:hover { color: var(--text); }
+.tab.active { color: var(--blue-l); border-bottom-color: var(--blue); }
+
+/* ── Cards ────────────────────────────────────────────────────────────────── */
+.card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 16px;
+}
+.card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+.card-title { font-size: 15px; font-weight: 600; color: var(--text); }
+.card-subtitle { font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+/* ── Score ────────────────────────────────────────────────────────────────── */
+.score-grid { display: grid; grid-template-columns: 140px 1fr; gap: 24px; align-items: center; }
+.score-ring { text-align: center; }
+.score-num { font-size: 52px; font-weight: 800; line-height: 1; }
+.score-label { font-size: 12px; color: var(--muted); margin-top: 4px; }
+.stat-row { display: flex; gap: 20px; flex-wrap: wrap; }
+.stat { text-align: center; }
+.stat-val { font-size: 24px; font-weight: 700; }
+.stat-key { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; }
+.c-green { color: var(--green); }
+.c-red { color: var(--red); }
+.c-amber { color: var(--amber); }
+.c-blue { color: var(--blue-l); }
+.c-muted { color: var(--muted); }
+
+/* ── Check list ───────────────────────────────────────────────────────────── */
+.check-list { display: flex; flex-direction: column; gap: 2px; }
+.check-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background .1s;
+  border: 1px solid transparent;
+}
+.check-item:hover { background: #1a2540; }
+.check-item.selected { background: #1a2540; border-color: var(--blue); }
+.check-badge {
+  flex-shrink: 0;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 4px;
+  text-transform: uppercase;
+  margin-top: 1px;
+}
+.badge-pass { background: #14532d; color: #4ade80; }
+.badge-fail { background: #450a0a; color: #f87171; }
+.badge-warn { background: #451a03; color: #fbbf24; }
+.badge-error { background: #1e293b; color: var(--muted); }
+.badge-pending { background: #1e293b; color: var(--muted); }
+.check-title { font-size: 13px; font-weight: 500; color: var(--text); flex: 1; }
+.check-detail { font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+/* ── Detail panel ─────────────────────────────────────────────────────────── */
+.detail-panel {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 16px;
+}
+.detail-label { font-size: 10px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); margin-bottom: 4px; }
+.detail-value { font-size: 13px; color: var(--text); }
+.remediation-box {
+  background: #0f2027;
+  border-left: 3px solid var(--amber);
+  border-radius: 0 8px 8px 0;
+  padding: 12px;
+  font-size: 12px;
+  color: var(--subtle);
+  line-height: 1.6;
+  white-space: pre-wrap;
+  font-family: 'SF Mono', Consolas, monospace;
+}
+
+/* ── Forms ────────────────────────────────────────────────────────────────── */
+.form-group { margin-bottom: 14px; }
+label { display: block; font-size: 12px; font-weight: 600; color: var(--subtle); margin-bottom: 4px; }
+input, select, textarea {
+  width: 100%;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 8px 10px;
+  border-radius: 8px;
+  font-size: 13px;
+  outline: none;
+  font-family: inherit;
+  transition: border-color .15s;
+}
+input:focus, select:focus, textarea:focus { border-color: var(--blue); }
+input::placeholder { color: var(--muted); }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.form-hint { font-size: 11px; color: var(--muted); margin-top: 4px; }
+.toggle-row { display: flex; align-items: center; justify-content: space-between; padding: 8px 0; }
+.toggle-label { font-size: 13px; color: var(--text); }
+.toggle { position: relative; width: 36px; height: 20px; }
+.toggle input { opacity: 0; width: 0; height: 0; }
+.toggle-slider {
+  position: absolute; inset: 0;
+  background: var(--border);
+  border-radius: 20px;
+  cursor: pointer;
+  transition: .2s;
+}
+.toggle-slider:before {
+  content: '';
+  position: absolute;
+  width: 14px; height: 14px;
+  left: 3px; top: 3px;
+  background: #fff;
+  border-radius: 50%;
+  transition: .2s;
+}
+.toggle input:checked + .toggle-slider { background: var(--blue); }
+.toggle input:checked + .toggle-slider:before { transform: translateX(16px); }
+
+/* ── Upgrade notice ───────────────────────────────────────────────────────── */
+.upgrade-notice {
+  background: linear-gradient(135deg, #1e3a5f22, #1e293b);
+  border: 1px solid #3b5998;
+  border-radius: 10px;
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 16px;
+}
+.upgrade-notice-icon { font-size: 20px; flex-shrink: 0; }
+.upgrade-notice-text h4 { font-size: 13px; color: #93c5fd; margin-bottom: 2px; }
+.upgrade-notice-text p { font-size: 12px; color: var(--muted); }
+.upgrade-notice-btn {
+  margin-left: auto;
+  background: var(--blue);
+  color: #fff;
+  border: none;
+  padding: 6px 14px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+/* ── Alerts ───────────────────────────────────────────────────────────────── */
+.alert {
+  padding: 12px 16px;
+  border-radius: 8px;
+  font-size: 13px;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+.alert-info { background: #1e3a5f; border: 1px solid var(--blue); color: #93c5fd; }
+.alert-success { background: #14532d22; border: 1px solid var(--green); color: #4ade80; }
+.alert-error { background: #450a0a22; border: 1px solid var(--red); color: #f87171; }
+.alert-warn { background: #451a0322; border: 1px solid var(--amber); color: #fbbf24; }
+
+/* ── Spinner ──────────────────────────────────────────────────────────────── */
+.spinner {
+  width: 16px; height: 16px;
+  border: 2px solid var(--border);
+  border-top-color: var(--blue);
+  border-radius: 50%;
+  animation: spin .7s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── Policy editor ────────────────────────────────────────────────────────── */
+.policy-content {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 16px;
+  font-size: 13px;
+  line-height: 1.7;
+  white-space: pre-wrap;
+  max-height: 500px;
+  overflow-y: auto;
+  color: var(--text);
+}
+.policy-content h1, .policy-content h2 { color: var(--blue-l); }
+.policy-content h2 { margin: 16px 0 8px; font-size: 14px; }
+
+/* ── Empty state ──────────────────────────────────────────────────────────── */
+.empty {
+  text-align: center;
+  padding: 60px 24px;
+  color: var(--muted);
+}
+.empty-icon { font-size: 48px; margin-bottom: 12px; }
+.empty h3 { color: var(--subtle); margin-bottom: 6px; }
+
+/* ── Setup wizard ─────────────────────────────────────────────────────────── */
+.setup-overlay {
+  position: fixed;
+  inset: 0;
+  background: var(--bg);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.setup-box {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 40px;
+  width: 480px;
+  max-width: 95vw;
+}
+.setup-logo { font-size: 22px; font-weight: 800; color: var(--text); margin-bottom: 4px; }
+.setup-sub { color: var(--muted); font-size: 13px; margin-bottom: 32px; }
+.setup-step { display: none; }
+.setup-step.active { display: block; }
+.step-indicator { display: flex; gap: 6px; margin-bottom: 24px; }
+.step-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--border); }
+.step-dot.done { background: var(--blue); }
+.setup-actions { display: flex; gap: 10px; margin-top: 24px; }
+
+/* ── Responsive ───────────────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .sidebar { display: none; }
+  .form-row { grid-template-columns: 1fr; }
+  .score-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- Setup Wizard (shown if not configured) -->
+<div class="setup-overlay" id="setupOverlay" style="display:none">
+  <div class="setup-box">
+    <div class="setup-logo">AuditCaddie OSS</div>
+    <div class="setup-sub">Self-hosted compliance scanning · Get up and running in 2 minutes</div>
+
+    <div class="step-indicator" id="stepDots"></div>
+
+    <!-- Step 1: AI Keys -->
+    <div class="setup-step active" id="step-0">
+      <div class="card-title" style="margin-bottom:6px">AI Provider (required)</div>
+      <p style="color:var(--muted);font-size:12px;margin-bottom:16px">AuditCaddie uses AI to generate policy documents. Add at least one key.</p>
+      <div class="form-group">
+        <label>OpenAI API Key (GPT-4o)</label>
+        <input type="password" id="s_openai" placeholder="sk-..." autocomplete="off">
+        <div class="form-hint">Get your key at <a href="https://platform.openai.com/api-keys" target="_blank" style="color:var(--blue-l)">platform.openai.com</a></div>
+      </div>
+      <div class="form-group">
+        <label>Anthropic API Key (Claude Sonnet)</label>
+        <input type="password" id="s_anthropic" placeholder="sk-ant-..." autocomplete="off">
+        <div class="form-hint">Get your key at <a href="https://console.anthropic.com" target="_blank" style="color:var(--blue-l)">console.anthropic.com</a></div>
+      </div>
+    </div>
+
+    <!-- Step 2: AWS -->
+    <div class="setup-step" id="step-1">
+      <div class="card-title" style="margin-bottom:6px">AWS Credentials (optional)</div>
+      <p style="color:var(--muted);font-size:12px;margin-bottom:16px">Read-only access to scan your AWS account. Skip to use environment variables or IAM roles.</p>
+      <div class="form-group">
+        <label>AWS Access Key ID</label>
+        <input type="text" id="s_aws_key" placeholder="AKIA..." autocomplete="off">
+      </div>
+      <div class="form-group">
+        <label>AWS Secret Access Key</label>
+        <input type="password" id="s_aws_secret" placeholder="..." autocomplete="off">
+      </div>
+      <div class="form-group">
+        <label>AWS Region</label>
+        <select id="s_aws_region">
+          <option value="us-east-1">us-east-1 (N. Virginia)</option>
+          <option value="us-east-2">us-east-2 (Ohio)</option>
+          <option value="us-west-2">us-west-2 (Oregon)</option>
+          <option value="eu-west-1">eu-west-1 (Ireland)</option>
+          <option value="eu-central-1">eu-central-1 (Frankfurt)</option>
+          <option value="ap-southeast-1">ap-southeast-1 (Singapore)</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Step 3: GitHub -->
+    <div class="setup-step" id="step-2">
+      <div class="card-title" style="margin-bottom:6px">GitHub Token (optional)</div>
+      <p style="color:var(--muted);font-size:12px;margin-bottom:16px">Scan your repositories for security controls. Requires <code style="background:var(--bg);padding:1px 4px;border-radius:3px">repo</code> and <code style="background:var(--bg);padding:1px 4px;border-radius:3px">read:org</code> scopes.</p>
+      <div class="form-group">
+        <label>GitHub Personal Access Token</label>
+        <input type="password" id="s_gh_token" placeholder="ghp_..." autocomplete="off">
+        <div class="form-hint">Create at <a href="https://github.com/settings/tokens/new" target="_blank" style="color:var(--blue-l)">github.com/settings/tokens</a></div>
+      </div>
+      <div class="form-group">
+        <label>GitHub Organization (optional)</label>
+        <input type="text" id="s_gh_org" placeholder="your-org-name">
+        <div class="form-hint">Leave blank to scan your personal repos</div>
+      </div>
+    </div>
+
+    <!-- Step 4: Done -->
+    <div class="setup-step" id="step-3">
+      <div style="text-align:center;padding:20px 0">
+        <div style="font-size:48px;margin-bottom:12px">✅</div>
+        <div class="card-title" style="margin-bottom:8px">You're all set!</div>
+        <p style="color:var(--muted);font-size:13px">Select a compliance framework on the left to run your first scan.</p>
+      </div>
+    </div>
+
+    <div class="setup-actions">
+      <button class="btn btn-secondary" id="setupBack" onclick="setupPrev()" style="display:none">Back</button>
+      <button class="btn btn-primary" id="setupNext" onclick="setupNext()" style="margin-left:auto">Next →</button>
+    </div>
+  </div>
+</div>
+
+<!-- Main App -->
+<div class="header">
+  <a href="https://github.com/Blodgic/AuditCaddie" target="_blank" class="logo">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" stroke="#3b82f6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    AuditCaddie
+    <span class="logo-badge">OSS</span>
+  </a>
+  <div id="configStatus" style="display:flex;align-items:center;gap:8px;font-size:12px;color:var(--muted)">
+    <div class="status-dot" id="awsDot"></div> AWS
+    <div class="status-dot" id="ghDot" style="margin-left:8px"></div> GitHub
+    <div class="status-dot" id="aiDot" style="margin-left:8px"></div> AI
+  </div>
+  <div class="header-spacer"></div>
+  <button class="btn btn-secondary btn-sm" onclick="openSettings()">⚙ Settings</button>
+  <a href="https://auditcaddie.com/pricing" target="_blank" class="upgrade-link">✦ Upgrade to Enterprise</a>
+</div>
+
+<div class="body">
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <div class="sidebar-section">
+      <div class="sidebar-label">Frameworks</div>
+      <div id="frameworkList">
+        <div class="c-muted" style="font-size:12px">Loading...</div>
+      </div>
+    </div>
+
+    <div class="sidebar-section" style="flex:1">
+      <div class="sidebar-label">Recent Scans</div>
+      <div id="recentScans" style="display:flex;flex-direction:column;gap:4px"></div>
+    </div>
+
+    <div class="sidebar-actions">
+      <button class="btn btn-primary btn-full" id="runScanBtn" onclick="startScan()" disabled>
+        ▶ Run Scan
+      </button>
+      <div style="height:8px"></div>
+      <button class="btn btn-secondary btn-full btn-sm" onclick="showTab('policies')">📄 Policies</button>
+    </div>
+  </div>
+
+  <!-- Main content -->
+  <div class="main">
+    <div class="tabs">
+      <div class="tab active" onclick="showTab('dashboard')" id="tab-dashboard">Dashboard</div>
+      <div class="tab" onclick="showTab('results')" id="tab-results">Scan Results</div>
+      <div class="tab" onclick="showTab('policies')" id="tab-policies">Policies</div>
+      <div class="tab" onclick="showTab('settings')" id="tab-settings">Settings</div>
+    </div>
+
+    <div class="content" id="content-dashboard">
+      <!-- Welcome / Dashboard -->
+      <div id="dashboardEmpty" class="empty">
+        <div class="empty-icon">🔍</div>
+        <h3>Select a framework and run your first scan</h3>
+        <p>Choose a compliance template from the sidebar, then click <strong>Run Scan</strong>.</p>
+        <div style="height:24px"></div>
+        <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+          <div class="card" style="max-width:200px;text-align:left;padding:16px">
+            <div style="font-size:20px;margin-bottom:8px">☁️</div>
+            <div style="font-weight:600;margin-bottom:4px">AWS Scanner</div>
+            <div style="color:var(--muted);font-size:12px">IAM, S3, CloudTrail, GuardDuty, RDS, VPC + more</div>
+          </div>
+          <div class="card" style="max-width:200px;text-align:left;padding:16px">
+            <div style="font-size:20px;margin-bottom:8px">🐙</div>
+            <div style="font-weight:600;margin-bottom:4px">GitHub Scanner</div>
+            <div style="color:var(--muted);font-size:12px">Branch protection, secret scanning, Dependabot, SAST</div>
+          </div>
+          <div class="card" style="max-width:200px;text-align:left;padding:16px">
+            <div style="font-size:20px;margin-bottom:8px">🤖</div>
+            <div style="font-weight:600;margin-bottom:4px">AI Policy Gen</div>
+            <div style="color:var(--muted);font-size:12px">GPT-4o or Claude Sonnet generates audit-ready policy docs</div>
+          </div>
+        </div>
+      </div>
+
+      <div id="dashboardResults" style="display:none">
+        <!-- Score summary -->
+        <div class="card" id="scoreCard">
+          <div class="score-grid">
+            <div class="score-ring">
+              <div class="score-num" id="scoreNum">—</div>
+              <div class="score-label">Readiness Score</div>
+            </div>
+            <div>
+              <div style="font-weight:700;font-size:16px;margin-bottom:12px" id="scanTitle"></div>
+              <div class="stat-row">
+                <div class="stat"><div class="stat-val c-green" id="statPass">0</div><div class="stat-key">Passed</div></div>
+                <div class="stat"><div class="stat-val c-red" id="statFail">0</div><div class="stat-key">Failed</div></div>
+                <div class="stat"><div class="stat-val c-amber" id="statWarn">0</div><div class="stat-key">Warnings</div></div>
+                <div class="stat"><div class="stat-val c-muted" id="statTotal">0</div><div class="stat-key">Total</div></div>
+              </div>
+              <div style="margin-top:16px;display:flex;gap:8px">
+                <a id="reportBtn" class="btn btn-secondary btn-sm" href="#" target="_blank">📋 Full Report</a>
+                <button class="btn btn-secondary btn-sm" onclick="showTab('results')">View Details →</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quick fails -->
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <div class="card-title">Failed Checks</div>
+              <div class="card-subtitle">Items requiring immediate attention</div>
+            </div>
+          </div>
+          <div class="check-list" id="failedChecks"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="content" id="content-results" style="display:none">
+      <div class="empty" id="resultsEmpty">
+        <div class="empty-icon">📊</div>
+        <h3>No scan results yet</h3>
+        <p>Run a scan from the sidebar to see detailed results here.</p>
+      </div>
+      <div id="resultsContent" style="display:none">
+        <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap">
+          <button class="btn btn-secondary btn-sm" onclick="filterChecks('all')" id="f-all">All</button>
+          <button class="btn btn-secondary btn-sm" onclick="filterChecks('fail')" id="f-fail">Failed</button>
+          <button class="btn btn-secondary btn-sm" onclick="filterChecks('warn')" id="f-warn">Warnings</button>
+          <button class="btn btn-secondary btn-sm" onclick="filterChecks('pass')" id="f-pass">Passed</button>
+          <div style="flex:1"></div>
+          <span id="sourceLabel" style="font-size:12px;color:var(--muted);align-self:center"></span>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 340px;gap:16px">
+          <div class="check-list" id="allChecks"></div>
+          <div id="checkDetail">
+            <div class="empty" style="padding:32px 0">
+              <div style="font-size:32px;margin-bottom:8px">←</div>
+              <p style="font-size:12px">Select a check for details</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="content" id="content-policies" style="display:none">
+      <div class="upgrade-notice">
+        <div class="upgrade-notice-icon">✨</div>
+        <div class="upgrade-notice-text">
+          <h4>AI Policy Document Generator</h4>
+          <p>Generate audit-ready policy documents. Enterprise adds team sharing, version control, and Fieldguide sync.</p>
+        </div>
+        <a href="https://auditcaddie.com/pricing" target="_blank" class="upgrade-notice-btn">Enterprise →</a>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Generate Policy Document</div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Policy Name</label>
+            <input type="text" id="policyName" placeholder="e.g. Access Control Policy">
+          </div>
+          <div class="form-group">
+            <label>AI Model</label>
+            <select id="policyModel">
+              <option value="gpt-4o">GPT-4o (OpenAI)</option>
+              <option value="gpt-4o-mini">GPT-4o Mini</option>
+              <option value="claude-sonnet-4-5">Claude Sonnet (Anthropic)</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Policy Requirements / Prompt</label>
+          <textarea id="policyPrompt" rows="4" placeholder="Describe what the policy should cover. E.g. 'Access Control Policy covering MFA requirements, password standards, privileged access, and quarterly access reviews for a 30-person SaaS startup.'"></textarea>
+        </div>
+        <div style="display:flex;gap:8px;align-items:center">
+          <button class="btn btn-primary" onclick="generatePolicy()">🤖 Generate Policy</button>
+          <div id="policySpinner" style="display:none"><div class="spinner"></div></div>
+          <span id="policyTokens" style="font-size:12px;color:var(--muted)"></span>
+        </div>
+      </div>
+
+      <div id="policyOutput" style="display:none" class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-title" id="policyOutputTitle"></div>
+            <div class="card-subtitle" id="policyOutputMeta"></div>
+          </div>
+          <div style="display:flex;gap:8px">
+            <button class="btn btn-secondary btn-sm" onclick="copyPolicy()">Copy</button>
+            <button class="btn btn-secondary btn-sm" onclick="downloadPolicy()">Download .md</button>
+          </div>
+        </div>
+        <div class="policy-content" id="policyText"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Saved Policies</div>
+          <button class="btn btn-secondary btn-sm" onclick="loadPolicies()">Refresh</button>
+        </div>
+        <div id="policiesList">
+          <div class="c-muted" style="font-size:12px">No policies generated yet.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="content" id="content-settings" style="display:none">
+      <div class="card">
+        <div class="card-header"><div class="card-title">AWS Configuration</div></div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>AWS Access Key ID</label>
+            <input type="text" id="cfg_aws_key" placeholder="AKIA... (or set via env var)">
+          </div>
+          <div class="form-group">
+            <label>AWS Secret Access Key</label>
+            <input type="password" id="cfg_aws_secret" placeholder="Set via .env or enter here">
+          </div>
+        </div>
+        <div class="form-group" style="max-width:240px">
+          <label>Default Region</label>
+          <select id="cfg_aws_region">
+            <option value="us-east-1">us-east-1</option>
+            <option value="us-east-2">us-east-2</option>
+            <option value="us-west-2">us-west-2</option>
+            <option value="eu-west-1">eu-west-1</option>
+            <option value="eu-central-1">eu-central-1</option>
+            <option value="ap-southeast-1">ap-southeast-1</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><div class="card-title">GitHub Configuration</div></div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>GitHub Token</label>
+            <input type="password" id="cfg_gh_token" placeholder="ghp_...">
+            <div class="form-hint">Needs repo + read:org scopes</div>
+          </div>
+          <div class="form-group">
+            <label>Organization (optional)</label>
+            <input type="text" id="cfg_gh_org" placeholder="your-org">
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><div class="card-title">AI Configuration</div></div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>OpenAI API Key</label>
+            <input type="password" id="cfg_openai" placeholder="sk-...">
+          </div>
+          <div class="form-group">
+            <label>Anthropic API Key</label>
+            <input type="password" id="cfg_anthropic" placeholder="sk-ant-...">
+          </div>
+        </div>
+        <div class="form-group" style="max-width:280px">
+          <label>Default AI Model</label>
+          <select id="cfg_ai_model">
+            <option value="gpt-4o">GPT-4o (OpenAI) — Recommended</option>
+            <option value="gpt-4o-mini">GPT-4o Mini (faster, cheaper)</option>
+            <option value="claude-sonnet-4-5">Claude Sonnet 4.5 (Anthropic)</option>
+          </select>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:10px">
+        <button class="btn btn-primary" onclick="saveSettings()">Save Settings</button>
+        <div id="settingsSaved" style="display:none" class="alert alert-success" style="margin:0;padding:8px 12px">✓ Saved</div>
+      </div>
+
+      <div style="margin-top:32px" class="card">
+        <div class="card-header"><div class="card-title">Enterprise Features</div></div>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          ${Object.entries({
+            'Team Collaboration': 'Multi-user access with role-based permissions',
+            'Fieldguide Integration': 'Push evidence directly to your auditor\'s Fieldguide workspace',
+            'SSO / SAML': 'Okta, Azure AD, Google Workspace single sign-on',
+            'Auditor Portal': 'Give your auditor read-only access to scan results',
+            'White-Label Trust Center': 'Customer-facing compliance page at your domain',
+            'CI/CD API Access': 'Run scans automatically in your deployment pipeline',
+          }).map(([name, desc]) => `
+          <div class="upgrade-notice" style="margin:0;padding:12px 16px">
+            <div style="font-size:16px">🔒</div>
+            <div style="flex:1"><div style="font-size:13px;color:#93c5fd;font-weight:500">${name}</div><div style="font-size:11px;color:var(--muted)">${desc}</div></div>
+            <a href="https://auditcaddie.com/pricing" target="_blank" class="upgrade-notice-btn" style="font-size:11px;padding:4px 10px">Upgrade</a>
+          </div>`).join('')}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── State ───────────────────────────────────────────────────────────────────
+let state = {
+  activeFramework: null,
+  activeScanId: null,
+  scanData: null,
+  allChecks: [],
+  currentFilter: 'all',
+  selectedCheck: null,
+  setupStep: 0,
+  setupSteps: 4,
+};
+
+// ── Init ────────────────────────────────────────────────────────────────────
+async function init() {
+  await loadConfig();
+  await loadFrameworks();
+  await loadRecentScans();
+  await loadPolicies();
+}
+
+async function loadConfig() {
+  try {
+    const cfg = await api('/api/config/status');
+    document.getElementById('awsDot').className = 'status-dot ' + (cfg.aws ? 'ok' : '');
+    document.getElementById('ghDot').className  = 'status-dot ' + (cfg.github ? 'ok' : '');
+    document.getElementById('aiDot').className  = 'status-dot ' + (cfg.ai?.configured ? 'ok' : '');
+
+    // Show setup wizard if nothing is configured
+    if (!cfg.aws && !cfg.github && !cfg.ai?.configured) {
+      showSetup();
+    }
+  } catch(e) {}
+}
+
+// ── API helper ──────────────────────────────────────────────────────────────
+async function api(url, opts = {}) {
+  const res = await fetch(url, { headers: { 'Content-Type': 'application/json' }, ...opts });
+  if (!res.ok) {
+    let msg = `HTTP ${res.status}`;
+    try { const j = await res.json(); msg = j.detail || j.error || msg; } catch {}
+    throw new Error(msg);
+  }
+  return res.json();
+}
+
+// ── Setup wizard ────────────────────────────────────────────────────────────
+function showSetup() {
+  document.getElementById('setupOverlay').style.display = 'flex';
+  renderStepDots();
+  showStep(0);
+}
+
+function renderStepDots() {
+  const dots = document.getElementById('stepDots');
+  dots.innerHTML = Array.from({length: state.setupSteps}, (_, i) =>
+    `<div class="step-dot ${i <= state.setupStep ? 'done' : ''}"></div>`
+  ).join('');
+}
+
+function showStep(n) {
+  state.setupStep = n;
+  for (let i = 0; i < state.setupSteps; i++) {
+    document.getElementById(`step-${i}`)?.classList.toggle('active', i === n);
+  }
+  document.getElementById('setupBack').style.display = n > 0 ? '' : 'none';
+  document.getElementById('setupNext').textContent = n === state.setupSteps - 1 ? 'Start Scanning →' : 'Next →';
+  renderStepDots();
+}
+
+async function setupNext() {
+  if (state.setupStep === state.setupSteps - 1) {
+    document.getElementById('setupOverlay').style.display = 'none';
+    return;
+  }
+
+  // Save current step data
+  if (state.setupStep === 0) {
+    const openai = document.getElementById('s_openai').value.trim();
+    const anthropic = document.getElementById('s_anthropic').value.trim();
+    if (!openai && !anthropic) {
+      alert('Please add at least one AI API key to continue.');
+      return;
+    }
+    await saveSettingsData({ openai_api_key: openai, anthropic_api_key: anthropic,
+      ai_model: openai ? 'gpt-4o' : 'claude-sonnet-4-5' });
+  } else if (state.setupStep === 1) {
+    const key = document.getElementById('s_aws_key').value.trim();
+    const secret = document.getElementById('s_aws_secret').value.trim();
+    const region = document.getElementById('s_aws_region').value;
+    if (key && secret) await saveSettingsData({ aws_access_key: key, aws_secret_key: secret, aws_region: region });
+  } else if (state.setupStep === 2) {
+    const token = document.getElementById('s_gh_token').value.trim();
+    const org = document.getElementById('s_gh_org').value.trim();
+    if (token) await saveSettingsData({ github_token: token, github_org: org });
+  }
+
+  showStep(state.setupStep + 1);
+  if (state.setupStep === 3) await loadConfig();
+}
+
+function setupPrev() { showStep(state.setupStep - 1); }
+
+// ── Frameworks ──────────────────────────────────────────────────────────────
+async function loadFrameworks() {
+  try {
+    const templates = await api('/api/templates');
+    const list = document.getElementById('frameworkList');
+    list.innerHTML = templates.map(t => `
+      <button class="framework-btn" onclick="selectFramework('${t.slug}')" id="fw-${t.slug}">
+        ${t.name}
+        <div class="framework-meta">${t.control_count} controls · ~${t.estimated_hours_with_caddie}h with Caddie</div>
+      </button>
+    `).join('');
+  } catch(e) {
+    document.getElementById('frameworkList').innerHTML = `<div class="c-red" style="font-size:12px">Failed to load templates</div>`;
+  }
+}
+
+function selectFramework(slug) {
+  state.activeFramework = slug;
+  document.querySelectorAll('.framework-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(`fw-${slug}`)?.classList.add('active');
+  document.getElementById('runScanBtn').disabled = false;
+}
+
+// ── Scan ─────────────────────────────────────────────────────────────────────
+async function startScan() {
+  if (!state.activeFramework) return alert('Select a framework first');
+
+  const btn = document.getElementById('runScanBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<div class="spinner" style="width:12px;height:12px"></div> Scanning...';
+
+  try {
+    const resp = await api('/api/scan', {
+      method: 'POST',
+      body: JSON.stringify({ framework: state.activeFramework, run_aws: true, run_github: true }),
+    });
+    state.activeScanId = resp.scan_id;
+    await pollScan(resp.scan_id);
+  } catch(e) {
+    alert('Scan failed: ' + e.message);
+    btn.disabled = false;
+    btn.innerHTML = '▶ Run Scan';
+  }
+}
+
+async function pollScan(scanId) {
+  let attempts = 0;
+  const check = async () => {
+    attempts++;
+    if (attempts > 60) return; // 5 min timeout
+    try {
+      const data = await api(`/api/scan/${scanId}`);
+      if (data.status === 'complete') {
+        state.scanData = data;
+        renderScanResults(data);
+        document.getElementById('runScanBtn').disabled = false;
+        document.getElementById('runScanBtn').innerHTML = '▶ Run Scan';
+        await loadRecentScans();
+      } else {
+        setTimeout(check, 5000);
+      }
+    } catch(e) {
+      setTimeout(check, 5000);
+    }
+  };
+  await check();
+}
+
+async function loadRecentScans() {
+  try {
+    const scans = await api('/api/scans?limit=5');
+    const list = document.getElementById('recentScans');
+    if (!scans.length) { list.innerHTML = '<div style="font-size:12px;color:var(--muted)">No scans yet</div>'; return; }
+    list.innerHTML = scans.map(s => `
+      <div style="padding:6px 8px;border-radius:6px;cursor:pointer;font-size:12px;border:1px solid transparent"
+           onclick="loadScan('${s.id}')"
+           onmouseenter="this.style.background='var(--bg2)'" onmouseleave="this.style.background=''">
+        <div style="font-weight:500;color:var(--text);overflow:hidden;white-space:nowrap;text-overflow:ellipsis">${s.scan_name}</div>
+        <div style="color:var(--muted)">${s.status} · ${s.created_at?.slice(0,10)}</div>
+      </div>
+    `).join('');
+  } catch(e) {}
+}
+
+async function loadScan(scanId) {
+  try {
+    const data = await api(`/api/scan/${scanId}`);
+    state.scanData = data;
+    state.activeScanId = scanId;
+    renderScanResults(data);
+  } catch(e) {}
+}
+
+// ── Render results ───────────────────────────────────────────────────────────
+function renderScanResults(data) {
+  const results = data.results || {};
+  const aws = results.aws || {};
+  const gh  = results.github || {};
+
+  const allChecks = [
+    ...(aws.results || []).map(r => ({...r, source: 'aws'})),
+    ...(gh.results || []).map(r => ({...r, source: 'github'})),
+  ];
+  state.allChecks = allChecks;
+
+  const total  = allChecks.length;
+  const passed = allChecks.filter(c => c.status === 'pass').length;
+  const failed = allChecks.filter(c => c.status === 'fail').length;
+  const warned = allChecks.filter(c => c.status === 'warn').length;
+  const score  = total ? Math.round(passed / total * 100) : 0;
+
+  // Dashboard score
+  const scoreColor = score >= 80 ? 'var(--green)' : score >= 50 ? 'var(--amber)' : 'var(--red)';
+  document.getElementById('scoreNum').textContent = score + '%';
+  document.getElementById('scoreNum').style.color = scoreColor;
+  document.getElementById('scanTitle').textContent = data.scan_name;
+  document.getElementById('statPass').textContent = passed;
+  document.getElementById('statFail').textContent = failed;
+  document.getElementById('statWarn').textContent = warned;
+  document.getElementById('statTotal').textContent = total;
+  document.getElementById('reportBtn').href = `/api/report/${data.id}`;
+
+  // Failed checks on dashboard
+  const failedChecks = allChecks.filter(c => c.status === 'fail');
+  document.getElementById('failedChecks').innerHTML = failedChecks.length
+    ? failedChecks.map(c => checkItemHTML(c)).join('')
+    : '<div style="color:var(--green);font-size:13px;padding:12px">✓ No failed checks!</div>';
+
+  document.getElementById('dashboardEmpty').style.display = 'none';
+  document.getElementById('dashboardResults').style.display = '';
+
+  // Results tab
+  renderAllChecks('all');
+  document.getElementById('resultsEmpty').style.display = 'none';
+  document.getElementById('resultsContent').style.display = '';
+  document.getElementById('sourceLabel').textContent =
+    `AWS: ${aws.account_id || 'N/A'} · GitHub: ${gh.actor || 'N/A'}`;
+}
+
+function checkItemHTML(c) {
+  const badges = { pass: 'badge-pass', fail: 'badge-fail', warn: 'badge-warn', error: 'badge-error' };
+  return `<div class="check-item" onclick="selectCheck('${c.check}')" id="ci-${c.check}">
+    <span class="check-badge ${badges[c.status] || 'badge-pending'}">${c.status}</span>
+    <div>
+      <div class="check-title">${c.title}</div>
+      ${c.detail ? `<div class="check-detail">${c.detail}</div>` : ''}
+    </div>
+  </div>`;
+}
+
+function renderAllChecks(filter) {
+  state.currentFilter = filter;
+  const checks = filter === 'all' ? state.allChecks : state.allChecks.filter(c => c.status === filter);
+  document.getElementById('allChecks').innerHTML = checks.map(c => checkItemHTML(c)).join('');
+  ['all','fail','warn','pass'].forEach(f => {
+    const btn = document.getElementById(`f-${f}`);
+    if (btn) btn.style.borderColor = f === filter ? 'var(--blue)' : '';
+  });
+}
+
+function filterChecks(filter) { renderAllChecks(filter); }
+
+function selectCheck(checkId) {
+  state.selectedCheck = checkId;
+  document.querySelectorAll('.check-item').forEach(el => {
+    el.classList.toggle('selected', el.id === `ci-${checkId}`);
+  });
+  const check = state.allChecks.find(c => c.check === checkId);
+  if (!check) return;
+
+  const promptSuggestion = `Write a ${check.title.replace(/—.*/,'')} Policy for a small business. Include: ${check.detail || 'relevant security controls and procedures'}.`;
+
+  document.getElementById('checkDetail').innerHTML = `
+    <div class="detail-panel">
+      <div class="detail-label">Check</div>
+      <div class="detail-value" style="font-weight:600;margin-bottom:12px">${check.title}</div>
+
+      <div class="detail-label">Status</div>
+      <div class="detail-value" style="margin-bottom:12px">
+        <span class="check-badge badge-${check.status}">${check.status}</span>
+      </div>
+
+      ${check.detail ? `<div class="detail-label">Finding</div>
+      <div class="detail-value" style="margin-bottom:12px">${check.detail}</div>` : ''}
+
+      ${check.remediation ? `<div class="detail-label">Remediation</div>
+      <div class="remediation-box" style="margin-bottom:12px">${check.remediation}</div>` : ''}
+
+      ${check.status !== 'pass' ? `
+      <div class="detail-label" style="margin-bottom:8px">AI Policy Generation</div>
+      <button class="btn btn-primary btn-sm btn-full"
+        onclick="prefillPolicy('${checkId}', \`${promptSuggestion.replace(/`/g, "'")}\`)">
+        🤖 Generate Policy Doc
+      </button>` : ''}
+    </div>
+  `;
+}
+
+function prefillPolicy(controlId, prompt) {
+  showTab('policies');
+  document.getElementById('policyName').value = state.allChecks.find(c => c.check === controlId)?.title?.split('—')[0]?.trim() + ' Policy' || '';
+  document.getElementById('policyPrompt').value = prompt;
+}
+
+// ── Tabs ─────────────────────────────────────────────────────────────────────
+function showTab(tab) {
+  ['dashboard', 'results', 'policies', 'settings'].forEach(t => {
+    document.getElementById(`content-${t}`).style.display = t === tab ? '' : 'none';
+    document.getElementById(`tab-${t}`)?.classList.toggle('active', t === tab);
+  });
+  if (tab === 'policies') loadPolicies();
+}
+
+// ── AI Policy Generation ─────────────────────────────────────────────────────
+async function generatePolicy() {
+  const name = document.getElementById('policyName').value.trim();
+  const prompt = document.getElementById('policyPrompt').value.trim();
+  const model = document.getElementById('policyModel').value;
+  if (!name || !prompt) return alert('Enter a policy name and requirements');
+
+  document.getElementById('policySpinner').style.display = '';
+  document.getElementById('policyOutput').style.display = 'none';
+  document.getElementById('policyTokens').textContent = '';
+
+  try {
+    const resp = await api('/api/generate-policy', {
+      method: 'POST',
+      body: JSON.stringify({
+        policy_name: name,
+        prompt,
+        model,
+        scan_id: state.activeScanId || '',
+      }),
+    });
+    document.getElementById('policyOutputTitle').textContent = resp.policy_name;
+    document.getElementById('policyOutputMeta').textContent = `Generated with ${resp.model} · ${resp.tokens || 0} tokens`;
+    document.getElementById('policyText').textContent = resp.content;
+    document.getElementById('policyOutput').style.display = '';
+    document.getElementById('policyTokens').textContent = `${resp.tokens || 0} tokens used`;
+    await loadPolicies();
+  } catch(e) {
+    alert('Policy generation failed: ' + e.message);
+  } finally {
+    document.getElementById('policySpinner').style.display = 'none';
+  }
+}
+
+function copyPolicy() {
+  navigator.clipboard.writeText(document.getElementById('policyText').textContent);
+}
+
+function downloadPolicy() {
+  const name = document.getElementById('policyOutputTitle').textContent;
+  const content = document.getElementById('policyText').textContent;
+  const blob = new Blob([content], { type: 'text/markdown' });
+  const a = Object.assign(document.createElement('a'), {
+    href: URL.createObjectURL(blob),
+    download: name.toLowerCase().replace(/\s+/g, '-') + '.md',
+  });
+  a.click();
+}
+
+async function loadPolicies() {
+  try {
+    const policies = await api('/api/policies');
+    const list = document.getElementById('policiesList');
+    if (!policies.length) { list.innerHTML = '<div class="c-muted" style="font-size:12px">No policies generated yet.</div>'; return; }
+    list.innerHTML = `<div style="display:flex;flex-direction:column;gap:6px">` +
+      policies.map(p => `
+        <div style="display:flex;align-items:center;gap:10px;padding:8px 10px;background:var(--bg);border-radius:8px;cursor:pointer"
+             onclick="loadPolicy('${p.id}')">
+          <div style="font-size:18px">📄</div>
+          <div style="flex:1">
+            <div style="font-weight:500;font-size:13px">${p.policy_name}</div>
+            <div style="font-size:11px;color:var(--muted)">${p.model_used} · ${p.created_at?.slice(0,10)}</div>
+          </div>
+        </div>
+      `).join('') + `</div>`;
+  } catch(e) {}
+}
+
+async function loadPolicy(id) {
+  try {
+    const p = await api(`/api/policies/${id}`);
+    document.getElementById('policyOutputTitle').textContent = p.policy_name;
+    document.getElementById('policyOutputMeta').textContent = `${p.model_used} · ${p.created_at?.slice(0,10)}`;
+    document.getElementById('policyText').textContent = p.content;
+    document.getElementById('policyOutput').style.display = '';
+    showTab('policies');
+  } catch(e) {}
+}
+
+// ── Settings ─────────────────────────────────────────────────────────────────
+function openSettings() { showTab('settings'); }
+
+async function saveSettings() {
+  const data = {
+    aws_access_key: document.getElementById('cfg_aws_key').value.trim(),
+    aws_secret_key: document.getElementById('cfg_aws_secret').value.trim(),
+    aws_region: document.getElementById('cfg_aws_region').value,
+    github_token: document.getElementById('cfg_gh_token').value.trim(),
+    github_org: document.getElementById('cfg_gh_org').value.trim(),
+    openai_api_key: document.getElementById('cfg_openai').value.trim(),
+    anthropic_api_key: document.getElementById('cfg_anthropic').value.trim(),
+    ai_model: document.getElementById('cfg_ai_model').value,
+  };
+  await saveSettingsData(data);
+  const saved = document.getElementById('settingsSaved');
+  saved.style.display = '';
+  setTimeout(() => { saved.style.display = 'none'; }, 2000);
+  await loadConfig();
+}
+
+async function saveSettingsData(data) {
+  await api('/api/settings', { method: 'POST', body: JSON.stringify(data) });
+}
+
+// ── Start ─────────────────────────────────────────────────────────────────────
+init();
+</script>
+</body>
+</html>

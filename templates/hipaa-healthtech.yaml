@@ -1,0 +1,422 @@
+# ─────────────────────────────────────────────────────────────────────────────
+#  AuditCaddie OSS — Compliance Template
+#  Template:    HIPAA Security Rule — Healthtech Startup Readiness
+#  Version:     1.0
+#  Generated:   auditcaddie.com | github.com/Blodgic/caddie-oss
+#  License:     MIT — free to use, share, and modify
+#  Attribution: If you share this template, please keep this header intact.
+#               Every shared template helps grow the open source GRC community.
+# ─────────────────────────────────────────────────────────────────────────────
+
+name: "HIPAA Security Rule — Healthtech Startup Readiness"
+slug: hipaa-healthtech
+version: "1.0"
+author: "AuditCaddie OSS | auditcaddie.com"
+framework: hipaa
+framework_version: "2013"
+target_audience: "Digital health startups and healthtech SaaS companies handling PHI on AWS"
+estimated_hours_manual: 150
+estimated_hours_with_caddie: 15
+description: >
+  A HIPAA Security Rule readiness template for digital health companies and
+  healthtech SaaS platforms handling Protected Health Information (PHI). Covers
+  the Administrative, Physical, and Technical Safeguards with AWS-native
+  controls. Designed for companies working toward their first BAA and HIPAA
+  attestation.
+
+  IMPORTANT: This template covers the HIPAA Security Rule technical controls.
+  HIPAA compliance also requires Privacy Rule policies and breach notification
+  procedures, which require legal review specific to your situation.
+
+  Generated and maintained by AuditCaddie OSS — the free, open source
+  compliance engine. Learn more: github.com/Blodgic/caddie-oss
+
+attribution:
+  product: "AuditCaddie OSS"
+  url: "https://github.com/Blodgic/caddie-oss"
+  commercial: "https://auditcaddie.com"
+  tagline: "Free compliance infrastructure for everyone."
+
+# ── AWS Scan Configuration ────────────────────────────────────────────────────
+aws_checks:
+  - iam_mfa_all_users
+  - iam_password_policy_strength
+  - iam_no_root_access_keys
+  - iam_access_key_rotation_90days
+  - s3_bucket_encryption_at_rest
+  - s3_bucket_public_access_blocked
+  - s3_bucket_versioning_enabled
+  - cloudtrail_enabled_all_regions
+  - cloudwatch_alarms_configured
+  - guardduty_enabled
+  - rds_encryption_enabled
+  - rds_automated_backups_enabled
+  - vpc_flow_logs_enabled
+  - kms_key_rotation_enabled
+  - acm_certificates_valid
+  - config_enabled
+  - ebs_volumes_encrypted
+  - lambda_environment_variables_not_plaintext
+
+# ── Controls ──────────────────────────────────────────────────────────────────
+controls:
+
+  # ── ADMINISTRATIVE SAFEGUARDS (§164.308) ──────────────────────────────────
+
+  - id: §164.308(a)(1)
+    name: "Security Management Process — Risk Analysis"
+    category: "Administrative Safeguards"
+    priority: critical
+    description: >
+      Conduct an accurate and thorough assessment of the potential risks and
+      vulnerabilities to the confidentiality, integrity, and availability of
+      electronic PHI held by the covered entity or business associate.
+    aws_checks:
+      - guardduty_enabled
+      - config_enabled
+    required_evidence:
+      - type: policy_doc
+        name: "HIPAA Risk Analysis Report"
+        ai_generate: true
+        template_prompt: >
+          Generate a HIPAA Security Rule Risk Analysis for a digital health startup
+          using AWS. Include: scope (all systems touching ePHI), threat identification
+          (unauthorized access, ransomware, insider threat, data breach, system
+          outage), vulnerability assessment, likelihood and impact ratings (High/
+          Medium/Low), risk levels, and recommended safeguards. This is a required
+          document — it must exist before a BAA can be signed.
+      - type: aws_scan
+        checks: [guardduty_enabled, config_enabled]
+        label: "Automated risk monitoring evidence"
+    ai_hint: >
+      The HIPAA Risk Analysis is the single most scrutinized document in a HIPAA
+      audit. OCR (the enforcement agency) expects a documented analysis of all
+      threats to ePHI. This must be done before implementation — not after.
+      GuardDuty and Config feed into ongoing risk monitoring after initial analysis.
+    remediation:
+      fail_guidance: >
+        A HIPAA Risk Analysis must be completed and documented. It cannot be
+        automated — it requires human judgment about what ePHI you hold, where
+        it lives, and what threats exist. Use AuditCaddie's AI to generate a
+        starting template, then review and customize with your team.
+
+  - id: §164.308(a)(1)(ii)(B)
+    name: "Security Management Process — Risk Management"
+    category: "Administrative Safeguards"
+    priority: critical
+    description: >
+      Implement security measures sufficient to reduce risks and vulnerabilities
+      to a reasonable and appropriate level to comply with the Security Rule.
+    required_evidence:
+      - type: policy_doc
+        name: "HIPAA Risk Management Plan"
+        ai_generate: true
+      - type: policy_doc
+        name: "Information Security Policy"
+        ai_generate: true
+    ai_hint: >
+      The Risk Management Plan documents how you will address each risk identified
+      in the Risk Analysis. For a startup, this typically means: implement technical
+      controls (encryption, MFA, logging), document policies, and schedule quarterly
+      risk reviews. The plan must be updated whenever the environment changes.
+
+  - id: §164.308(a)(3)
+    name: "Workforce Security — Authorization and Access"
+    category: "Administrative Safeguards"
+    priority: critical
+    description: >
+      Implement policies and procedures to ensure that all members of its
+      workforce have appropriate access to electronic PHI and to prevent
+      those workforce members who do not have access from obtaining access.
+    aws_checks:
+      - iam_mfa_all_users
+      - iam_no_root_access_keys
+    required_evidence:
+      - type: aws_scan
+        checks: [iam_mfa_all_users, iam_no_root_access_keys]
+        label: "IAM access control evidence"
+      - type: policy_doc
+        name: "Workforce Access Authorization Policy"
+        ai_generate: true
+        template_prompt: >
+          Generate a Workforce Access Authorization Policy for a HIPAA-covered
+          healthtech company. Include: role-based access to ePHI (minimum necessary
+          standard), access request and approval process, access review cadence
+          (quarterly), immediate access revocation on termination, and prohibited
+          access scenarios.
+    ai_hint: >
+      HIPAA's "minimum necessary" standard requires that workforce members only
+      access ePHI required for their job function. Role-based IAM policies in
+      AWS directly support this. Access reviews must be documented — quarterly
+      is the expected cadence for ePHI access.
+
+  - id: §164.308(a)(5)
+    name: "Security Awareness and Training"
+    category: "Administrative Safeguards"
+    priority: high
+    description: >
+      Implement a security awareness and training program for all members of
+      its workforce, including management.
+    required_evidence:
+      - type: manual_upload
+        label: "HIPAA training completion records for all workforce members"
+      - type: policy_doc
+        name: "HIPAA Security Awareness Training Policy"
+        ai_generate: true
+        template_prompt: >
+          Generate a HIPAA Security Awareness Training Policy. Include: training
+          frequency (at hire and annually), required topics (what is PHI, HIPAA
+          obligations, phishing awareness, breach reporting, password requirements,
+          device security), training delivery method, and completion tracking.
+    ai_hint: >
+      HIPAA requires documented training for all workforce members with access
+      to ePHI. "Workforce" includes contractors and business associates. Training
+      records must be retained for 6 years. Annual refresher training is required.
+
+  - id: §164.308(a)(6)
+    name: "Security Incident Procedures"
+    category: "Administrative Safeguards"
+    priority: critical
+    description: >
+      Implement policies and procedures to address security incidents, including
+      procedures to identify and respond to suspected or known security incidents.
+    required_evidence:
+      - type: policy_doc
+        name: "HIPAA Incident Response and Breach Notification Policy"
+        ai_generate: true
+        template_prompt: >
+          Generate a HIPAA Security Incident Response and Breach Notification Policy.
+          Include: incident identification and classification, response team roles,
+          containment and investigation steps, breach determination analysis (4-factor
+          test), notification requirements (individuals within 60 days, HHS, media if
+          500+ affected), incident log template, and 6-year record retention requirement.
+    ai_hint: >
+      HIPAA breach notification has strict timelines: individuals must be notified
+      within 60 days of discovery. The 4-factor breach determination analysis is
+      required before concluding whether a security incident qualifies as a breach.
+      Incident logs must be retained for 6 years.
+
+  - id: §164.308(b)(1)
+    name: "Business Associate Agreements"
+    category: "Administrative Safeguards"
+    priority: critical
+    description: >
+      A covered entity may permit a business associate to create, receive,
+      maintain, or transmit electronic protected health information on the
+      covered entity's behalf only if the covered entity obtains satisfactory
+      assurances that the business associate will appropriately safeguard the
+      information.
+    required_evidence:
+      - type: manual_upload
+        label: "AWS BAA (from AWS Artifact) and BAA inventory for other vendors"
+      - type: policy_doc
+        name: "Business Associate Management Policy"
+        ai_generate: true
+    ai_hint: >
+      Every vendor that touches ePHI requires a signed BAA. AWS provides a
+      standard BAA via AWS Artifact (free). Zoom, Google Workspace, Slack,
+      and other SaaS tools also offer HIPAA BAAs (often on paid plans).
+      You need an inventory of all BAs and confirmation that BAAs are signed.
+
+  # ── PHYSICAL SAFEGUARDS (§164.310) ────────────────────────────────────────
+
+  - id: §164.310(a)(1)
+    name: "Facility Access Controls"
+    category: "Physical Safeguards"
+    priority: medium
+    description: >
+      Implement policies and procedures to limit physical access to its
+      electronic information systems and the facility in which they are housed
+      while ensuring that properly authorized access is allowed.
+    required_evidence:
+      - type: manual_upload
+        label: "AWS data center compliance documentation (from AWS Artifact) or office access control policy"
+      - type: policy_doc
+        name: "Physical Security Policy"
+        ai_generate: true
+    ai_hint: >
+      For AWS-hosted ePHI, AWS's data center security (accessible via AWS Artifact
+      compliance reports) satisfies the data center physical safeguard. Your office
+      physical security policy covers the corporate office. Remote-work policies
+      should address workstation physical security.
+
+  - id: §164.310(d)(1)
+    name: "Device and Media Controls"
+    category: "Physical Safeguards"
+    priority: high
+    description: >
+      Implement policies and procedures that govern the receipt and removal of
+      hardware and electronic media that contain electronic protected health
+      information into and out of a facility.
+    required_evidence:
+      - type: policy_doc
+        name: "Device and Media Handling Policy"
+        ai_generate: true
+        template_prompt: >
+          Generate a Device and Media Controls Policy for a HIPAA healthtech company.
+          Cover: laptop encryption requirement (FileVault/BitLocker), MDM enrollment,
+          acceptable use of removable media (USB drives discouraged), device disposal
+          and secure wipe procedures, BYOD policy, and lost/stolen device response.
+    ai_hint: >
+      For a software company, this primarily means: all laptops must be encrypted
+      and enrolled in MDM. Removable media with ePHI should be prohibited or
+      require encrypted USB drives. Disposal of devices must include verified
+      secure wipe (NIST 800-88 media sanitization).
+
+  # ── TECHNICAL SAFEGUARDS (§164.312) ───────────────────────────────────────
+
+  - id: §164.312(a)(1)
+    name: "Access Control — Unique User Identification"
+    category: "Technical Safeguards"
+    priority: critical
+    description: >
+      Assign a unique name and/or number for identifying and tracking user
+      identity. Implement procedures to obtain necessary electronic PHI during
+      an emergency.
+    aws_checks:
+      - iam_mfa_all_users
+      - iam_password_policy_strength
+    required_evidence:
+      - type: aws_scan
+        checks: [iam_mfa_all_users, iam_password_policy_strength]
+        label: "Unique user identification evidence"
+      - type: policy_doc
+        name: "Access Control Policy"
+        ai_generate: true
+    ai_hint: >
+      Shared AWS accounts are a HIPAA violation. Every person accessing ePHI
+      must have their own unique IAM user or SSO identity. No shared accounts,
+      no shared access keys. MFA is required for all accounts with access to
+      ePHI systems.
+
+  - id: §164.312(a)(2)(iv)
+    name: "Encryption and Decryption"
+    category: "Technical Safeguards"
+    priority: critical
+    description: >
+      Implement a mechanism to encrypt and decrypt electronic protected health
+      information.
+    aws_checks:
+      - s3_bucket_encryption_at_rest
+      - rds_encryption_enabled
+      - kms_key_rotation_enabled
+      - ebs_volumes_encrypted
+    required_evidence:
+      - type: aws_scan
+        checks: [s3_bucket_encryption_at_rest, rds_encryption_enabled, kms_key_rotation_enabled]
+        label: "ePHI encryption at rest evidence"
+      - type: manual_upload
+        label: "Screenshot of TLS enforcement on all ePHI endpoints"
+    ai_hint: >
+      All ePHI at rest must be encrypted: S3 (SSE-KMS preferred for ePHI),
+      RDS, EBS volumes, and any other storage. All ePHI in transit must use
+      TLS 1.2 or higher. KMS customer-managed keys with rotation enabled are
+      required for ePHI (not SSE-S3). This is non-negotiable for HIPAA.
+    remediation:
+      fail_guidance: >
+        S3 with ePHI: Use SSE-KMS (not SSE-S3) — KMS provides key management audit trail
+        RDS: Must be encrypted at creation — restore from snapshot to create encrypted instance
+        EBS: Enable encryption by default: EC2 → Settings → EBS Encryption → Enable by default
+        KMS rotation: KMS → Customer managed keys → select key → Key rotation → Enable
+
+  - id: §164.312(b)
+    name: "Audit Controls"
+    category: "Technical Safeguards"
+    priority: critical
+    description: >
+      Implement hardware, software, and/or procedural mechanisms that record
+      and examine activity in information systems that contain or use electronic
+      protected health information.
+    aws_checks:
+      - cloudtrail_enabled_all_regions
+      - cloudwatch_alarms_configured
+      - vpc_flow_logs_enabled
+    required_evidence:
+      - type: aws_scan
+        checks: [cloudtrail_enabled_all_regions, cloudwatch_alarms_configured, vpc_flow_logs_enabled]
+        label: "Audit logging evidence for ePHI systems"
+      - type: policy_doc
+        name: "Audit Logging and Monitoring Policy"
+        ai_generate: true
+    ai_hint: >
+      CloudTrail must be enabled in all regions and logs retained for at least
+      6 years (HIPAA retention requirement). CloudWatch alarms should alert on
+      unauthorized access to ePHI. Application-level audit logs (who accessed
+      which patient record, when) are also required — AWS CloudTrail alone is
+      insufficient for application-layer auditing.
+    remediation:
+      fail_guidance: >
+        CloudTrail: Create trail with all regions enabled. Set S3 log retention to 6+ years.
+        Application logs: Implement audit logging in your application for ePHI access events.
+        CloudWatch: Create alarms for unusual access patterns to ePHI resources.
+
+  - id: §164.312(c)(1)
+    name: "Integrity Controls"
+    category: "Technical Safeguards"
+    priority: high
+    description: >
+      Implement policies and procedures to protect electronic protected health
+      information from improper alteration or destruction.
+    aws_checks:
+      - s3_bucket_versioning_enabled
+      - rds_automated_backups_enabled
+    required_evidence:
+      - type: aws_scan
+        checks: [s3_bucket_versioning_enabled, rds_automated_backups_enabled]
+        label: "ePHI integrity and backup evidence"
+      - type: policy_doc
+        name: "Data Integrity and Backup Policy"
+        ai_generate: true
+    ai_hint: >
+      S3 versioning prevents accidental deletion/overwrite of ePHI. RDS automated
+      backups with point-in-time recovery protect against data corruption. Consider
+      S3 Object Lock for immutable audit logs. Application-level checksums on ePHI
+      records are a best practice.
+
+  - id: §164.312(e)(1)
+    name: "Transmission Security"
+    category: "Technical Safeguards"
+    priority: critical
+    description: >
+      Implement technical security measures to guard against unauthorized access
+      to electronic protected health information that is being transmitted over
+      an electronic communications network.
+    aws_checks:
+      - acm_certificates_valid
+    required_evidence:
+      - type: aws_scan
+        checks: [acm_certificates_valid]
+        label: "TLS certificate evidence"
+      - type: manual_upload
+        label: "SSL Labs or equivalent test showing A/A+ rating on ePHI endpoints"
+    ai_hint: >
+      All transmission of ePHI must use TLS 1.2 minimum (TLS 1.3 preferred).
+      Certificates must be valid and not expiring within 30 days. HTTPS must
+      be enforced — HTTP to HTTPS redirect required. Email with ePHI must use
+      encrypted email (standard SMTP is insufficient for ePHI).
+    remediation:
+      fail_guidance: >
+        ACM: Use ACM for free automated TLS certificates. Enable auto-renewal.
+        Load balancer: Set security policy to ELBSecurityPolicy-TLS13-1-2-2021-06 or higher.
+        Force HTTPS: Add HTTP listener rule to redirect all traffic to HTTPS.
+
+# ── Report Configuration ──────────────────────────────────────────────────────
+report:
+  title: "HIPAA Security Rule Readiness Assessment"
+  subtitle: "Powered by AuditCaddie OSS"
+  footer: "Generated by AuditCaddie OSS | auditcaddie.com | github.com/Blodgic/caddie-oss"
+  include_remediation: true
+  include_evidence_citations: true
+  include_auddie_attribution: true
+  disclaimer: >
+    This assessment covers technical controls under the HIPAA Security Rule.
+    Full HIPAA compliance also requires Privacy Rule policies, Notice of Privacy
+    Practices, and breach notification procedures. Consult qualified HIPAA counsel
+    for complete compliance guidance.
+  sections:
+    - executive_summary
+    - readiness_score
+    - control_results
+    - evidence_summary
+    - remediation_roadmap
+    - about_auditcaddie

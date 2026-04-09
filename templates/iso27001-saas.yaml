@@ -1,0 +1,438 @@
+# ─────────────────────────────────────────────────────────────────────────────
+#  AuditCaddie OSS — Compliance Template
+#  Template:    ISO 27001:2022 — SaaS Company Readiness
+#  Version:     1.0
+#  Generated:   auditcaddie.com | github.com/Blodgic/caddie-oss
+#  License:     MIT — free to use, share, and modify
+#  Attribution: If you share this template, please keep this header intact.
+#               Every shared template helps grow the open source GRC community.
+# ─────────────────────────────────────────────────────────────────────────────
+
+name: "ISO 27001:2022 — SaaS Company Readiness"
+slug: iso27001-saas
+version: "1.0"
+author: "AuditCaddie OSS | auditcaddie.com"
+framework: iso27001
+framework_version: "2022"
+target_audience: "B2B SaaS companies, 20–200 employees, AWS-hosted, seeking ISO 27001 certification"
+estimated_hours_manual: 200
+estimated_hours_with_caddie: 20
+description: >
+  An ISO 27001:2022 readiness template for B2B SaaS companies. Covers the
+  highest-priority Annex A controls and ISMS core requirements that certification
+  auditors focus on for cloud-native SaaS products. Built around the 2022 update
+  which restructured to 93 controls across 4 themes.
+
+  Generated and maintained by AuditCaddie OSS — the free, open source
+  compliance engine. Learn more: github.com/Blodgic/caddie-oss
+
+attribution:
+  product: "AuditCaddie OSS"
+  url: "https://github.com/Blodgic/caddie-oss"
+  commercial: "https://auditcaddie.com"
+  tagline: "Free compliance infrastructure for everyone."
+
+# ── AWS Scan Configuration ────────────────────────────────────────────────────
+aws_checks:
+  - iam_mfa_all_users
+  - iam_password_policy_strength
+  - iam_no_root_access_keys
+  - iam_access_key_rotation_90days
+  - s3_bucket_encryption_at_rest
+  - s3_bucket_public_access_blocked
+  - s3_bucket_versioning_enabled
+  - cloudtrail_enabled_all_regions
+  - cloudwatch_alarms_configured
+  - guardduty_enabled
+  - config_enabled
+  - rds_encryption_enabled
+  - rds_automated_backups_enabled
+  - vpc_flow_logs_enabled
+  - kms_key_rotation_enabled
+  - acm_certificates_valid
+  - security_hub_enabled
+
+# ── Controls ──────────────────────────────────────────────────────────────────
+controls:
+
+  # ── ISMS CORE (Clauses 4–10) ──────────────────────────────────────────────
+
+  - id: ISMS-4.1
+    name: "Context of the Organization"
+    category: "ISMS Core"
+    priority: high
+    description: >
+      The organization determines external and internal issues relevant to its
+      purpose and that affect its ability to achieve the intended outcomes of
+      its ISMS.
+    required_evidence:
+      - type: policy_doc
+        name: "ISMS Scope Statement"
+        ai_generate: true
+        template_prompt: >
+          Generate an ISMS Scope Statement for a B2B SaaS company. Define the
+          scope of the Information Security Management System including: systems
+          in scope (cloud infrastructure, development environment, corporate
+          network), services covered, locations, and explicit exclusions. Keep
+          it concise — one page.
+      - type: policy_doc
+        name: "Information Security Policy"
+        ai_generate: true
+        template_prompt: >
+          Generate a top-level Information Security Policy for a B2B SaaS company
+          pursuing ISO 27001. Include: management commitment, policy objectives,
+          roles and responsibilities, legal and regulatory obligations, and review
+          cadence. Should be signed by the CEO or equivalent. Under 3 pages.
+    ai_hint: >
+      The ISMS scope document must clearly define what is in and out of scope.
+      For a SaaS company, this typically includes the production AWS environment,
+      development tooling (GitHub, CI/CD), and key SaaS tools. Corporate laptops
+      are usually in scope; personal devices out of scope.
+
+  - id: ISMS-6.1
+    name: "Risk Assessment and Treatment"
+    category: "ISMS Core"
+    priority: critical
+    description: >
+      The organization defines and applies an information security risk
+      assessment process and selects appropriate risk treatment options.
+    aws_checks:
+      - guardduty_enabled
+      - security_hub_enabled
+    required_evidence:
+      - type: policy_doc
+        name: "Risk Assessment Methodology"
+        ai_generate: true
+      - type: policy_doc
+        name: "Risk Register"
+        ai_generate: true
+        template_prompt: >
+          Generate an Information Security Risk Register for a B2B SaaS company.
+          Include 15–20 risks covering: infrastructure vulnerabilities, data breach
+          scenarios, insider threats, third-party/vendor risks, supply chain attacks,
+          and business continuity risks. For each: risk description, likelihood (1-5),
+          impact (1-5), risk score, current controls, and treatment plan.
+      - type: aws_scan
+        checks: [guardduty_enabled, security_hub_enabled]
+        label: "Automated threat detection evidence"
+    ai_hint: >
+      ISO 27001 requires a documented risk assessment methodology. The risk
+      register must tie to specific Annex A controls as treatment options.
+      GuardDuty and Security Hub findings feed directly into the risk register
+      as identified technical risks.
+
+  - id: ISMS-9.1
+    name: "Monitoring, Measurement, and Evaluation"
+    category: "ISMS Core"
+    priority: medium
+    description: >
+      The organization evaluates the information security performance and the
+      effectiveness of the ISMS.
+    aws_checks:
+      - cloudtrail_enabled_all_regions
+      - cloudwatch_alarms_configured
+      - config_enabled
+    required_evidence:
+      - type: aws_scan
+        checks: [cloudtrail_enabled_all_regions, cloudwatch_alarms_configured]
+        label: "Monitoring and logging evidence"
+      - type: policy_doc
+        name: "Security KPIs and Metrics Program"
+        ai_generate: true
+    ai_hint: >
+      ISO 27001 requires you to measure ISMS effectiveness. Define 3–5 security
+      KPIs (e.g., % users with MFA, mean time to patch critical CVEs, number of
+      open high-severity GuardDuty findings). CloudWatch dashboards are ideal
+      evidence of ongoing measurement.
+
+  # ── ANNEX A — ORGANIZATIONAL CONTROLS ────────────────────────────────────
+
+  - id: A.5.1
+    name: "Information Security Policies"
+    category: "Organizational Controls"
+    priority: high
+    description: >
+      Information security policy and topic-specific policies shall be defined,
+      approved by management, published, communicated, and acknowledged by
+      relevant personnel.
+    required_evidence:
+      - type: policy_doc
+        name: "Information Security Policy Suite"
+        ai_generate: true
+        template_prompt: >
+          List and briefly describe the required policy documents for ISO 27001
+          Annex A.5.1 for a B2B SaaS company. Include: Information Security
+          Policy, Acceptable Use Policy, Access Control Policy, Data Classification
+          Policy, Incident Response Policy, Vendor Management Policy, and Business
+          Continuity Policy.
+    ai_hint: >
+      ISO 27001 requires a documented suite of security policies. For a SaaS
+      company, at minimum: Information Security Policy, Access Control Policy,
+      Incident Response Policy, and Acceptable Use Policy. Evidence of management
+      approval (signature, date) is required for certification.
+
+  - id: A.5.15
+    name: "Access Control"
+    category: "Organizational Controls"
+    priority: critical
+    description: >
+      Rules to control physical and logical access to information and other
+      associated assets shall be established and implemented.
+    aws_checks:
+      - iam_mfa_all_users
+      - iam_password_policy_strength
+      - iam_no_root_access_keys
+      - iam_access_key_rotation_90days
+    required_evidence:
+      - type: aws_scan
+        checks: [iam_mfa_all_users, iam_password_policy_strength, iam_no_root_access_keys]
+        label: "IAM access control evidence"
+      - type: policy_doc
+        name: "Access Control Policy"
+        ai_generate: true
+    ai_hint: >
+      ISO 27001 requires documented access control rules and evidence they are
+      enforced. MFA for all users, least-privilege IAM roles, and a formal
+      access review process (quarterly is typical) are the key technical controls.
+
+  - id: A.5.23
+    name: "Information Security for Cloud Services"
+    category: "Organizational Controls"
+    priority: high
+    description: >
+      Processes for acquisition, use, management, and exit from cloud services
+      shall be established per the information security requirements.
+    aws_checks:
+      - s3_bucket_encryption_at_rest
+      - s3_bucket_public_access_blocked
+      - vpc_flow_logs_enabled
+    required_evidence:
+      - type: aws_scan
+        checks: [s3_bucket_encryption_at_rest, s3_bucket_public_access_blocked]
+        label: "Cloud security configuration evidence"
+      - type: policy_doc
+        name: "Cloud Security Policy"
+        ai_generate: true
+        template_prompt: >
+          Generate a Cloud Security Policy for a B2B SaaS company using AWS.
+          Cover: approved cloud services list, cloud resource tagging standards,
+          shared responsibility model acknowledgment, data residency requirements,
+          encryption requirements for cloud storage, and cloud exit strategy.
+    ai_hint: >
+      ISO 27001:2022 added A.5.23 specifically for cloud services. Evidence
+      should include your cloud security configuration baselines and a policy
+      that acknowledges the shared responsibility model with your cloud provider.
+
+  - id: A.5.29
+    name: "Information Security During Disruption"
+    category: "Organizational Controls"
+    priority: medium
+    description: >
+      The organization shall plan how to maintain information security at an
+      appropriate level during disruption.
+    aws_checks:
+      - rds_automated_backups_enabled
+      - s3_bucket_versioning_enabled
+    required_evidence:
+      - type: aws_scan
+        checks: [rds_automated_backups_enabled]
+        label: "Backup and availability evidence"
+      - type: policy_doc
+        name: "Business Continuity and Disaster Recovery Plan"
+        ai_generate: true
+    ai_hint: >
+      RDS automated backups (7+ day retention) and S3 versioning are the minimum
+      technical controls. The BCP/DRP must document RTOs, RPOs, and the recovery
+      procedure. Annual tabletop exercises are expected for certification.
+
+  # ── ANNEX A — PEOPLE CONTROLS ─────────────────────────────────────────────
+
+  - id: A.6.1
+    name: "Screening"
+    category: "People Controls"
+    priority: medium
+    description: >
+      Background verification checks on all candidates for employment shall be
+      carried out prior to joining the organization and on an ongoing basis.
+    required_evidence:
+      - type: policy_doc
+        name: "HR Security Policy"
+        ai_generate: true
+        template_prompt: >
+          Generate an HR Security Policy for a B2B SaaS company. Include:
+          background check requirements by role (standard vs. elevated for
+          privileged access roles), onboarding security checklist, security
+          training requirements, and offboarding procedures including system
+          access revocation within 24 hours.
+    ai_hint: >
+      For a SaaS company, background checks for employees with access to
+      production data are expected. A written policy is required; evidence
+      of screening is required. Offboarding procedures must explicitly
+      include immediate IAM deactivation.
+
+  - id: A.6.3
+    name: "Information Security Awareness and Training"
+    category: "People Controls"
+    priority: high
+    description: >
+      Personnel shall receive appropriate information security awareness
+      education and training.
+    required_evidence:
+      - type: manual_upload
+        label: "Security training completion records or LMS screenshot"
+      - type: policy_doc
+        name: "Security Awareness Training Policy"
+        ai_generate: true
+    ai_hint: >
+      Annual security awareness training is required. Evidence should be
+      completion records showing which employees completed training and when.
+      Phishing simulation results are a bonus. For certification, training
+      must cover at least: phishing, password hygiene, and data handling.
+
+  # ── ANNEX A — TECHNOLOGICAL CONTROLS ─────────────────────────────────────
+
+  - id: A.8.5
+    name: "Secure Authentication"
+    category: "Technological Controls"
+    priority: critical
+    description: >
+      Secure authentication technologies and procedures shall be implemented
+      based on information access restrictions and the topic-specific policy
+      on access control.
+    aws_checks:
+      - iam_mfa_all_users
+    required_evidence:
+      - type: aws_scan
+        checks: [iam_mfa_all_users]
+        label: "MFA enforcement evidence"
+      - type: manual_upload
+        label: "Screenshot of SSO/MFA enforcement for production systems"
+    ai_hint: >
+      MFA must be enforced for all access to production systems and sensitive
+      data. AWS IAM MFA evidence covers cloud access. SSO with MFA (Okta,
+      Google Workspace, etc.) covering SaaS tools is also required.
+
+  - id: A.8.7
+    name: "Protection Against Malware"
+    category: "Technological Controls"
+    priority: high
+    description: >
+      Protection against malware shall be implemented and supported by
+      appropriate user awareness.
+    aws_checks:
+      - guardduty_enabled
+    required_evidence:
+      - type: aws_scan
+        checks: [guardduty_enabled]
+        label: "GuardDuty malware protection evidence"
+      - type: manual_upload
+        label: "EDR/antivirus coverage screenshot for corporate endpoints"
+    ai_hint: >
+      GuardDuty provides AWS-layer malware detection. Corporate laptops must
+      also have endpoint protection (CrowdStrike, SentinelOne, Malwarebytes,
+      or similar). Evidence should show both cloud and endpoint coverage.
+
+  - id: A.8.8
+    name: "Management of Technical Vulnerabilities"
+    category: "Technological Controls"
+    priority: high
+    description: >
+      Information about technical vulnerabilities of information systems shall
+      be obtained, the organization's exposure evaluated, and appropriate
+      measures taken.
+    aws_checks:
+      - guardduty_enabled
+      - security_hub_enabled
+    required_evidence:
+      - type: aws_scan
+        checks: [guardduty_enabled, security_hub_enabled]
+        label: "Vulnerability scanning evidence"
+      - type: policy_doc
+        name: "Vulnerability Management Policy"
+        ai_generate: true
+    ai_hint: >
+      Security Hub with AWS Inspector provides continuous vulnerability scanning
+      for EC2 instances, containers, and Lambda functions. Define SLAs for
+      patching: critical CVEs within 7 days, high within 30 days is typical.
+
+  - id: A.8.12
+    name: "Data Leakage Prevention"
+    category: "Technological Controls"
+    priority: medium
+    description: >
+      Data leakage prevention measures shall be applied to systems, networks,
+      and any other devices that process, store, or transmit sensitive information.
+    aws_checks:
+      - s3_bucket_public_access_blocked
+      - vpc_flow_logs_enabled
+    required_evidence:
+      - type: aws_scan
+        checks: [s3_bucket_public_access_blocked]
+        label: "S3 public access block evidence"
+      - type: policy_doc
+        name: "Data Loss Prevention Policy"
+        ai_generate: true
+    ai_hint: >
+      S3 Block Public Access is the primary DLP control for cloud storage.
+      VPC flow logs detect unexpected data exfiltration. For corporate endpoints,
+      DLP tooling (or at minimum Google Workspace/M365 DLP settings) should be
+      documented.
+
+  - id: A.8.23
+    name: "Web Filtering"
+    category: "Technological Controls"
+    priority: low
+    description: >
+      Access to external websites shall be managed to reduce exposure to
+      malicious content.
+    required_evidence:
+      - type: manual_upload
+        label: "Evidence of DNS filtering or web proxy configuration"
+      - type: policy_doc
+        name: "Acceptable Use Policy"
+        ai_generate: true
+    ai_hint: >
+      For a SaaS company, DNS-layer filtering (Cloudflare Gateway, Cisco Umbrella,
+      or similar) satisfies this. A written Acceptable Use Policy that prohibits
+      accessing malicious/unauthorized sites is also required. This is a lower
+      priority for Type I — focus on higher-priority controls first.
+
+  - id: A.8.28
+    name: "Secure Coding"
+    category: "Technological Controls"
+    priority: high
+    description: >
+      Secure coding principles shall be applied to software development.
+    required_evidence:
+      - type: policy_doc
+        name: "Secure Development Policy"
+        ai_generate: true
+        template_prompt: >
+          Generate a Secure Development Policy for a B2B SaaS company. Include:
+          OWASP Top 10 awareness requirement, code review requirements (peer
+          review before merge), SAST/DAST tooling requirements, dependency
+          vulnerability scanning, branch protection rules, and secrets management
+          (no hardcoded credentials).
+      - type: manual_upload
+        label: "GitHub branch protection screenshot and SAST tool evidence"
+    ai_hint: >
+      For ISO 27001, secure coding evidence includes: branch protection rules
+      (at least one reviewer required), automated SAST scanning (GitHub Advanced
+      Security, Snyk, or Semgrep), and dependency vulnerability scanning.
+      A written Secure Development Policy is also required.
+
+# ── Report Configuration ──────────────────────────────────────────────────────
+report:
+  title: "ISO 27001:2022 Readiness Assessment"
+  subtitle: "Powered by AuditCaddie OSS"
+  footer: "Generated by AuditCaddie OSS | auditcaddie.com | github.com/Blodgic/caddie-oss"
+  include_remediation: true
+  include_evidence_citations: true
+  include_auddie_attribution: true
+  sections:
+    - executive_summary
+    - readiness_score
+    - control_results
+    - evidence_summary
+    - remediation_roadmap
+    - about_auditcaddie
