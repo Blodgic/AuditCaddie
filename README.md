@@ -4,7 +4,7 @@
 
 **Self-hosted compliance scanning for AWS + GitHub**
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![License: Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
 [![Docker](https://img.shields.io/badge/Docker-ready-2496ED?logo=docker&logoColor=white)](https://github.com/Blodgic/AuditCaddie/pkgs/container/auditcaddie)
 
 [**Get Started**](#quick-start) · [**Templates**](templates/) · [**Enterprise**](https://auditcaddie.com/pricing) · [**Docs**](https://github.com/Blodgic/AuditCaddie/wiki)
@@ -169,13 +169,19 @@ Your data in `./data/` is preserved across updates.
 
 - **Issues & features:** [github.com/Blodgic/AuditCaddie/issues](https://github.com/Blodgic/AuditCaddie/issues)
 - **Commercial product:** [auditcaddie.com](https://auditcaddie.com)
-- **Templates are MIT licensed** — fork, extend, and share. Please keep the attribution header.
+- **Policy templates** — free to use, customize, and share under Apache 2.0. Keep the attribution header.
 
 ## License
 
-MIT — free to use, self-host, and modify. See [LICENSE](LICENSE).
+**Apache License 2.0** — free to use, self-host, modify, and redistribute. See [LICENSE](LICENSE).
 
-Enterprise features are available under a commercial license at [auditcaddie.com/pricing](https://auditcaddie.com/pricing).
+Apache 2.0 is a permissive open source license that also includes:
+- An **express patent grant** from all contributors (meaningful protection for security and AI tooling)
+- A **trademark clause** — "AuditCaddie" and "BLODGIC" are protected marks; this license does not grant their use
+
+**This repository contains the Community Edition only.** See [LICENSE](LICENSE) for the full scope of what is and is not included.
+
+Enterprise features (multi-tenancy, SSO, Fieldguide integration, auditor portal, advanced evidence workflows, and more) are available under a commercial license at [auditcaddie.com/pricing](https://auditcaddie.com/pricing).
 
 ---
 

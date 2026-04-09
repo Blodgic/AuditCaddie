@@ -1,6 +1,6 @@
 ---
 > **Provided by AuditCaddie OSS** · [github.com/Blodgic/AuditCaddie](https://github.com/Blodgic/AuditCaddie) · [auditcaddie.com](https://auditcaddie.com)
-> MIT Licensed — free to use, customize, and share. Please keep this footer intact.
+> Apache Licensed 2.0 — free to use, customize, and share. Please keep this attribution intact.
 ---
 
 # Business Continuity and Disaster Recovery Plan
@@ -130,7 +130,7 @@ Test results are documented and used to improve this plan.
 ---
 
 > **Provided by AuditCaddie OSS**
-> This policy template is provided free of charge under the MIT License.
+> This policy template is provided free of charge under the Apache License 2.0.
 > Customize it for your organization, then generate evidence with AuditCaddie.
 >
 > 🔗 [github.com/Blodgic/AuditCaddie](https://github.com/Blodgic/AuditCaddie) · [auditcaddie.com](https://auditcaddie.com)

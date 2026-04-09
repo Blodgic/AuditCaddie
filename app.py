@@ -1,12 +1,16 @@
 """
-AuditCaddie OSS
-===============
+AuditCaddie Community Edition
+==============================
 Self-hosted compliance scanning for AWS + GitHub.
 Single-user. BYOK AI. 10 minutes to running.
 
-Docs:       https://github.com/Blodgic/AuditCaddie
-Commercial: https://auditcaddie.com
-License:    MIT
+Copyright 2026 BLODGIC Inc.
+Licensed under the Apache License, Version 2.0
+See LICENSE and NOTICE for full terms, trademark notice,
+and community edition scope.
+
+Docs:        https://github.com/Blodgic/AuditCaddie
+Enterprise:  https://auditcaddie.com/pricing
 """
 
 import json

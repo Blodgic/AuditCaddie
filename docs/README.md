@@ -1,13 +1,13 @@
 ---
-> **Provided by AuditCaddie OSS** · [github.com/Blodgic/AuditCaddie](https://github.com/Blodgic/AuditCaddie) · [auditcaddie.com](https://auditcaddie.com)
-> MIT Licensed — free to use, customize, and share.
+> **Provided by AuditCaddie Community Edition** · [github.com/Blodgic/AuditCaddie](https://github.com/Blodgic/AuditCaddie) · [auditcaddie.com](https://auditcaddie.com)
+> Apache Licensed 2.0 — free to use, customize, and share.
 ---
 
-# AuditCaddie OSS — Free Policy Library
+# AuditCaddie — Free Policy Library
 
-**7 production-ready compliance policy templates. Customize, sign, and submit to your auditor.**
+**9 production-ready compliance policy templates. Customize, sign, and submit to your auditor.**
 
-All documents are MIT licensed — free to use, share, and modify. Keep the footer attribution intact to help grow the open source GRC community.
+All documents are licensed under the Apache License 2.0 — free to use, share, and modify. Keep the footer attribution intact to help grow the open source GRC community. "AuditCaddie" and "BLODGIC" are trademarks of BLODGIC Inc.; this license does not grant use of those marks.
 
 ---
 
