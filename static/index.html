@@ -5,262 +5,417 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>AuditCaddie OSS</title>
 <style>
+/* ── Design tokens — enterprise palette ─────────────────────────────────── */
 :root {
-  --bg:      #0f172a;
-  --bg2:     #1e293b;
-  --bg3:     #0d1526;
-  --border:  #334155;
-  --text:    #e2e8f0;
-  --muted:   #64748b;
-  --subtle:  #94a3b8;
-  --blue:    #3b82f6;
-  --blue-l:  #60a5fa;
-  --green:   #22c55e;
-  --red:     #ef4444;
-  --amber:   #f59e0b;
-  --purple:  #a78bfa;
+  --navy:      #0c2979;
+  --navy-d:    #091f60;
+  --navy-l:    #1a3a8f;
+  --teal:      #4ecdc4;
+  --teal-d:    #3ab8af;
+  --bg:        #f4f6fa;
+  --bg2:       #ffffff;
+  --sidebar-bg:#0c2979;
+  --border:    #e2e8f0;
+  --border-d:  #cbd5e1;
+  --text:      #1e293b;
+  --muted:     #64748b;
+  --subtle:    #94a3b8;
+  --green:     #22c55e;
+  --green-bg:  #f0fdf4;
+  --red:       #ef4444;
+  --red-bg:    #fef2f2;
+  --amber:     #f59e0b;
+  --amber-bg:  #fffbeb;
+  --blue:      #3b82f6;
 }
 * { box-sizing: border-box; margin: 0; padding: 0; }
-body { background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-size: 14px; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Helvetica Neue', Helvetica, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-size: 14px;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
 
-/* ── Header ───────────────────────────────────────────────────────────────── */
+/* ── Header ─────────────────────────────────────────────────────────────── */
 .header {
-  background: var(--bg3);
+  background: #fff;
   border-bottom: 1px solid var(--border);
-  padding: 0 20px;
-  height: 52px;
+  padding: 0 24px;
+  height: 56px;
   display: flex;
   align-items: center;
   gap: 16px;
   flex-shrink: 0;
   z-index: 100;
+  box-shadow: 0 1px 4px rgba(0,0,0,.06);
 }
 .logo {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   font-weight: 700;
-  font-size: 15px;
-  color: var(--text);
+  font-size: 16px;
+  color: var(--navy);
   text-decoration: none;
+  letter-spacing: -.02em;
 }
+.logo-icon {
+  width: 32px; height: 32px;
+  background: var(--navy);
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.logo-icon svg { width: 18px; height: 18px; }
 .logo-badge {
-  background: var(--blue);
+  background: var(--teal);
   color: #fff;
   font-size: 9px;
   font-weight: 700;
-  padding: 1px 5px;
+  padding: 2px 6px;
   border-radius: 4px;
-  letter-spacing: .05em;
+  letter-spacing: .06em;
+  text-transform: uppercase;
 }
 .header-spacer { flex: 1; }
-.upgrade-link {
+
+.status-bar {
   display: flex;
   align-items: center;
-  gap: 6px;
-  background: linear-gradient(135deg, #1e3a5f, #1e2d4a);
-  border: 1px solid #3b5998;
-  color: var(--blue-l);
-  padding: 5px 12px;
-  border-radius: 6px;
+  gap: 12px;
   font-size: 12px;
-  font-weight: 600;
+  color: var(--muted);
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 5px 12px;
+}
+.status-dot {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: var(--border-d);
+  display: inline-block;
+}
+.status-dot.ok { background: var(--green); }
+.status-item { display: flex; align-items: center; gap: 5px; }
+
+.header-btn {
+  display: flex; align-items: center; gap: 6px;
+  border: 1px solid var(--border-d);
+  background: #fff;
+  color: var(--muted);
+  padding: 6px 14px;
+  border-radius: 8px;
+  font-size: 12px; font-weight: 600;
+  cursor: pointer;
   text-decoration: none;
   transition: all .15s;
 }
-.upgrade-link:hover { border-color: var(--blue); color: #93c5fd; }
-.status-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--muted); }
-.status-dot.ok { background: var(--green); }
+.header-btn:hover { border-color: var(--navy); color: var(--navy); }
 
-/* ── Layout ───────────────────────────────────────────────────────────────── */
+.upgrade-link {
+  display: flex; align-items: center; gap: 6px;
+  background: var(--navy);
+  color: #fff;
+  padding: 7px 14px;
+  border-radius: 8px;
+  font-size: 12px; font-weight: 700;
+  text-decoration: none;
+  transition: background .15s;
+  white-space: nowrap;
+}
+.upgrade-link:hover { background: var(--navy-l); }
+
+/* ── Layout ─────────────────────────────────────────────────────────────── */
 .body { display: flex; flex: 1; overflow: hidden; }
+
+/* ── Sidebar ────────────────────────────────────────────────────────────── */
 .sidebar {
-  width: 260px;
-  background: var(--bg3);
-  border-right: 1px solid var(--border);
+  width: 264px;
+  background: var(--sidebar-bg);
   display: flex;
   flex-direction: column;
   overflow-y: auto;
   flex-shrink: 0;
+  color: rgba(255,255,255,.85);
 }
-.main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
-.content { flex: 1; overflow-y: auto; padding: 24px; }
 
-/* ── Sidebar ──────────────────────────────────────────────────────────────── */
-.sidebar-section { padding: 16px; border-bottom: 1px solid var(--border); }
-.sidebar-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); margin-bottom: 10px; }
+.sidebar-header {
+  padding: 20px 20px 12px;
+  border-bottom: 1px solid rgba(255,255,255,.1);
+}
+.sidebar-title {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .1em;
+  color: rgba(255,255,255,.4);
+  margin-bottom: 10px;
+}
+
 .framework-btn {
   width: 100%;
   text-align: left;
   background: transparent;
-  border: 1px solid transparent;
-  color: var(--subtle);
-  padding: 8px 10px;
-  border-radius: 6px;
+  border: none;
+  color: rgba(255,255,255,.7);
+  padding: 9px 12px;
+  border-radius: 8px;
   cursor: pointer;
   font-size: 13px;
   transition: all .15s;
   display: block;
   margin-bottom: 2px;
+  font-family: inherit;
+  position: relative;
 }
-.framework-btn:hover { background: var(--bg2); color: var(--text); border-color: var(--border); }
-.framework-btn.active { background: var(--bg2); color: var(--blue-l); border-color: var(--blue); font-weight: 600; }
-.framework-meta { font-size: 10px; color: var(--muted); margin-top: 2px; }
-
-.sidebar-actions { padding: 16px; margin-top: auto; }
-.btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 8px 16px;
-  border-radius: 8px;
-  font-size: 13px;
+.framework-btn:hover {
+  background: rgba(255,255,255,.08);
+  color: #fff;
+}
+.framework-btn.active {
+  background: linear-gradient(90deg, rgba(78,205,196,.25) 0%, rgba(78,205,196,0) 100%);
+  color: var(--teal);
   font-weight: 600;
-  cursor: pointer;
-  border: none;
+  border-left: 3px solid var(--teal);
+  padding-left: 9px;
+}
+.framework-meta {
+  font-size: 10px;
+  color: rgba(255,255,255,.35);
+  margin-top: 2px;
+}
+.framework-btn.active .framework-meta { color: rgba(78,205,196,.6); }
+
+.usage-bar-wrap {
+  margin: 10px 0 4px;
+  padding: 10px 12px;
+  background: rgba(0,0,0,.2);
+  border-radius: 8px;
+}
+.usage-bar-label {
+  display: flex; justify-content: space-between;
+  font-size: 10px; color: rgba(255,255,255,.4);
+  margin-bottom: 6px;
+}
+.usage-bar-track {
+  background: rgba(255,255,255,.1);
+  border-radius: 4px; height: 4px; overflow: hidden;
+}
+.usage-bar-fill {
+  height: 4px; border-radius: 4px;
+  background: var(--teal);
+  transition: width .3s;
+}
+.usage-bar-fill.full { background: var(--amber); }
+.usage-upgrade {
+  margin-top: 6px;
+  font-size: 10px;
+  color: rgba(255,255,255,.4);
+}
+.usage-upgrade a { color: var(--teal); text-decoration: none; }
+
+.sidebar-section {
+  padding: 16px 20px;
+  border-bottom: 1px solid rgba(255,255,255,.08);
+  flex: 1;
+}
+
+.sidebar-actions {
+  padding: 16px 20px;
+  border-top: 1px solid rgba(255,255,255,.1);
+  display: flex; flex-direction: column; gap: 8px;
+}
+
+.btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 9px 18px;
+  border-radius: 8px;
+  font-size: 13px; font-weight: 600;
+  cursor: pointer; border: none;
   transition: all .15s;
   text-decoration: none;
+  font-family: inherit;
 }
-.btn-primary { background: var(--blue); color: #fff; }
-.btn-primary:hover { background: #2563eb; }
-.btn-primary:disabled { background: #1e3a5f; color: var(--muted); cursor: not-allowed; }
-.btn-secondary { background: var(--bg2); color: var(--text); border: 1px solid var(--border); }
-.btn-secondary:hover { border-color: var(--blue); color: var(--blue-l); }
-.btn-danger { background: transparent; color: var(--red); border: 1px solid #7f1d1d; }
-.btn-danger:hover { background: #450a0a; }
-.btn-sm { padding: 5px 10px; font-size: 12px; }
+.btn-primary { background: var(--teal); color: #fff; }
+.btn-primary:hover { background: var(--teal-d); }
+.btn-primary:disabled { background: rgba(255,255,255,.15); color: rgba(255,255,255,.35); cursor: not-allowed; }
+.btn-secondary { background: rgba(255,255,255,.08); color: rgba(255,255,255,.8); border: 1px solid rgba(255,255,255,.12); }
+.btn-secondary:hover { background: rgba(255,255,255,.15); color: #fff; }
+.btn-light { background: #fff; color: var(--navy); border: 1px solid var(--border); }
+.btn-light:hover { border-color: var(--navy); }
+.btn-danger { background: transparent; color: var(--red); border: 1px solid #fecaca; }
+.btn-danger:hover { background: var(--red-bg); }
+.btn-sm { padding: 6px 12px; font-size: 12px; }
 .btn-full { width: 100%; justify-content: center; }
+.btn-outline {
+  background: transparent; color: var(--navy);
+  border: 1px solid var(--border-d);
+}
+.btn-outline:hover { border-color: var(--navy); background: #f8fafc; }
+.btn-navy { background: var(--navy); color: #fff; }
+.btn-navy:hover { background: var(--navy-l); }
 
-/* ── Tabs ─────────────────────────────────────────────────────────────────── */
+/* ── Recent scans in sidebar ─────────────────────────────────────────────── */
+.recent-scan-item {
+  padding: 7px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 12px;
+  transition: background .1s;
+  color: rgba(255,255,255,.7);
+}
+.recent-scan-item:hover { background: rgba(255,255,255,.08); color: #fff; }
+.recent-scan-name { font-weight: 500; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.recent-scan-meta { font-size: 10px; color: rgba(255,255,255,.35); margin-top: 1px; }
+
+/* ── Main ───────────────────────────────────────────────────────────────── */
+.main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+
+/* ── Tab bar ────────────────────────────────────────────────────────────── */
 .tabs {
   display: flex;
-  border-bottom: 1px solid var(--border);
+  border-bottom: 2px solid var(--border);
   padding: 0 24px;
-  background: var(--bg3);
+  background: #fff;
   flex-shrink: 0;
+  gap: 2px;
 }
 .tab {
-  padding: 12px 16px;
-  font-size: 13px;
-  font-weight: 500;
+  padding: 14px 18px;
+  font-size: 13px; font-weight: 500;
   color: var(--muted);
   cursor: pointer;
   border-bottom: 2px solid transparent;
+  margin-bottom: -2px;
   transition: all .15s;
   white-space: nowrap;
 }
-.tab:hover { color: var(--text); }
-.tab.active { color: var(--blue-l); border-bottom-color: var(--blue); }
+.tab:hover { color: var(--navy); }
+.tab.active { color: var(--navy); border-bottom-color: var(--teal); font-weight: 600; }
 
-/* ── Cards ────────────────────────────────────────────────────────────────── */
+/* ── Content ─────────────────────────────────────────────────────────────── */
+.content { flex: 1; overflow-y: auto; padding: 24px; }
+
+/* ── Cards ──────────────────────────────────────────────────────────────── */
 .card {
-  background: var(--bg2);
+  background: #fff;
   border: 1px solid var(--border);
   border-radius: 12px;
   padding: 20px;
   margin-bottom: 16px;
+  box-shadow: 0 1px 3px rgba(0,0,0,.04);
 }
 .card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
-.card-title { font-size: 15px; font-weight: 600; color: var(--text); }
+.card-title { font-size: 15px; font-weight: 700; color: var(--navy); }
 .card-subtitle { font-size: 12px; color: var(--muted); margin-top: 2px; }
 
-/* ── Score ────────────────────────────────────────────────────────────────── */
+/* ── Score ──────────────────────────────────────────────────────────────── */
 .score-grid { display: grid; grid-template-columns: 140px 1fr; gap: 24px; align-items: center; }
 .score-ring { text-align: center; }
-.score-num { font-size: 52px; font-weight: 800; line-height: 1; }
+.score-num { font-size: 56px; font-weight: 800; line-height: 1; color: var(--navy); }
 .score-label { font-size: 12px; color: var(--muted); margin-top: 4px; }
-.stat-row { display: flex; gap: 20px; flex-wrap: wrap; }
+.stat-row { display: flex; gap: 24px; flex-wrap: wrap; }
 .stat { text-align: center; }
-.stat-val { font-size: 24px; font-weight: 700; }
-.stat-key { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; }
+.stat-val { font-size: 28px; font-weight: 700; }
+.stat-key { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; margin-top: 2px; }
 .c-green { color: var(--green); }
 .c-red { color: var(--red); }
 .c-amber { color: var(--amber); }
-.c-blue { color: var(--blue-l); }
+.c-blue { color: var(--blue); }
+.c-navy { color: var(--navy); }
 .c-muted { color: var(--muted); }
 
-/* ── Check list ───────────────────────────────────────────────────────────── */
+/* ── Check list ─────────────────────────────────────────────────────────── */
 .check-list { display: flex; flex-direction: column; gap: 2px; }
 .check-item {
-  display: flex;
-  align-items: flex-start;
-  gap: 12px;
+  display: flex; align-items: flex-start; gap: 12px;
   padding: 10px 12px;
   border-radius: 8px;
   cursor: pointer;
   transition: background .1s;
   border: 1px solid transparent;
 }
-.check-item:hover { background: #1a2540; }
-.check-item.selected { background: #1a2540; border-color: var(--blue); }
+.check-item:hover { background: var(--bg); }
+.check-item.selected { background: #eef2ff; border-color: #c7d2fe; }
+
 .check-badge {
   flex-shrink: 0;
-  font-size: 10px;
-  font-weight: 700;
-  padding: 2px 7px;
-  border-radius: 4px;
+  font-size: 10px; font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 20px;
   text-transform: uppercase;
   margin-top: 1px;
 }
-.badge-pass { background: #14532d; color: #4ade80; }
-.badge-fail { background: #450a0a; color: #f87171; }
-.badge-warn { background: #451a03; color: #fbbf24; }
-.badge-error { background: #1e293b; color: var(--muted); }
-.badge-pending { background: #1e293b; color: var(--muted); }
+.badge-pass { background: #dcfce7; color: #15803d; }
+.badge-fail { background: #fee2e2; color: #b91c1c; }
+.badge-warn { background: #fef3c7; color: #b45309; }
+.badge-error { background: #f1f5f9; color: var(--muted); }
+.badge-pending { background: #f1f5f9; color: var(--muted); }
+
 .check-title { font-size: 13px; font-weight: 500; color: var(--text); flex: 1; }
 .check-detail { font-size: 12px; color: var(--muted); margin-top: 2px; }
 
-/* ── Detail panel ─────────────────────────────────────────────────────────── */
+/* ── Detail panel ──────────────────────────────────────────────────────── */
 .detail-panel {
-  background: var(--bg2);
+  background: #fff;
   border: 1px solid var(--border);
   border-radius: 12px;
   padding: 20px;
   margin-bottom: 16px;
+  box-shadow: 0 1px 3px rgba(0,0,0,.04);
 }
-.detail-label { font-size: 10px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); margin-bottom: 4px; }
+.detail-label { font-size: 10px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); margin-bottom: 4px; font-weight: 600; }
 .detail-value { font-size: 13px; color: var(--text); }
 .remediation-box {
-  background: #0f2027;
+  background: var(--amber-bg);
   border-left: 3px solid var(--amber);
   border-radius: 0 8px 8px 0;
   padding: 12px;
   font-size: 12px;
-  color: var(--subtle);
+  color: #92400e;
   line-height: 1.6;
   white-space: pre-wrap;
   font-family: 'SF Mono', Consolas, monospace;
+  margin-bottom: 12px;
 }
 
-/* ── Forms ────────────────────────────────────────────────────────────────── */
+/* ── Forms ──────────────────────────────────────────────────────────────── */
 .form-group { margin-bottom: 14px; }
-label { display: block; font-size: 12px; font-weight: 600; color: var(--subtle); margin-bottom: 4px; }
+label { display: block; font-size: 12px; font-weight: 600; color: var(--text); margin-bottom: 5px; }
 input, select, textarea {
   width: 100%;
-  background: var(--bg);
-  border: 1px solid var(--border);
+  background: #fff;
+  border: 1px solid var(--border-d);
   color: var(--text);
-  padding: 8px 10px;
+  padding: 9px 12px;
   border-radius: 8px;
   font-size: 13px;
   outline: none;
   font-family: inherit;
-  transition: border-color .15s;
+  transition: border-color .15s, box-shadow .15s;
 }
-input:focus, select:focus, textarea:focus { border-color: var(--blue); }
-input::placeholder { color: var(--muted); }
-.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+input:focus, select:focus, textarea:focus {
+  border-color: var(--navy);
+  box-shadow: 0 0 0 3px rgba(12,41,121,.08);
+}
+input::placeholder { color: var(--subtle); }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
 .form-hint { font-size: 11px; color: var(--muted); margin-top: 4px; }
+.form-hint a { color: var(--navy); }
 .toggle-row { display: flex; align-items: center; justify-content: space-between; padding: 8px 0; }
 .toggle-label { font-size: 13px; color: var(--text); }
 .toggle { position: relative; width: 36px; height: 20px; }
 .toggle input { opacity: 0; width: 0; height: 0; }
 .toggle-slider {
   position: absolute; inset: 0;
-  background: var(--border);
+  background: var(--border-d);
   border-radius: 20px;
-  cursor: pointer;
-  transition: .2s;
+  cursor: pointer; transition: .2s;
 }
 .toggle-slider:before {
   content: '';
@@ -271,115 +426,178 @@ input::placeholder { color: var(--muted); }
   border-radius: 50%;
   transition: .2s;
 }
-.toggle input:checked + .toggle-slider { background: var(--blue); }
+.toggle input:checked + .toggle-slider { background: var(--teal); }
 .toggle input:checked + .toggle-slider:before { transform: translateX(16px); }
 
-/* ── Upgrade notice ───────────────────────────────────────────────────────── */
+/* ── Alerts ─────────────────────────────────────────────────────────────── */
+.alert {
+  padding: 12px 16px; border-radius: 8px; font-size: 13px;
+  margin-bottom: 16px; display: flex; align-items: flex-start; gap: 10px;
+}
+.alert-info { background: #eff6ff; border: 1px solid #bfdbfe; color: #1d4ed8; }
+.alert-success { background: var(--green-bg); border: 1px solid #bbf7d0; color: #15803d; }
+.alert-error { background: var(--red-bg); border: 1px solid #fecaca; color: #b91c1c; }
+.alert-warn { background: var(--amber-bg); border: 1px solid #fde68a; color: #92400e; }
+
+/* ── Upgrade notice ─────────────────────────────────────────────────────── */
 .upgrade-notice {
-  background: linear-gradient(135deg, #1e3a5f22, #1e293b);
-  border: 1px solid #3b5998;
+  background: linear-gradient(135deg, #eef2ff, #f0fdf4);
+  border: 1px solid #c7d2fe;
   border-radius: 10px;
-  padding: 16px 20px;
-  display: flex;
-  align-items: center;
-  gap: 14px;
+  padding: 14px 18px;
+  display: flex; align-items: center; gap: 14px;
   margin-bottom: 16px;
 }
 .upgrade-notice-icon { font-size: 20px; flex-shrink: 0; }
-.upgrade-notice-text h4 { font-size: 13px; color: #93c5fd; margin-bottom: 2px; }
+.upgrade-notice-text h4 { font-size: 13px; color: var(--navy); margin-bottom: 2px; font-weight: 600; }
 .upgrade-notice-text p { font-size: 12px; color: var(--muted); }
 .upgrade-notice-btn {
   margin-left: auto;
-  background: var(--blue);
-  color: #fff;
-  border: none;
-  padding: 6px 14px;
-  border-radius: 6px;
-  font-size: 12px;
-  font-weight: 600;
-  cursor: pointer;
-  text-decoration: none;
-  white-space: nowrap;
+  background: var(--navy);
+  color: #fff; border: none;
+  padding: 7px 14px;
+  border-radius: 6px; font-size: 12px; font-weight: 600;
+  cursor: pointer; text-decoration: none; white-space: nowrap;
 }
+.upgrade-notice-btn:hover { background: var(--navy-l); }
 
-/* ── Alerts ───────────────────────────────────────────────────────────────── */
-.alert {
-  padding: 12px 16px;
-  border-radius: 8px;
-  font-size: 13px;
-  margin-bottom: 16px;
-  display: flex;
-  align-items: flex-start;
-  gap: 10px;
-}
-.alert-info { background: #1e3a5f; border: 1px solid var(--blue); color: #93c5fd; }
-.alert-success { background: #14532d22; border: 1px solid var(--green); color: #4ade80; }
-.alert-error { background: #450a0a22; border: 1px solid var(--red); color: #f87171; }
-.alert-warn { background: #451a0322; border: 1px solid var(--amber); color: #fbbf24; }
-
-/* ── Spinner ──────────────────────────────────────────────────────────────── */
+/* ── Spinner ─────────────────────────────────────────────────────────────── */
 .spinner {
   width: 16px; height: 16px;
-  border: 2px solid var(--border);
-  border-top-color: var(--blue);
+  border: 2px solid var(--border-d);
+  border-top-color: var(--navy);
   border-radius: 50%;
   animation: spin .7s linear infinite;
 }
 @keyframes spin { to { transform: rotate(360deg); } }
 
-/* ── Policy editor ────────────────────────────────────────────────────────── */
+/* ── Policy editor ──────────────────────────────────────────────────────── */
 .policy-content {
   background: var(--bg);
   border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 16px;
-  font-size: 13px;
-  line-height: 1.7;
+  border-radius: 8px; padding: 20px;
+  font-size: 13px; line-height: 1.75;
   white-space: pre-wrap;
-  max-height: 500px;
-  overflow-y: auto;
+  max-height: 520px; overflow-y: auto;
   color: var(--text);
+  font-family: 'SF Mono', Consolas, monospace;
 }
-.policy-content h1, .policy-content h2 { color: var(--blue-l); }
-.policy-content h2 { margin: 16px 0 8px; font-size: 14px; }
 
-/* ── Empty state ──────────────────────────────────────────────────────────── */
-.empty {
-  text-align: center;
-  padding: 60px 24px;
-  color: var(--muted);
-}
+/* ── Empty state ─────────────────────────────────────────────────────────── */
+.empty { text-align: center; padding: 60px 24px; color: var(--muted); }
 .empty-icon { font-size: 48px; margin-bottom: 12px; }
-.empty h3 { color: var(--subtle); margin-bottom: 6px; }
+.empty h3 { color: var(--text); font-size: 16px; margin-bottom: 6px; }
+.empty p { font-size: 13px; }
 
-/* ── Setup wizard ─────────────────────────────────────────────────────────── */
+/* ── Welcome cards ──────────────────────────────────────────────────────── */
+.welcome-card {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 12px; padding: 20px;
+  max-width: 200px; text-align: left;
+  box-shadow: 0 1px 3px rgba(0,0,0,.04);
+  transition: transform .15s, box-shadow .15s;
+}
+.welcome-card:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,.08); }
+.welcome-card-icon { font-size: 24px; margin-bottom: 10px; }
+.welcome-card-title { font-weight: 700; margin-bottom: 4px; color: var(--navy); font-size: 13px; }
+.welcome-card-desc { color: var(--muted); font-size: 12px; line-height: 1.5; }
+
+/* ── Setup wizard ───────────────────────────────────────────────────────── */
 .setup-overlay {
-  position: fixed;
-  inset: 0;
-  background: var(--bg);
+  position: fixed; inset: 0;
+  background: rgba(12,41,121,.06);
+  backdrop-filter: blur(4px);
   z-index: 1000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  display: flex; align-items: center; justify-content: center;
 }
 .setup-box {
-  background: var(--bg2);
+  background: #fff;
   border: 1px solid var(--border);
-  border-radius: 16px;
-  padding: 40px;
-  width: 480px;
-  max-width: 95vw;
+  border-radius: 16px; padding: 40px;
+  width: 500px; max-width: 95vw;
+  box-shadow: 0 20px 60px rgba(0,0,0,.12);
 }
-.setup-logo { font-size: 22px; font-weight: 800; color: var(--text); margin-bottom: 4px; }
-.setup-sub { color: var(--muted); font-size: 13px; margin-bottom: 32px; }
+.setup-logo {
+  display: flex; align-items: center; gap: 10px;
+  margin-bottom: 4px;
+}
+.setup-logo-icon {
+  width: 36px; height: 36px;
+  background: var(--navy); border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+}
+.setup-logo-text { font-size: 20px; font-weight: 800; color: var(--navy); }
+.setup-sub { color: var(--muted); font-size: 13px; margin-bottom: 32px; padding-left: 46px; }
 .setup-step { display: none; }
 .setup-step.active { display: block; }
 .step-indicator { display: flex; gap: 6px; margin-bottom: 24px; }
-.step-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--border); }
-.step-dot.done { background: var(--blue); }
-.setup-actions { display: flex; gap: 10px; margin-top: 24px; }
+.step-dot { flex: 1; height: 3px; border-radius: 3px; background: var(--border); }
+.step-dot.done { background: var(--teal); }
+.setup-step-title { font-size: 15px; font-weight: 700; color: var(--navy); margin-bottom: 6px; }
+.setup-step-desc { font-size: 12px; color: var(--muted); margin-bottom: 20px; }
+.setup-actions { display: flex; gap: 10px; margin-top: 28px; }
 
-/* ── Responsive ───────────────────────────────────────────────────────────── */
+/* ── Upgrade modal ──────────────────────────────────────────────────────── */
+#upgradeModal {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,.5);
+  z-index: 2000;
+  align-items: center; justify-content: center;
+}
+.upgrade-modal-box {
+  background: #fff;
+  border-radius: 16px; padding: 40px;
+  width: 480px; max-width: 95vw; text-align: center;
+  box-shadow: 0 25px 60px rgba(0,0,0,.2);
+}
+.upgrade-modal-icon { font-size: 44px; margin-bottom: 16px; }
+.upgrade-modal-title { font-size: 22px; font-weight: 800; color: var(--navy); margin-bottom: 8px; }
+.upgrade-modal-body { font-size: 13px; color: var(--muted); line-height: 1.7; margin-bottom: 24px; }
+.upgrade-feature-list {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 10px; padding: 16px;
+  margin-bottom: 24px; text-align: left;
+}
+.upgrade-feature-label {
+  font-size: 10px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: .08em; color: var(--muted); margin-bottom: 10px;
+}
+.upgrade-feature-item {
+  display: flex; align-items: flex-start; gap: 8px;
+  font-size: 13px; color: var(--text); margin-bottom: 6px;
+}
+.upgrade-feature-check { color: var(--teal); font-weight: 700; flex-shrink: 0; }
+.upgrade-modal-actions { display: flex; gap: 10px; justify-content: center; }
+.upgrade-modal-footer { margin-top: 16px; font-size: 11px; color: var(--muted); }
+.upgrade-modal-footer a { color: var(--navy); }
+
+/* ── Section header ─────────────────────────────────────────────────────── */
+.section-header { margin-bottom: 20px; }
+.section-header h2 { font-size: 18px; font-weight: 700; color: var(--navy); margin-bottom: 4px; }
+.section-header p { font-size: 13px; color: var(--muted); }
+
+/* ── Enterprise feature row ─────────────────────────────────────────────── */
+.ent-feature {
+  display: flex; align-items: center; gap: 14px;
+  padding: 12px 16px;
+  background: #fff; border: 1px solid var(--border);
+  border-radius: 10px; margin-bottom: 8px;
+}
+.ent-feature-icon { font-size: 18px; flex-shrink: 0; }
+.ent-feature-body { flex: 1; }
+.ent-feature-name { font-size: 13px; font-weight: 600; color: var(--navy); }
+.ent-feature-desc { font-size: 12px; color: var(--muted); }
+.ent-feature-btn {
+  background: var(--navy); color: #fff;
+  border: none; padding: 6px 12px;
+  border-radius: 6px; font-size: 11px; font-weight: 600;
+  cursor: pointer; text-decoration: none; white-space: nowrap;
+}
+.ent-feature-btn:hover { background: var(--navy-l); }
+
+/* ── Responsive ─────────────────────────────────────────────────────────── */
 @media (max-width: 768px) {
   .sidebar { display: none; }
   .form-row { grid-template-columns: 1fr; }
@@ -389,34 +607,42 @@ input::placeholder { color: var(--muted); }
 </head>
 <body>
 
-<!-- Setup Wizard (shown if not configured) -->
+<!-- Setup Wizard -->
 <div class="setup-overlay" id="setupOverlay" style="display:none">
   <div class="setup-box">
-    <div class="setup-logo">AuditCaddie OSS</div>
-    <div class="setup-sub">Self-hosted compliance scanning · Get up and running in 2 minutes</div>
+    <div class="setup-logo">
+      <div class="setup-logo-icon">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" width="20" height="20">
+          <path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <span class="setup-logo-text">AuditCaddie</span>
+      <span class="logo-badge">OSS</span>
+    </div>
+    <div class="setup-sub">Self-hosted compliance scanning — get up and running in 2 minutes</div>
 
     <div class="step-indicator" id="stepDots"></div>
 
     <!-- Step 1: AI Keys -->
     <div class="setup-step active" id="step-0">
-      <div class="card-title" style="margin-bottom:6px">AI Provider (required)</div>
-      <p style="color:var(--muted);font-size:12px;margin-bottom:16px">AuditCaddie uses AI to generate policy documents. Add at least one key.</p>
+      <div class="setup-step-title">AI Provider</div>
+      <div class="setup-step-desc">AuditCaddie uses AI to generate policy documents. Add at least one key to continue.</div>
       <div class="form-group">
         <label>OpenAI API Key (GPT-4o)</label>
         <input type="password" id="s_openai" placeholder="sk-..." autocomplete="off">
-        <div class="form-hint">Get your key at <a href="https://platform.openai.com/api-keys" target="_blank" style="color:var(--blue-l)">platform.openai.com</a></div>
+        <div class="form-hint">Get your key at <a href="https://platform.openai.com/api-keys" target="_blank">platform.openai.com</a></div>
       </div>
       <div class="form-group">
         <label>Anthropic API Key (Claude Sonnet)</label>
         <input type="password" id="s_anthropic" placeholder="sk-ant-..." autocomplete="off">
-        <div class="form-hint">Get your key at <a href="https://console.anthropic.com" target="_blank" style="color:var(--blue-l)">console.anthropic.com</a></div>
+        <div class="form-hint">Get your key at <a href="https://console.anthropic.com" target="_blank">console.anthropic.com</a></div>
       </div>
     </div>
 
     <!-- Step 2: AWS -->
     <div class="setup-step" id="step-1">
-      <div class="card-title" style="margin-bottom:6px">AWS Credentials (optional)</div>
-      <p style="color:var(--muted);font-size:12px;margin-bottom:16px">Read-only access to scan your AWS account. Skip to use environment variables or IAM roles.</p>
+      <div class="setup-step-title">AWS Credentials</div>
+      <div class="setup-step-desc">Read-only access to scan your AWS account. Skip to use environment variables or IAM roles.</div>
       <div class="form-group">
         <label>AWS Access Key ID</label>
         <input type="text" id="s_aws_key" placeholder="AKIA..." autocomplete="off">
@@ -440,15 +666,15 @@ input::placeholder { color: var(--muted); }
 
     <!-- Step 3: GitHub -->
     <div class="setup-step" id="step-2">
-      <div class="card-title" style="margin-bottom:6px">GitHub Token (optional)</div>
-      <p style="color:var(--muted);font-size:12px;margin-bottom:16px">Scan your repositories for security controls. Requires <code style="background:var(--bg);padding:1px 4px;border-radius:3px">repo</code> and <code style="background:var(--bg);padding:1px 4px;border-radius:3px">read:org</code> scopes.</p>
+      <div class="setup-step-title">GitHub Token</div>
+      <div class="setup-step-desc">Scan your repositories for security controls. Requires <code style="background:var(--bg);padding:1px 5px;border-radius:4px;font-family:monospace">repo</code> and <code style="background:var(--bg);padding:1px 5px;border-radius:4px;font-family:monospace">read:org</code> scopes.</div>
       <div class="form-group">
         <label>GitHub Personal Access Token</label>
         <input type="password" id="s_gh_token" placeholder="ghp_..." autocomplete="off">
-        <div class="form-hint">Create at <a href="https://github.com/settings/tokens/new" target="_blank" style="color:var(--blue-l)">github.com/settings/tokens</a></div>
+        <div class="form-hint">Create at <a href="https://github.com/settings/tokens/new" target="_blank">github.com/settings/tokens</a></div>
       </div>
       <div class="form-group">
-        <label>GitHub Organization (optional)</label>
+        <label>GitHub Organization <span style="font-weight:400;color:var(--muted)">(optional)</span></label>
         <input type="text" id="s_gh_org" placeholder="your-org-name">
         <div class="form-hint">Leave blank to scan your personal repos</div>
       </div>
@@ -456,100 +682,105 @@ input::placeholder { color: var(--muted); }
 
     <!-- Step 4: Done -->
     <div class="setup-step" id="step-3">
-      <div style="text-align:center;padding:20px 0">
-        <div style="font-size:48px;margin-bottom:12px">✅</div>
-        <div class="card-title" style="margin-bottom:8px">You're all set!</div>
-        <p style="color:var(--muted);font-size:13px">Select a compliance framework on the left to run your first scan.</p>
+      <div style="text-align:center;padding:24px 0 8px">
+        <div style="width:64px;height:64px;background:linear-gradient(135deg,var(--navy),var(--teal));border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-size:28px">✓</div>
+        <div class="setup-step-title" style="font-size:18px">You're all set!</div>
+        <p style="color:var(--muted);font-size:13px;margin-top:8px">Select a compliance framework on the left<br>to run your first scan.</p>
       </div>
     </div>
 
     <div class="setup-actions">
-      <button class="btn btn-secondary" id="setupBack" onclick="setupPrev()" style="display:none">Back</button>
-      <button class="btn btn-primary" id="setupNext" onclick="setupNext()" style="margin-left:auto">Next →</button>
+      <button class="btn btn-outline" id="setupBack" onclick="setupPrev()" style="display:none">← Back</button>
+      <button class="btn btn-navy btn-full" id="setupNext" onclick="setupNext()">Continue →</button>
     </div>
   </div>
 </div>
 
 <!-- Upgrade Modal -->
-<div id="upgradeModal" style="display:none;position:fixed;inset:0;background:#000000cc;z-index:2000;align-items:center;justify-content:center">
-  <div style="background:var(--bg2);border:1px solid #3b5998;border-radius:16px;padding:40px;width:460px;max-width:95vw;text-align:center">
-    <div style="font-size:40px;margin-bottom:12px">🔒</div>
-    <div style="font-size:20px;font-weight:700;color:var(--text);margin-bottom:8px">Framework Limit Reached</div>
-    <div style="font-size:13px;color:var(--muted);margin-bottom:20px;line-height:1.6">
-      AuditCaddie OSS includes <strong style="color:var(--text)">2 frameworks</strong>.<br>
-      You're already using <strong style="color:var(--blue-l)" id="upgradeModalUsed"></strong>.<br><br>
-      <strong style="color:var(--text)" id="upgradeModalFeature"></strong> is available in Enterprise.
+<div id="upgradeModal" style="display:none">
+  <div class="upgrade-modal-box">
+    <div class="upgrade-modal-icon">🔒</div>
+    <div class="upgrade-modal-title">Framework Limit Reached</div>
+    <div class="upgrade-modal-body">
+      AuditCaddie OSS includes <strong>2 frameworks</strong>.<br>
+      You're using <strong id="upgradeModalUsed"></strong>.<br>
+      <strong id="upgradeModalFeature"></strong> requires Enterprise.
     </div>
-    <div style="background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:16px;margin-bottom:24px;text-align:left">
-      <div style="font-size:11px;color:var(--muted);margin-bottom:10px;font-weight:700;text-transform:uppercase;letter-spacing:.05em">Enterprise unlocks</div>
-      <div style="display:flex;flex-direction:column;gap:6px;font-size:13px;color:var(--gray)">
-        <div>✓ <strong>All 5 frameworks</strong> — SOC 2, NIST CSF, ISO 27001, HIPAA, Vendor</div>
-        <div>✓ <strong>Custom frameworks</strong> — build your own control sets</div>
-        <div>✓ <strong>Team collaboration</strong> — multi-user access with roles</div>
-        <div>✓ <strong>Fieldguide integration</strong> — push evidence to your auditor</div>
-        <div>✓ <strong>Auditor portal</strong> — read-only access for your auditor</div>
-      </div>
+    <div class="upgrade-feature-list">
+      <div class="upgrade-feature-label">Enterprise unlocks</div>
+      <div class="upgrade-feature-item"><span class="upgrade-feature-check">✓</span><span><strong>All 5 frameworks</strong> — SOC 2, NIST CSF, ISO 27001, HIPAA, Vendor</span></div>
+      <div class="upgrade-feature-item"><span class="upgrade-feature-check">✓</span><span><strong>Custom frameworks</strong> — build your own control sets</span></div>
+      <div class="upgrade-feature-item"><span class="upgrade-feature-check">✓</span><span><strong>Team collaboration</strong> — multi-user access with roles</span></div>
+      <div class="upgrade-feature-item"><span class="upgrade-feature-check">✓</span><span><strong>Fieldguide integration</strong> — push evidence to your auditor</span></div>
+      <div class="upgrade-feature-item"><span class="upgrade-feature-check">✓</span><span><strong>Auditor portal</strong> — read-only access for your auditor</span></div>
     </div>
-    <div style="display:flex;gap:10px;justify-content:center">
-      <a href="https://auditcaddie.com/pricing" target="_blank"
-         style="background:var(--blue);color:#fff;padding:10px 24px;border-radius:8px;font-weight:700;font-size:14px;text-decoration:none">
-        Upgrade to Enterprise →
-      </a>
-      <button onclick="document.getElementById('upgradeModal').style.display='none'"
-              style="background:var(--bg);border:1px solid var(--border);color:var(--muted);padding:10px 20px;border-radius:8px;cursor:pointer;font-size:14px">
-        Not now
-      </button>
+    <div class="upgrade-modal-actions">
+      <a href="https://auditcaddie.com/pricing" target="_blank" class="btn btn-navy" style="font-size:14px;padding:10px 24px">Upgrade to Enterprise →</a>
+      <button onclick="document.getElementById('upgradeModal').style.display='none'" class="btn btn-outline" style="font-size:14px">Not now</button>
     </div>
-    <div style="margin-top:16px;font-size:11px;color:var(--muted)">
-      OSS remains free forever · <a href="https://github.com/Blodgic/AuditCaddie" target="_blank" style="color:var(--blue-l)">github.com/Blodgic/AuditCaddie</a>
-    </div>
+    <div class="upgrade-modal-footer">OSS remains free forever · <a href="https://github.com/Blodgic/AuditCaddie" target="_blank">github.com/Blodgic/AuditCaddie</a></div>
   </div>
 </div>
 
-<!-- Main App -->
+<!-- ── Header ──────────────────────────────────────────────────────────── -->
 <div class="header">
   <a href="https://github.com/Blodgic/AuditCaddie" target="_blank" class="logo">
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" stroke="#3b82f6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-    </svg>
+    <div class="logo-icon">
+      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" width="18" height="18">
+        <path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
     AuditCaddie
     <span class="logo-badge">OSS</span>
   </a>
-  <div id="configStatus" style="display:flex;align-items:center;gap:8px;font-size:12px;color:var(--muted)">
-    <div class="status-dot" id="awsDot"></div> AWS
-    <div class="status-dot" id="ghDot" style="margin-left:8px"></div> GitHub
-    <div class="status-dot" id="aiDot" style="margin-left:8px"></div> AI
+
+  <div class="status-bar" id="configStatus">
+    <div class="status-item"><div class="status-dot" id="awsDot"></div> AWS</div>
+    <div class="status-item"><div class="status-dot" id="ghDot"></div> GitHub</div>
+    <div class="status-item"><div class="status-dot" id="aiDot"></div> AI</div>
   </div>
+
   <div class="header-spacer"></div>
-  <button class="btn btn-secondary btn-sm" onclick="openSettings()">⚙ Settings</button>
-  <a href="https://auditcaddie.com/pricing" target="_blank" class="upgrade-link">✦ Upgrade to Enterprise</a>
+
+  <button class="header-btn" onclick="openSettings()">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+    Settings
+  </button>
+  <a href="https://auditcaddie.com/pricing" target="_blank" class="upgrade-link">
+    ✦ Upgrade to Enterprise
+  </a>
 </div>
 
+<!-- ── App body ────────────────────────────────────────────────────────── -->
 <div class="body">
+
   <!-- Sidebar -->
   <div class="sidebar">
-    <div class="sidebar-section">
-      <div class="sidebar-label">Frameworks</div>
+    <div class="sidebar-header">
+      <div class="sidebar-title">Compliance Frameworks</div>
       <div id="frameworkList">
-        <div class="c-muted" style="font-size:12px">Loading...</div>
+        <div style="font-size:12px;color:rgba(255,255,255,.3)">Loading...</div>
       </div>
     </div>
 
-    <div class="sidebar-section" style="flex:1">
-      <div class="sidebar-label">Recent Scans</div>
-      <div id="recentScans" style="display:flex;flex-direction:column;gap:4px"></div>
+    <div class="sidebar-section">
+      <div class="sidebar-title">Recent Scans</div>
+      <div id="recentScans" style="display:flex;flex-direction:column;gap:2px"></div>
     </div>
 
     <div class="sidebar-actions">
       <button class="btn btn-primary btn-full" id="runScanBtn" onclick="startScan()" disabled>
-        ▶ Run Scan
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+        Run Scan
       </button>
-      <div style="height:8px"></div>
-      <button class="btn btn-secondary btn-full btn-sm" onclick="showTab('policies')">📄 Policies</button>
+      <button class="btn btn-secondary btn-full btn-sm" onclick="showTab('policies')">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        Policy Generator
+      </button>
     </div>
   </div>
 
-  <!-- Main content -->
+  <!-- Main content area -->
   <div class="main">
     <div class="tabs">
       <div class="tab active" onclick="showTab('dashboard')" id="tab-dashboard">Dashboard</div>
@@ -558,28 +789,27 @@ input::placeholder { color: var(--muted); }
       <div class="tab" onclick="showTab('settings')" id="tab-settings">Settings</div>
     </div>
 
+    <!-- Dashboard tab -->
     <div class="content" id="content-dashboard">
-      <!-- Welcome / Dashboard -->
       <div id="dashboardEmpty" class="empty">
-        <div class="empty-icon">🔍</div>
-        <h3>Select a framework and run your first scan</h3>
-        <p>Choose a compliance template from the sidebar, then click <strong>Run Scan</strong>.</p>
-        <div style="height:24px"></div>
-        <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
-          <div class="card" style="max-width:200px;text-align:left;padding:16px">
-            <div style="font-size:20px;margin-bottom:8px">☁️</div>
-            <div style="font-weight:600;margin-bottom:4px">AWS Scanner</div>
-            <div style="color:var(--muted);font-size:12px">IAM, S3, CloudTrail, GuardDuty, RDS, VPC + more</div>
+        <div style="width:72px;height:72px;background:linear-gradient(135deg,var(--navy),var(--teal));border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-size:32px">🔍</div>
+        <h3>Select a framework to get started</h3>
+        <p style="margin-bottom:32px">Choose a compliance template from the sidebar, then click <strong>Run Scan</strong>.</p>
+        <div style="display:flex;gap:16px;justify-content:center;flex-wrap:wrap">
+          <div class="welcome-card">
+            <div class="welcome-card-icon">☁️</div>
+            <div class="welcome-card-title">AWS Scanner</div>
+            <div class="welcome-card-desc">IAM, S3, CloudTrail, GuardDuty, RDS, VPC + more</div>
           </div>
-          <div class="card" style="max-width:200px;text-align:left;padding:16px">
-            <div style="font-size:20px;margin-bottom:8px">🐙</div>
-            <div style="font-weight:600;margin-bottom:4px">GitHub Scanner</div>
-            <div style="color:var(--muted);font-size:12px">Branch protection, secret scanning, Dependabot, SAST</div>
+          <div class="welcome-card">
+            <div class="welcome-card-icon">🐙</div>
+            <div class="welcome-card-title">GitHub Scanner</div>
+            <div class="welcome-card-desc">Branch protection, secret scanning, Dependabot, SAST</div>
           </div>
-          <div class="card" style="max-width:200px;text-align:left;padding:16px">
-            <div style="font-size:20px;margin-bottom:8px">🤖</div>
-            <div style="font-weight:600;margin-bottom:4px">AI Policy Gen</div>
-            <div style="color:var(--muted);font-size:12px">GPT-4o or Claude Sonnet generates audit-ready policy docs</div>
+          <div class="welcome-card">
+            <div class="welcome-card-icon">🤖</div>
+            <div class="welcome-card-title">AI Policy Gen</div>
+            <div class="welcome-card-desc">GPT-4o or Claude Sonnet generates audit-ready policy docs</div>
           </div>
         </div>
       </div>
@@ -593,22 +823,25 @@ input::placeholder { color: var(--muted); }
               <div class="score-label">Readiness Score</div>
             </div>
             <div>
-              <div style="font-weight:700;font-size:16px;margin-bottom:12px" id="scanTitle"></div>
+              <div style="font-weight:700;font-size:16px;color:var(--navy);margin-bottom:16px" id="scanTitle"></div>
               <div class="stat-row">
                 <div class="stat"><div class="stat-val c-green" id="statPass">0</div><div class="stat-key">Passed</div></div>
                 <div class="stat"><div class="stat-val c-red" id="statFail">0</div><div class="stat-key">Failed</div></div>
                 <div class="stat"><div class="stat-val c-amber" id="statWarn">0</div><div class="stat-key">Warnings</div></div>
-                <div class="stat"><div class="stat-val c-muted" id="statTotal">0</div><div class="stat-key">Total</div></div>
+                <div class="stat"><div class="stat-val c-muted" id="statTotal">0</div><div class="stat-key">Total Checks</div></div>
               </div>
-              <div style="margin-top:16px;display:flex;gap:8px">
-                <a id="reportBtn" class="btn btn-secondary btn-sm" href="#" target="_blank">📋 Full Report</a>
-                <button class="btn btn-secondary btn-sm" onclick="showTab('results')">View Details →</button>
+              <div style="margin-top:20px;display:flex;gap:10px">
+                <a id="reportBtn" class="btn btn-outline btn-sm" href="#" target="_blank">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                  Full Report
+                </a>
+                <button class="btn btn-navy btn-sm" onclick="showTab('results')">View Details →</button>
               </div>
             </div>
           </div>
         </div>
 
-        <!-- Quick fails -->
+        <!-- Failed checks -->
         <div class="card">
           <div class="card-header">
             <div>
@@ -621,6 +854,7 @@ input::placeholder { color: var(--muted); }
       </div>
     </div>
 
+    <!-- Results tab -->
     <div class="content" id="content-results" style="display:none">
       <div class="empty" id="resultsEmpty">
         <div class="empty-icon">📊</div>
@@ -628,19 +862,19 @@ input::placeholder { color: var(--muted); }
         <p>Run a scan from the sidebar to see detailed results here.</p>
       </div>
       <div id="resultsContent" style="display:none">
-        <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap">
-          <button class="btn btn-secondary btn-sm" onclick="filterChecks('all')" id="f-all">All</button>
-          <button class="btn btn-secondary btn-sm" onclick="filterChecks('fail')" id="f-fail">Failed</button>
-          <button class="btn btn-secondary btn-sm" onclick="filterChecks('warn')" id="f-warn">Warnings</button>
-          <button class="btn btn-secondary btn-sm" onclick="filterChecks('pass')" id="f-pass">Passed</button>
+        <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;align-items:center">
+          <button class="btn btn-outline btn-sm" onclick="filterChecks('all')" id="f-all">All</button>
+          <button class="btn btn-outline btn-sm" onclick="filterChecks('fail')" id="f-fail">Failed</button>
+          <button class="btn btn-outline btn-sm" onclick="filterChecks('warn')" id="f-warn">Warnings</button>
+          <button class="btn btn-outline btn-sm" onclick="filterChecks('pass')" id="f-pass">Passed</button>
           <div style="flex:1"></div>
-          <span id="sourceLabel" style="font-size:12px;color:var(--muted);align-self:center"></span>
+          <span id="sourceLabel" style="font-size:12px;color:var(--muted)"></span>
         </div>
 
         <div style="display:grid;grid-template-columns:1fr 340px;gap:16px">
           <div class="check-list" id="allChecks"></div>
           <div id="checkDetail">
-            <div class="empty" style="padding:32px 0">
+            <div class="empty" style="padding:32px 0;background:#fff;border:1px solid var(--border);border-radius:12px">
               <div style="font-size:32px;margin-bottom:8px">←</div>
               <p style="font-size:12px">Select a check for details</p>
             </div>
@@ -649,6 +883,7 @@ input::placeholder { color: var(--muted); }
       </div>
     </div>
 
+    <!-- Policies tab -->
     <div class="content" id="content-policies" style="display:none">
       <div class="upgrade-notice">
         <div class="upgrade-notice-icon">✨</div>
@@ -681,8 +916,11 @@ input::placeholder { color: var(--muted); }
           <label>Policy Requirements / Prompt</label>
           <textarea id="policyPrompt" rows="4" placeholder="Describe what the policy should cover. E.g. 'Access Control Policy covering MFA requirements, password standards, privileged access, and quarterly access reviews for a 30-person SaaS startup.'"></textarea>
         </div>
-        <div style="display:flex;gap:8px;align-items:center">
-          <button class="btn btn-primary" onclick="generatePolicy()">🤖 Generate Policy</button>
+        <div style="display:flex;gap:10px;align-items:center">
+          <button class="btn btn-navy" onclick="generatePolicy()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+            Generate Policy
+          </button>
           <div id="policySpinner" style="display:none"><div class="spinner"></div></div>
           <span id="policyTokens" style="font-size:12px;color:var(--muted)"></span>
         </div>
@@ -695,8 +933,8 @@ input::placeholder { color: var(--muted); }
             <div class="card-subtitle" id="policyOutputMeta"></div>
           </div>
           <div style="display:flex;gap:8px">
-            <button class="btn btn-secondary btn-sm" onclick="copyPolicy()">Copy</button>
-            <button class="btn btn-secondary btn-sm" onclick="downloadPolicy()">Download .md</button>
+            <button class="btn btn-outline btn-sm" onclick="copyPolicy()">Copy</button>
+            <button class="btn btn-navy btn-sm" onclick="downloadPolicy()">Download .md</button>
           </div>
         </div>
         <div class="policy-content" id="policyText"></div>
@@ -705,7 +943,7 @@ input::placeholder { color: var(--muted); }
       <div class="card">
         <div class="card-header">
           <div class="card-title">Saved Policies</div>
-          <button class="btn btn-secondary btn-sm" onclick="loadPolicies()">Refresh</button>
+          <button class="btn btn-outline btn-sm" onclick="loadPolicies()">Refresh</button>
         </div>
         <div id="policiesList">
           <div class="c-muted" style="font-size:12px">No policies generated yet.</div>
@@ -713,7 +951,13 @@ input::placeholder { color: var(--muted); }
       </div>
     </div>
 
+    <!-- Settings tab -->
     <div class="content" id="content-settings" style="display:none">
+      <div class="section-header">
+        <h2>Configuration</h2>
+        <p>Configure your AWS, GitHub, and AI credentials. All keys are stored locally.</p>
+      </div>
+
       <div class="card">
         <div class="card-header"><div class="card-title">AWS Configuration</div></div>
         <div class="form-row">
@@ -729,12 +973,12 @@ input::placeholder { color: var(--muted); }
         <div class="form-group" style="max-width:240px">
           <label>Default Region</label>
           <select id="cfg_aws_region">
-            <option value="us-east-1">us-east-1</option>
-            <option value="us-east-2">us-east-2</option>
-            <option value="us-west-2">us-west-2</option>
-            <option value="eu-west-1">eu-west-1</option>
-            <option value="eu-central-1">eu-central-1</option>
-            <option value="ap-southeast-1">ap-southeast-1</option>
+            <option value="us-east-1">us-east-1 (N. Virginia)</option>
+            <option value="us-east-2">us-east-2 (Ohio)</option>
+            <option value="us-west-2">us-west-2 (Oregon)</option>
+            <option value="eu-west-1">eu-west-1 (Ireland)</option>
+            <option value="eu-central-1">eu-central-1 (Frankfurt)</option>
+            <option value="ap-southeast-1">ap-southeast-1 (Singapore)</option>
           </select>
         </div>
       </div>
@@ -748,7 +992,7 @@ input::placeholder { color: var(--muted); }
             <div class="form-hint">Needs repo + read:org scopes</div>
           </div>
           <div class="form-group">
-            <label>Organization (optional)</label>
+            <label>Organization <span style="font-weight:400;color:var(--muted)">(optional)</span></label>
             <input type="text" id="cfg_gh_org" placeholder="your-org">
           </div>
         </div>
@@ -766,7 +1010,7 @@ input::placeholder { color: var(--muted); }
             <input type="password" id="cfg_anthropic" placeholder="sk-ant-...">
           </div>
         </div>
-        <div class="form-group" style="max-width:280px">
+        <div class="form-group" style="max-width:300px">
           <label>Default AI Model</label>
           <select id="cfg_ai_model">
             <option value="gpt-4o">GPT-4o (OpenAI) — Recommended</option>
@@ -776,28 +1020,63 @@ input::placeholder { color: var(--muted); }
         </div>
       </div>
 
-      <div style="display:flex;gap:10px">
-        <button class="btn btn-primary" onclick="saveSettings()">Save Settings</button>
-        <div id="settingsSaved" style="display:none" class="alert alert-success" style="margin:0;padding:8px 12px">✓ Saved</div>
+      <div style="display:flex;gap:10px;align-items:center;margin-bottom:40px">
+        <button class="btn btn-navy" onclick="saveSettings()">Save Settings</button>
+        <div id="settingsSaved" style="display:none" class="alert alert-success" style="margin:0;padding:6px 14px">✓ Saved</div>
       </div>
 
-      <div style="margin-top:32px" class="card">
-        <div class="card-header"><div class="card-title">Enterprise Features</div></div>
-        <div style="display:flex;flex-direction:column;gap:8px">
-          ${Object.entries({
-            'Team Collaboration': 'Multi-user access with role-based permissions',
-            'Fieldguide Integration': 'Push evidence directly to your auditor\'s Fieldguide workspace',
-            'SSO / SAML': 'Okta, Azure AD, Google Workspace single sign-on',
-            'Auditor Portal': 'Give your auditor read-only access to scan results',
-            'White-Label Trust Center': 'Customer-facing compliance page at your domain',
-            'CI/CD API Access': 'Run scans automatically in your deployment pipeline',
-          }).map(([name, desc]) => `
-          <div class="upgrade-notice" style="margin:0;padding:12px 16px">
-            <div style="font-size:16px">🔒</div>
-            <div style="flex:1"><div style="font-size:13px;color:#93c5fd;font-weight:500">${name}</div><div style="font-size:11px;color:var(--muted)">${desc}</div></div>
-            <a href="https://auditcaddie.com/pricing" target="_blank" class="upgrade-notice-btn" style="font-size:11px;padding:4px 10px">Upgrade</a>
-          </div>`).join('')}
+      <div class="section-header">
+        <h2>Enterprise Features</h2>
+        <p>Available with an AuditCaddie Enterprise subscription.</p>
+      </div>
+
+      <div class="ent-feature">
+        <div class="ent-feature-icon">👥</div>
+        <div class="ent-feature-body">
+          <div class="ent-feature-name">Team Collaboration</div>
+          <div class="ent-feature-desc">Multi-user access with role-based permissions</div>
         </div>
+        <a href="https://auditcaddie.com/pricing" target="_blank" class="ent-feature-btn">Upgrade</a>
+      </div>
+      <div class="ent-feature">
+        <div class="ent-feature-icon">🔗</div>
+        <div class="ent-feature-body">
+          <div class="ent-feature-name">Fieldguide Integration</div>
+          <div class="ent-feature-desc">Push evidence directly to your auditor's Fieldguide workspace</div>
+        </div>
+        <a href="https://auditcaddie.com/pricing" target="_blank" class="ent-feature-btn">Upgrade</a>
+      </div>
+      <div class="ent-feature">
+        <div class="ent-feature-icon">🔐</div>
+        <div class="ent-feature-body">
+          <div class="ent-feature-name">SSO / SAML</div>
+          <div class="ent-feature-desc">Okta, Azure AD, Google Workspace single sign-on</div>
+        </div>
+        <a href="https://auditcaddie.com/pricing" target="_blank" class="ent-feature-btn">Upgrade</a>
+      </div>
+      <div class="ent-feature">
+        <div class="ent-feature-icon">🏛️</div>
+        <div class="ent-feature-body">
+          <div class="ent-feature-name">Auditor Portal</div>
+          <div class="ent-feature-desc">Give your auditor read-only access to scan results</div>
+        </div>
+        <a href="https://auditcaddie.com/pricing" target="_blank" class="ent-feature-btn">Upgrade</a>
+      </div>
+      <div class="ent-feature">
+        <div class="ent-feature-icon">🌐</div>
+        <div class="ent-feature-body">
+          <div class="ent-feature-name">Trust Center</div>
+          <div class="ent-feature-desc">Customer-facing compliance page at your domain</div>
+        </div>
+        <a href="https://auditcaddie.com/pricing" target="_blank" class="ent-feature-btn">Upgrade</a>
+      </div>
+      <div class="ent-feature">
+        <div class="ent-feature-icon">⚙️</div>
+        <div class="ent-feature-body">
+          <div class="ent-feature-name">CI/CD API Access</div>
+          <div class="ent-feature-desc">Run scans automatically in your deployment pipeline</div>
+        </div>
+        <a href="https://auditcaddie.com/pricing" target="_blank" class="ent-feature-btn">Upgrade</a>
       </div>
     </div>
   </div>
@@ -814,11 +1093,11 @@ let state = {
   selectedCheck: null,
   setupStep: 0,
   setupSteps: 4,
-  usedFrameworks: [],    // frameworks with completed scans
-  frameworkLimit: 2,     // OSS cap
+  usedFrameworks: [],
+  frameworkLimit: 2,
 };
 
-// ── Init ────────────────────────────────────────────────────────────────────
+// ── Init ─────────────────────────────────────────────────────────────────────
 async function init() {
   await loadConfig();
   await loadFrameworkUsage();
@@ -841,11 +1120,7 @@ async function loadConfig() {
     document.getElementById('awsDot').className = 'status-dot ' + (cfg.aws ? 'ok' : '');
     document.getElementById('ghDot').className  = 'status-dot ' + (cfg.github ? 'ok' : '');
     document.getElementById('aiDot').className  = 'status-dot ' + (cfg.ai?.configured ? 'ok' : '');
-
-    // Show setup wizard if nothing is configured
-    if (!cfg.aws && !cfg.github && !cfg.ai?.configured) {
-      showSetup();
-    }
+    if (!cfg.aws && !cfg.github && !cfg.ai?.configured) showSetup();
   } catch(e) {}
 }
 
@@ -880,7 +1155,8 @@ function showStep(n) {
     document.getElementById(`step-${i}`)?.classList.toggle('active', i === n);
   }
   document.getElementById('setupBack').style.display = n > 0 ? '' : 'none';
-  document.getElementById('setupNext').textContent = n === state.setupSteps - 1 ? 'Start Scanning →' : 'Next →';
+  const nextBtn = document.getElementById('setupNext');
+  nextBtn.textContent = n === state.setupSteps - 1 ? 'Start Scanning →' : 'Continue →';
   renderStepDots();
 }
 
@@ -889,15 +1165,10 @@ async function setupNext() {
     document.getElementById('setupOverlay').style.display = 'none';
     return;
   }
-
-  // Save current step data
   if (state.setupStep === 0) {
     const openai = document.getElementById('s_openai').value.trim();
     const anthropic = document.getElementById('s_anthropic').value.trim();
-    if (!openai && !anthropic) {
-      alert('Please add at least one AI API key to continue.');
-      return;
-    }
+    if (!openai && !anthropic) { alert('Please add at least one AI API key to continue.'); return; }
     await saveSettingsData({ openai_api_key: openai, anthropic_api_key: anthropic,
       ai_model: openai ? 'gpt-4o' : 'claude-sonnet-4-5' });
   } else if (state.setupStep === 1) {
@@ -910,7 +1181,6 @@ async function setupNext() {
     const org = document.getElementById('s_gh_org').value.trim();
     if (token) await saveSettingsData({ github_token: token, github_org: org });
   }
-
   showStep(state.setupStep + 1);
   if (state.setupStep === 3) await loadConfig();
 }
@@ -923,7 +1193,8 @@ async function loadFrameworks() {
     const templates = await api('/api/templates');
     renderFrameworkList(templates);
   } catch(e) {
-    document.getElementById('frameworkList').innerHTML = `<div class="c-red" style="font-size:12px">Failed to load templates</div>`;
+    document.getElementById('frameworkList').innerHTML =
+      `<div style="font-size:12px;color:var(--red)">Failed to load templates</div>`;
   }
 }
 
@@ -931,22 +1202,22 @@ function renderFrameworkList(templates) {
   const list = document.getElementById('frameworkList');
   const slotsLeft = state.frameworkLimit - state.usedFrameworks.length;
 
-  list.innerHTML = templates.map(t => {
+  let html = templates.map(t => {
     const used = state.usedFrameworks.includes(t.slug);
     const locked = !used && slotsLeft <= 0;
 
     if (locked) {
       return `
         <button class="framework-btn" onclick="showFrameworkUpgrade('${t.slug}', '${t.name}')" id="fw-${t.slug}"
-                style="opacity:0.55;cursor:pointer">
-          <span style="float:right;font-size:11px;color:var(--muted)">🔒</span>
+                style="opacity:.5;cursor:pointer">
+          <span style="float:right;font-size:11px;opacity:.7">🔒</span>
           ${t.name}
           <div class="framework-meta">${t.control_count} controls · Enterprise</div>
         </button>`;
     }
 
     const tag = used
-      ? `<span style="float:right;font-size:9px;background:#14532d;color:#4ade80;padding:1px 5px;border-radius:3px;font-weight:700">ACTIVE</span>`
+      ? `<span style="float:right;font-size:9px;background:rgba(78,205,196,.25);color:var(--teal);padding:2px 6px;border-radius:4px;font-weight:700">ACTIVE</span>`
       : (slotsLeft === 1
           ? `<span style="float:right;font-size:9px;color:var(--amber)">last slot</span>`
           : '');
@@ -958,21 +1229,22 @@ function renderFrameworkList(templates) {
       </button>`;
   }).join('');
 
-  // Usage indicator
-  const usageBar = `
-    <div style="margin-top:10px;padding:8px 10px;background:var(--bg2);border:1px solid var(--border);border-radius:8px">
-      <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--muted);margin-bottom:5px">
+  // Usage bar
+  const pct = (state.usedFrameworks.length / state.frameworkLimit) * 100;
+  const full = slotsLeft === 0;
+  html += `
+    <div class="usage-bar-wrap">
+      <div class="usage-bar-label">
         <span>Frameworks used</span>
-        <span style="color:${slotsLeft===0?'var(--amber)':'var(--green)'}">${state.usedFrameworks.length} / ${state.frameworkLimit}</span>
+        <span style="color:${full ? 'var(--amber)' : 'var(--teal)'}">${state.usedFrameworks.length} / ${state.frameworkLimit}</span>
       </div>
-      <div style="background:var(--bg);border-radius:4px;height:4px;overflow:hidden">
-        <div style="background:${slotsLeft===0?'var(--amber)':'var(--blue)'};height:4px;width:${(state.usedFrameworks.length/state.frameworkLimit)*100}%;transition:width .3s"></div>
+      <div class="usage-bar-track">
+        <div class="usage-bar-fill ${full ? 'full' : ''}" style="width:${pct}%"></div>
       </div>
-      ${slotsLeft===0 ? `<div style="font-size:10px;color:var(--amber);margin-top:5px">
-        <a href="https://auditcaddie.com/pricing" target="_blank" style="color:var(--blue-l)">Upgrade for all 5 frameworks →</a>
-      </div>` : ''}
+      ${full ? `<div class="usage-upgrade"><a href="https://auditcaddie.com/pricing" target="_blank">Upgrade for all 5 frameworks →</a></div>` : ''}
     </div>`;
-  list.insertAdjacentHTML('beforeend', usageBar);
+
+  list.innerHTML = html;
 }
 
 function selectFramework(slug) {
@@ -983,25 +1255,21 @@ function selectFramework(slug) {
 }
 
 function showFrameworkUpgrade(slug, name) {
-  // Select it visually so they can see the template details
   state.activeFramework = slug;
   document.querySelectorAll('.framework-btn').forEach(b => b.classList.remove('active'));
   document.getElementById(`fw-${slug}`)?.classList.add('active');
-
-  // Show upgrade modal
-  const modal = document.getElementById('upgradeModal');
   document.getElementById('upgradeModalFeature').textContent = name;
   document.getElementById('upgradeModalUsed').textContent = state.usedFrameworks.join(' + ');
-  modal.style.display = 'flex';
+  document.getElementById('upgradeModal').style.display = 'flex';
 }
 
-// ── Scan ─────────────────────────────────────────────────────────────────────
+// ── Scan ──────────────────────────────────────────────────────────────────────
 async function startScan() {
   if (!state.activeFramework) return alert('Select a framework first');
 
   const btn = document.getElementById('runScanBtn');
   btn.disabled = true;
-  btn.innerHTML = '<div class="spinner" style="width:12px;height:12px"></div> Scanning...';
+  btn.innerHTML = '<div class="spinner" style="width:13px;height:13px;border-top-color:#fff"></div> Scanning...';
 
   try {
     const res = await fetch('/api/scan', {
@@ -1017,7 +1285,7 @@ async function startScan() {
       document.getElementById('upgradeModalUsed').textContent = (detail.used || state.usedFrameworks).join(' + ');
       document.getElementById('upgradeModal').style.display = 'flex';
       btn.disabled = false;
-      btn.innerHTML = '▶ Run Scan';
+      btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg> Run Scan';
       return;
     }
     if (!res.ok) {
@@ -1031,7 +1299,7 @@ async function startScan() {
   } catch(e) {
     alert('Scan failed: ' + e.message);
     btn.disabled = false;
-    btn.innerHTML = '▶ Run Scan';
+    btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg> Run Scan';
   }
 }
 
@@ -1039,15 +1307,14 @@ async function pollScan(scanId) {
   let attempts = 0;
   const check = async () => {
     attempts++;
-    if (attempts > 60) return; // 5 min timeout
+    if (attempts > 60) return;
     try {
       const data = await api(`/api/scan/${scanId}`);
       if (data.status === 'complete') {
         state.scanData = data;
         renderScanResults(data);
         document.getElementById('runScanBtn').disabled = false;
-        document.getElementById('runScanBtn').innerHTML = '▶ Run Scan';
-        // Refresh framework usage — this scan may have consumed a slot
+        document.getElementById('runScanBtn').innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg> Run Scan';
         await loadFrameworkUsage();
         const templates = await api('/api/templates').catch(() => []);
         if (templates.length) renderFrameworkList(templates);
@@ -1066,13 +1333,14 @@ async function loadRecentScans() {
   try {
     const scans = await api('/api/scans?limit=5');
     const list = document.getElementById('recentScans');
-    if (!scans.length) { list.innerHTML = '<div style="font-size:12px;color:var(--muted)">No scans yet</div>'; return; }
+    if (!scans.length) {
+      list.innerHTML = '<div style="font-size:12px;color:rgba(255,255,255,.3)">No scans yet</div>';
+      return;
+    }
     list.innerHTML = scans.map(s => `
-      <div style="padding:6px 8px;border-radius:6px;cursor:pointer;font-size:12px;border:1px solid transparent"
-           onclick="loadScan('${s.id}')"
-           onmouseenter="this.style.background='var(--bg2)'" onmouseleave="this.style.background=''">
-        <div style="font-weight:500;color:var(--text);overflow:hidden;white-space:nowrap;text-overflow:ellipsis">${s.scan_name}</div>
-        <div style="color:var(--muted)">${s.status} · ${s.created_at?.slice(0,10)}</div>
+      <div class="recent-scan-item" onclick="loadScan('${s.id}')">
+        <div class="recent-scan-name">${s.scan_name}</div>
+        <div class="recent-scan-meta">${s.status} · ${s.created_at?.slice(0,10)}</div>
       </div>
     `).join('');
   } catch(e) {}
@@ -1105,7 +1373,6 @@ function renderScanResults(data) {
   const warned = allChecks.filter(c => c.status === 'warn').length;
   const score  = total ? Math.round(passed / total * 100) : 0;
 
-  // Dashboard score
   const scoreColor = score >= 80 ? 'var(--green)' : score >= 50 ? 'var(--amber)' : 'var(--red)';
   document.getElementById('scoreNum').textContent = score + '%';
   document.getElementById('scoreNum').style.color = scoreColor;
@@ -1116,16 +1383,14 @@ function renderScanResults(data) {
   document.getElementById('statTotal').textContent = total;
   document.getElementById('reportBtn').href = `/api/report/${data.id}`;
 
-  // Failed checks on dashboard
   const failedChecks = allChecks.filter(c => c.status === 'fail');
   document.getElementById('failedChecks').innerHTML = failedChecks.length
     ? failedChecks.map(c => checkItemHTML(c)).join('')
-    : '<div style="color:var(--green);font-size:13px;padding:12px">✓ No failed checks!</div>';
+    : '<div style="color:var(--green);font-size:13px;padding:12px;font-weight:600">✓ No failed checks!</div>';
 
   document.getElementById('dashboardEmpty').style.display = 'none';
   document.getElementById('dashboardResults').style.display = '';
 
-  // Results tab
   renderAllChecks('all');
   document.getElementById('resultsEmpty').style.display = 'none';
   document.getElementById('resultsContent').style.display = '';
@@ -1150,7 +1415,11 @@ function renderAllChecks(filter) {
   document.getElementById('allChecks').innerHTML = checks.map(c => checkItemHTML(c)).join('');
   ['all','fail','warn','pass'].forEach(f => {
     const btn = document.getElementById(`f-${f}`);
-    if (btn) btn.style.borderColor = f === filter ? 'var(--blue)' : '';
+    if (btn) {
+      btn.style.borderColor = f === filter ? 'var(--navy)' : '';
+      btn.style.color = f === filter ? 'var(--navy)' : '';
+      btn.style.fontWeight = f === filter ? '700' : '';
+    }
   });
 }
 
@@ -1169,24 +1438,24 @@ function selectCheck(checkId) {
   document.getElementById('checkDetail').innerHTML = `
     <div class="detail-panel">
       <div class="detail-label">Check</div>
-      <div class="detail-value" style="font-weight:600;margin-bottom:12px">${check.title}</div>
+      <div class="detail-value" style="font-weight:700;color:var(--navy);margin-bottom:14px;font-size:14px">${check.title}</div>
 
       <div class="detail-label">Status</div>
-      <div class="detail-value" style="margin-bottom:12px">
+      <div class="detail-value" style="margin-bottom:14px">
         <span class="check-badge badge-${check.status}">${check.status}</span>
       </div>
 
       ${check.detail ? `<div class="detail-label">Finding</div>
-      <div class="detail-value" style="margin-bottom:12px">${check.detail}</div>` : ''}
+      <div class="detail-value" style="margin-bottom:14px">${check.detail}</div>` : ''}
 
       ${check.remediation ? `<div class="detail-label">Remediation</div>
-      <div class="remediation-box" style="margin-bottom:12px">${check.remediation}</div>` : ''}
+      <div class="remediation-box">${check.remediation}</div>` : ''}
 
       ${check.status !== 'pass' ? `
-      <div class="detail-label" style="margin-bottom:8px">AI Policy Generation</div>
-      <button class="btn btn-primary btn-sm btn-full"
+      <div class="detail-label" style="margin-bottom:8px">Quick Action</div>
+      <button class="btn btn-navy btn-sm btn-full"
         onclick="prefillPolicy('${checkId}', \`${promptSuggestion.replace(/`/g, "'")}\`)">
-        🤖 Generate Policy Doc
+        Generate Policy Doc →
       </button>` : ''}
     </div>
   `;
@@ -1198,7 +1467,7 @@ function prefillPolicy(controlId, prompt) {
   document.getElementById('policyPrompt').value = prompt;
 }
 
-// ── Tabs ─────────────────────────────────────────────────────────────────────
+// ── Tabs ──────────────────────────────────────────────────────────────────────
 function showTab(tab) {
   ['dashboard', 'results', 'policies', 'settings'].forEach(t => {
     document.getElementById(`content-${t}`).style.display = t === tab ? '' : 'none';
@@ -1221,12 +1490,7 @@ async function generatePolicy() {
   try {
     const resp = await api('/api/generate-policy', {
       method: 'POST',
-      body: JSON.stringify({
-        policy_name: name,
-        prompt,
-        model,
-        scan_id: state.activeScanId || '',
-      }),
+      body: JSON.stringify({ policy_name: name, prompt, model, scan_id: state.activeScanId || '' }),
     });
     document.getElementById('policyOutputTitle').textContent = resp.policy_name;
     document.getElementById('policyOutputMeta').textContent = `Generated with ${resp.model} · ${resp.tokens || 0} tokens`;
@@ -1260,16 +1524,22 @@ async function loadPolicies() {
   try {
     const policies = await api('/api/policies');
     const list = document.getElementById('policiesList');
-    if (!policies.length) { list.innerHTML = '<div class="c-muted" style="font-size:12px">No policies generated yet.</div>'; return; }
+    if (!policies.length) {
+      list.innerHTML = '<div class="c-muted" style="font-size:12px">No policies generated yet.</div>';
+      return;
+    }
     list.innerHTML = `<div style="display:flex;flex-direction:column;gap:6px">` +
       policies.map(p => `
-        <div style="display:flex;align-items:center;gap:10px;padding:8px 10px;background:var(--bg);border-radius:8px;cursor:pointer"
-             onclick="loadPolicy('${p.id}')">
-          <div style="font-size:18px">📄</div>
+        <div style="display:flex;align-items:center;gap:12px;padding:10px 12px;background:var(--bg);border:1px solid var(--border);border-radius:8px;cursor:pointer;transition:border-color .15s"
+             onclick="loadPolicy('${p.id}')"
+             onmouseenter="this.style.borderColor='var(--navy)'"
+             onmouseleave="this.style.borderColor='var(--border)'">
+          <div style="font-size:20px">📄</div>
           <div style="flex:1">
-            <div style="font-weight:500;font-size:13px">${p.policy_name}</div>
+            <div style="font-weight:600;font-size:13px;color:var(--navy)">${p.policy_name}</div>
             <div style="font-size:11px;color:var(--muted)">${p.model_used} · ${p.created_at?.slice(0,10)}</div>
           </div>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
         </div>
       `).join('') + `</div>`;
   } catch(e) {}
@@ -1286,19 +1556,19 @@ async function loadPolicy(id) {
   } catch(e) {}
 }
 
-// ── Settings ─────────────────────────────────────────────────────────────────
+// ── Settings ──────────────────────────────────────────────────────────────────
 function openSettings() { showTab('settings'); }
 
 async function saveSettings() {
   const data = {
-    aws_access_key: document.getElementById('cfg_aws_key').value.trim(),
-    aws_secret_key: document.getElementById('cfg_aws_secret').value.trim(),
-    aws_region: document.getElementById('cfg_aws_region').value,
-    github_token: document.getElementById('cfg_gh_token').value.trim(),
-    github_org: document.getElementById('cfg_gh_org').value.trim(),
-    openai_api_key: document.getElementById('cfg_openai').value.trim(),
+    aws_access_key:    document.getElementById('cfg_aws_key').value.trim(),
+    aws_secret_key:    document.getElementById('cfg_aws_secret').value.trim(),
+    aws_region:        document.getElementById('cfg_aws_region').value,
+    github_token:      document.getElementById('cfg_gh_token').value.trim(),
+    github_org:        document.getElementById('cfg_gh_org').value.trim(),
+    openai_api_key:    document.getElementById('cfg_openai').value.trim(),
     anthropic_api_key: document.getElementById('cfg_anthropic').value.trim(),
-    ai_model: document.getElementById('cfg_ai_model').value,
+    ai_model:          document.getElementById('cfg_ai_model').value,
   };
   await saveSettingsData(data);
   const saved = document.getElementById('settingsSaved');
