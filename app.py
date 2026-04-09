@@ -38,6 +38,7 @@ DATA_DIR.mkdir(exist_ok=True)
 
 VERSION = "1.0.0"
 UPGRADE_URL = "https://auditcaddie.com/pricing"
+OSS_FRAMEWORK_LIMIT = 2   # OSS: scan up to 2 frameworks; Enterprise: unlimited
 
 # Enterprise features — OSS shows upgrade notice for these
 ENTERPRISE_FEATURES = {
@@ -274,8 +275,46 @@ def _run_scan_task(scan_id: str, req: ScanRequest):
     log.info("Scan %s complete", scan_id)
 
 
+def _get_used_frameworks() -> list[str]:
+    """Return distinct frameworks that have completed scans."""
+    with get_db() as conn:
+        rows = conn.execute(
+            "SELECT DISTINCT framework FROM scans WHERE status='complete' ORDER BY MIN(created_at)"
+        ).fetchall()
+    return [r["framework"] for r in rows]
+
+
+@app.get("/api/frameworks/usage")
+def framework_usage():
+    """Return which frameworks have been used and how many remain."""
+    used = _get_used_frameworks()
+    return {
+        "used": used,
+        "used_count": len(used),
+        "limit": OSS_FRAMEWORK_LIMIT,
+        "remaining": max(0, OSS_FRAMEWORK_LIMIT - len(used)),
+        "upgrade_url": UPGRADE_URL,
+    }
+
+
 @app.post("/api/scan")
 def start_scan(req: ScanRequest, background_tasks: BackgroundTasks):
+    # Enforce OSS framework limit
+    used = _get_used_frameworks()
+    if req.framework not in used and len(used) >= OSS_FRAMEWORK_LIMIT:
+        raise HTTPException(
+            status_code=402,
+            detail={
+                "code": "framework_limit_reached",
+                "message": f"AuditCaddie OSS includes {OSS_FRAMEWORK_LIMIT} frameworks. "
+                           f"You've already used: {', '.join(used)}. "
+                           f"Upgrade to Enterprise for all 5 frameworks.",
+                "used": used,
+                "limit": OSS_FRAMEWORK_LIMIT,
+                "upgrade_url": UPGRADE_URL,
+            },
+        )
+
     scan_id = str(uuid.uuid4())[:8]
     name = req.scan_name or f"{req.framework} — {datetime.utcnow().strftime('%Y-%m-%d %H:%M')}"
     with get_db() as conn:

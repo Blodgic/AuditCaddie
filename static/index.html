@@ -470,6 +470,42 @@ input::placeholder { color: var(--muted); }
   </div>
 </div>
 
+<!-- Upgrade Modal -->
+<div id="upgradeModal" style="display:none;position:fixed;inset:0;background:#000000cc;z-index:2000;align-items:center;justify-content:center">
+  <div style="background:var(--bg2);border:1px solid #3b5998;border-radius:16px;padding:40px;width:460px;max-width:95vw;text-align:center">
+    <div style="font-size:40px;margin-bottom:12px">🔒</div>
+    <div style="font-size:20px;font-weight:700;color:var(--text);margin-bottom:8px">Framework Limit Reached</div>
+    <div style="font-size:13px;color:var(--muted);margin-bottom:20px;line-height:1.6">
+      AuditCaddie OSS includes <strong style="color:var(--text)">2 frameworks</strong>.<br>
+      You're already using <strong style="color:var(--blue-l)" id="upgradeModalUsed"></strong>.<br><br>
+      <strong style="color:var(--text)" id="upgradeModalFeature"></strong> is available in Enterprise.
+    </div>
+    <div style="background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:16px;margin-bottom:24px;text-align:left">
+      <div style="font-size:11px;color:var(--muted);margin-bottom:10px;font-weight:700;text-transform:uppercase;letter-spacing:.05em">Enterprise unlocks</div>
+      <div style="display:flex;flex-direction:column;gap:6px;font-size:13px;color:var(--gray)">
+        <div>✓ <strong>All 5 frameworks</strong> — SOC 2, NIST CSF, ISO 27001, HIPAA, Vendor</div>
+        <div>✓ <strong>Custom frameworks</strong> — build your own control sets</div>
+        <div>✓ <strong>Team collaboration</strong> — multi-user access with roles</div>
+        <div>✓ <strong>Fieldguide integration</strong> — push evidence to your auditor</div>
+        <div>✓ <strong>Auditor portal</strong> — read-only access for your auditor</div>
+      </div>
+    </div>
+    <div style="display:flex;gap:10px;justify-content:center">
+      <a href="https://auditcaddie.com/pricing" target="_blank"
+         style="background:var(--blue);color:#fff;padding:10px 24px;border-radius:8px;font-weight:700;font-size:14px;text-decoration:none">
+        Upgrade to Enterprise →
+      </a>
+      <button onclick="document.getElementById('upgradeModal').style.display='none'"
+              style="background:var(--bg);border:1px solid var(--border);color:var(--muted);padding:10px 20px;border-radius:8px;cursor:pointer;font-size:14px">
+        Not now
+      </button>
+    </div>
+    <div style="margin-top:16px;font-size:11px;color:var(--muted)">
+      OSS remains free forever · <a href="https://github.com/Blodgic/AuditCaddie" target="_blank" style="color:var(--blue-l)">github.com/Blodgic/AuditCaddie</a>
+    </div>
+  </div>
+</div>
+
 <!-- Main App -->
 <div class="header">
   <a href="https://github.com/Blodgic/AuditCaddie" target="_blank" class="logo">
@@ -778,14 +814,25 @@ let state = {
   selectedCheck: null,
   setupStep: 0,
   setupSteps: 4,
+  usedFrameworks: [],    // frameworks with completed scans
+  frameworkLimit: 2,     // OSS cap
 };
 
 // ── Init ────────────────────────────────────────────────────────────────────
 async function init() {
   await loadConfig();
+  await loadFrameworkUsage();
   await loadFrameworks();
   await loadRecentScans();
   await loadPolicies();
+}
+
+async function loadFrameworkUsage() {
+  try {
+    const usage = await api('/api/frameworks/usage');
+    state.usedFrameworks = usage.used;
+    state.frameworkLimit = usage.limit;
+  } catch(e) {}
 }
 
 async function loadConfig() {
@@ -874,16 +921,58 @@ function setupPrev() { showStep(state.setupStep - 1); }
 async function loadFrameworks() {
   try {
     const templates = await api('/api/templates');
-    const list = document.getElementById('frameworkList');
-    list.innerHTML = templates.map(t => `
-      <button class="framework-btn" onclick="selectFramework('${t.slug}')" id="fw-${t.slug}">
-        ${t.name}
-        <div class="framework-meta">${t.control_count} controls · ~${t.estimated_hours_with_caddie}h with Caddie</div>
-      </button>
-    `).join('');
+    renderFrameworkList(templates);
   } catch(e) {
     document.getElementById('frameworkList').innerHTML = `<div class="c-red" style="font-size:12px">Failed to load templates</div>`;
   }
+}
+
+function renderFrameworkList(templates) {
+  const list = document.getElementById('frameworkList');
+  const slotsLeft = state.frameworkLimit - state.usedFrameworks.length;
+
+  list.innerHTML = templates.map(t => {
+    const used = state.usedFrameworks.includes(t.slug);
+    const locked = !used && slotsLeft <= 0;
+
+    if (locked) {
+      return `
+        <button class="framework-btn" onclick="showFrameworkUpgrade('${t.slug}', '${t.name}')" id="fw-${t.slug}"
+                style="opacity:0.55;cursor:pointer">
+          <span style="float:right;font-size:11px;color:var(--muted)">🔒</span>
+          ${t.name}
+          <div class="framework-meta">${t.control_count} controls · Enterprise</div>
+        </button>`;
+    }
+
+    const tag = used
+      ? `<span style="float:right;font-size:9px;background:#14532d;color:#4ade80;padding:1px 5px;border-radius:3px;font-weight:700">ACTIVE</span>`
+      : (slotsLeft === 1
+          ? `<span style="float:right;font-size:9px;color:var(--amber)">last slot</span>`
+          : '');
+
+    return `
+      <button class="framework-btn" onclick="selectFramework('${t.slug}')" id="fw-${t.slug}">
+        ${tag}${t.name}
+        <div class="framework-meta">${t.control_count} controls · ~${t.estimated_hours_with_caddie}h with Caddie</div>
+      </button>`;
+  }).join('');
+
+  // Usage indicator
+  const usageBar = `
+    <div style="margin-top:10px;padding:8px 10px;background:var(--bg2);border:1px solid var(--border);border-radius:8px">
+      <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--muted);margin-bottom:5px">
+        <span>Frameworks used</span>
+        <span style="color:${slotsLeft===0?'var(--amber)':'var(--green)'}">${state.usedFrameworks.length} / ${state.frameworkLimit}</span>
+      </div>
+      <div style="background:var(--bg);border-radius:4px;height:4px;overflow:hidden">
+        <div style="background:${slotsLeft===0?'var(--amber)':'var(--blue)'};height:4px;width:${(state.usedFrameworks.length/state.frameworkLimit)*100}%;transition:width .3s"></div>
+      </div>
+      ${slotsLeft===0 ? `<div style="font-size:10px;color:var(--amber);margin-top:5px">
+        <a href="https://auditcaddie.com/pricing" target="_blank" style="color:var(--blue-l)">Upgrade for all 5 frameworks →</a>
+      </div>` : ''}
+    </div>`;
+  list.insertAdjacentHTML('beforeend', usageBar);
 }
 
 function selectFramework(slug) {
@@ -891,6 +980,19 @@ function selectFramework(slug) {
   document.querySelectorAll('.framework-btn').forEach(b => b.classList.remove('active'));
   document.getElementById(`fw-${slug}`)?.classList.add('active');
   document.getElementById('runScanBtn').disabled = false;
+}
+
+function showFrameworkUpgrade(slug, name) {
+  // Select it visually so they can see the template details
+  state.activeFramework = slug;
+  document.querySelectorAll('.framework-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(`fw-${slug}`)?.classList.add('active');
+
+  // Show upgrade modal
+  const modal = document.getElementById('upgradeModal');
+  document.getElementById('upgradeModalFeature').textContent = name;
+  document.getElementById('upgradeModalUsed').textContent = state.usedFrameworks.join(' + ');
+  modal.style.display = 'flex';
 }
 
 // ── Scan ─────────────────────────────────────────────────────────────────────
@@ -902,10 +1004,28 @@ async function startScan() {
   btn.innerHTML = '<div class="spinner" style="width:12px;height:12px"></div> Scanning...';
 
   try {
-    const resp = await api('/api/scan', {
+    const res = await fetch('/api/scan', {
       method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ framework: state.activeFramework, run_aws: true, run_github: true }),
     });
+
+    if (res.status === 402) {
+      const err = await res.json();
+      const detail = err.detail || {};
+      document.getElementById('upgradeModalFeature').textContent = state.activeFramework;
+      document.getElementById('upgradeModalUsed').textContent = (detail.used || state.usedFrameworks).join(' + ');
+      document.getElementById('upgradeModal').style.display = 'flex';
+      btn.disabled = false;
+      btn.innerHTML = '▶ Run Scan';
+      return;
+    }
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.detail || `HTTP ${res.status}`);
+    }
+
+    const resp = await res.json();
     state.activeScanId = resp.scan_id;
     await pollScan(resp.scan_id);
   } catch(e) {
@@ -927,6 +1047,10 @@ async function pollScan(scanId) {
         renderScanResults(data);
         document.getElementById('runScanBtn').disabled = false;
         document.getElementById('runScanBtn').innerHTML = '▶ Run Scan';
+        // Refresh framework usage — this scan may have consumed a slot
+        await loadFrameworkUsage();
+        const templates = await api('/api/templates').catch(() => []);
+        if (templates.length) renderFrameworkList(templates);
         await loadRecentScans();
       } else {
         setTimeout(check, 5000);
