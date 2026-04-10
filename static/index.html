@@ -503,6 +503,54 @@ input::placeholder { color: var(--subtle); }
 .welcome-card-title { font-weight: 700; margin-bottom: 4px; color: var(--navy); font-size: 13px; }
 .welcome-card-desc { color: var(--muted); font-size: 12px; line-height: 1.5; }
 
+/* ── Compliance Notebook ────────────────────────────────────────────────── */
+.nb-category { margin-bottom: 24px; }
+.nb-category-title {
+  font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em;
+  color: var(--muted); padding: 0 0 8px; border-bottom: 1px solid var(--border);
+  margin-bottom: 12px;
+}
+.nb-control {
+  background: #fff; border: 1px solid var(--border); border-radius: 10px;
+  padding: 14px 16px; margin-bottom: 8px; cursor: pointer; transition: border-color .15s;
+  display: flex; align-items: center; gap: 12px;
+}
+.nb-control:hover { border-color: var(--teal); }
+.nb-control-dot {
+  width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0;
+}
+.nb-control-body { flex: 1; min-width: 0; }
+.nb-control-id { font-size: 11px; font-weight: 700; color: var(--teal); }
+.nb-control-name { font-weight: 600; color: var(--navy); font-size: 13px; }
+.nb-control-desc { color: var(--muted); font-size: 12px; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.nb-doc-count {
+  font-size: 11px; font-weight: 700; padding: 3px 9px; border-radius: 12px;
+  white-space: nowrap; flex-shrink: 0;
+}
+/* confidence badges */
+.badge-high   { background: #dcfce7; color: #15803d; }
+.badge-medium { background: #fef9c3; color: #92400e; }
+.badge-low    { background: #fee2e2; color: #991b1b; }
+.badge-none   { background: var(--bg); color: var(--muted); }
+.conf-badge {
+  font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 10px; display: inline-block;
+}
+/* document list in detail panel */
+.doc-card {
+  border: 1px solid var(--border); border-radius: 8px; padding: 12px; margin-bottom: 10px;
+}
+.doc-card-name { font-weight: 600; color: var(--navy); font-size: 13px; margin-bottom: 4px; }
+.doc-card-meta { font-size: 12px; color: var(--muted); }
+.suggestion-item {
+  background: var(--bg); border-radius: 8px; padding: 10px 12px; margin-bottom: 8px; cursor: pointer;
+  border: 2px solid transparent; transition: border-color .15s;
+}
+.suggestion-item:hover { border-color: var(--teal); }
+.suggestion-item.selected { border-color: var(--teal); background: #f0fdfa; }
+.suggestion-rank { font-size: 11px; font-weight: 700; color: var(--muted); margin-bottom: 2px; }
+.suggestion-ctrl { font-weight: 700; color: var(--navy); font-size: 13px; }
+.suggestion-reason { font-size: 12px; color: var(--muted); margin-top: 4px; line-height: 1.5; }
+
 /* ── Setup wizard ───────────────────────────────────────────────────────── */
 .setup-overlay {
   position: fixed; inset: 0;
@@ -785,6 +833,7 @@ input::placeholder { color: var(--subtle); }
     <div class="tabs">
       <div class="tab active" onclick="showTab('dashboard')" id="tab-dashboard">Dashboard</div>
       <div class="tab" onclick="showTab('results')" id="tab-results">Scan Results</div>
+      <div class="tab" onclick="showTab('notebook')" id="tab-notebook">Notebook</div>
       <div class="tab" onclick="showTab('policies')" id="tab-policies">Policies</div>
       <div class="tab" onclick="showTab('settings')" id="tab-settings">Settings</div>
     </div>
@@ -949,6 +998,91 @@ input::placeholder { color: var(--subtle); }
           <div class="c-muted" style="font-size:12px">No policies generated yet.</div>
         </div>
       </div>
+    </div>
+
+    <!-- Notebook tab -->
+    <div class="content" id="content-notebook" style="display:none">
+      <div class="section-header" style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:12px">
+        <div>
+          <h2>Compliance Notebook</h2>
+          <p>Upload evidence and policies — AI maps them to controls with confidence scoring.</p>
+        </div>
+        <button class="btn btn-navy btn-sm" onclick="openUploadModal()">+ Upload Evidence</button>
+      </div>
+
+      <!-- No framework selected notice -->
+      <div id="notebookNoFramework" class="empty" style="padding:40px 0">
+        <div style="font-size:32px;margin-bottom:12px">📋</div>
+        <h3>Select a framework first</h3>
+        <p>Choose a compliance template from the sidebar to load its controls.</p>
+      </div>
+
+      <!-- Controls by category -->
+      <div id="notebookContent" style="display:none">
+        <div id="notebookCategories"></div>
+      </div>
+    </div>
+
+    <!-- Upload Evidence Modal -->
+    <div id="uploadModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:500;display:none;align-items:center;justify-content:center">
+      <div style="background:#fff;border-radius:16px;padding:32px;width:500px;max-width:95vw;box-shadow:0 20px 60px rgba(0,0,0,.3)">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px">
+          <h3 style="font-size:16px;font-weight:700;color:var(--navy)">Upload Evidence or Policy</h3>
+          <button onclick="closeUploadModal()" style="background:none;border:none;font-size:20px;cursor:pointer;color:var(--muted)">×</button>
+        </div>
+
+        <!-- Drop zone -->
+        <div id="dropZone" style="border:2px dashed var(--border-d);border-radius:12px;padding:32px;text-align:center;cursor:pointer;transition:all .2s;margin-bottom:16px"
+             ondragover="event.preventDefault();this.style.borderColor='var(--teal)'"
+             ondragleave="this.style.borderColor='var(--border-d)'"
+             ondrop="handleFileDrop(event)"
+             onclick="document.getElementById('fileInput').click()">
+          <div style="font-size:28px;margin-bottom:8px">📄</div>
+          <div style="font-weight:600;color:var(--navy);margin-bottom:4px">Drop file here or click to browse</div>
+          <div style="font-size:12px;color:var(--muted)">PDF, DOCX, TXT — up to 10 MB</div>
+          <input type="file" id="fileInput" accept=".pdf,.docx,.doc,.txt,.md,.csv" style="display:none" onchange="handleFileSelect(this)">
+        </div>
+
+        <div id="uploadFileInfo" style="display:none;background:var(--bg);border-radius:8px;padding:12px;margin-bottom:16px;font-size:13px;display:flex;gap:12px;align-items:center">
+          <span style="font-size:20px">📄</span>
+          <div>
+            <div id="uploadFileName" style="font-weight:600;color:var(--navy)"></div>
+            <div id="uploadFileSize" style="color:var(--muted);font-size:12px"></div>
+          </div>
+        </div>
+
+        <div class="form-group" style="margin-bottom:12px">
+          <label>Document Type</label>
+          <select id="uploadDocType">
+            <option value="evidence">Evidence</option>
+            <option value="policy">Policy</option>
+            <option value="requirement">Requirement</option>
+          </select>
+        </div>
+
+        <div class="form-group" style="margin-bottom:20px">
+          <label>Framework <span style="font-weight:400;color:var(--muted)">(for AI mapping)</span></label>
+          <select id="uploadFramework">
+            <option value="">— Skip AI classification —</option>
+          </select>
+        </div>
+
+        <div id="uploadError" style="display:none;color:var(--red);font-size:13px;margin-bottom:12px;padding:8px 12px;background:var(--red-bg);border-radius:8px"></div>
+
+        <div style="display:flex;gap:10px">
+          <button class="btn btn-outline" onclick="closeUploadModal()" style="flex:1">Cancel</button>
+          <button class="btn btn-navy" onclick="submitUpload()" id="uploadSubmitBtn" style="flex:2">Upload &amp; Classify</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Document Detail Panel -->
+    <div id="docDetailPanel" style="display:none;position:fixed;right:0;top:56px;bottom:0;width:420px;background:#fff;border-left:1px solid var(--border);z-index:200;overflow-y:auto;box-shadow:-4px 0 20px rgba(0,0,0,.08)">
+      <div style="padding:20px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center">
+        <div style="font-weight:700;color:var(--navy)" id="docDetailName"></div>
+        <button onclick="closeDocDetail()" style="background:none;border:none;font-size:20px;cursor:pointer;color:var(--muted)">×</button>
+      </div>
+      <div id="docDetailContent" style="padding:20px"></div>
     </div>
 
     <!-- Settings tab -->
@@ -1192,6 +1326,7 @@ function setupPrev() { showStep(state.setupStep - 1); }
 async function loadFrameworks() {
   try {
     const templates = await api('/api/templates');
+    state.templates = templates;
     renderFrameworkList(templates);
   } catch(e) {
     document.getElementById('frameworkList').innerHTML =
@@ -1584,6 +1719,296 @@ async function saveSettingsData(data) {
 
 // ── Start ─────────────────────────────────────────────────────────────────────
 init();
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// COMPLIANCE NOTEBOOK
+// ═══════════════════════════════════════════════════════════════════════════════
+
+const notebookState = {
+  framework: '',      // current framework slug
+  controls: {},       // { category: [control, ...] }
+  documents: [],      // all docs for this framework
+  selectedControl: null,
+  uploadFile: null,
+  templateOptions: [],
+};
+
+// Called when user clicks the Notebook tab or switches framework
+async function loadNotebook() {
+  const fw = state.activeFramework;
+  if (!fw) {
+    document.getElementById('notebookNoFramework').style.display = '';
+    document.getElementById('notebookContent').style.display = 'none';
+    return;
+  }
+  notebookState.framework = fw;
+
+  try {
+    const [ctrlData, docs] = await Promise.all([
+      api(`/api/frameworks/${fw}/controls`),
+      api(`/api/documents?framework=${fw}`),
+    ]);
+    notebookState.controls = ctrlData.categories;
+    notebookState.documents = docs;
+    renderNotebook();
+    document.getElementById('notebookNoFramework').style.display = 'none';
+    document.getElementById('notebookContent').style.display = '';
+  } catch (e) {
+    document.getElementById('notebookNoFramework').innerHTML =
+      `<div style="color:var(--red)">Failed to load notebook: ${e.message}</div>`;
+  }
+}
+
+function renderNotebook() {
+  const { controls, documents } = notebookState;
+  // Build a map: control_id → confirmed docs
+  const docsByControl = {};
+  const pendingByControl = {};
+  for (const doc of documents) {
+    for (const cid of (doc.confirmed_controls || [])) {
+      (docsByControl[cid] = docsByControl[cid] || []).push(doc);
+    }
+    // Unconfirmed but suggested
+    if (!doc.is_confirmed) {
+      for (const s of (doc.suggestions || [])) {
+        (pendingByControl[s.control_id] = pendingByControl[s.control_id] || []).push(doc);
+      }
+    }
+  }
+
+  const container = document.getElementById('notebookCategories');
+  container.innerHTML = Object.entries(controls).map(([cat, ctrlList]) => `
+    <div class="nb-category">
+      <div class="nb-category-title">${cat}</div>
+      ${ctrlList.map(c => {
+        const confirmed = (docsByControl[c.id] || []).length;
+        const pending   = (pendingByControl[c.id] || []).length;
+        const dotColor  = confirmed > 0 ? 'var(--green)' : pending > 0 ? 'var(--amber)' : 'var(--border-d)';
+        const countLabel = confirmed > 0
+          ? `<span class="nb-doc-count badge-high">${confirmed} doc${confirmed > 1 ? 's' : ''}</span>`
+          : pending > 0
+          ? `<span class="nb-doc-count badge-medium">${pending} pending</span>`
+          : `<span class="nb-doc-count badge-none">No evidence</span>`;
+        return `
+          <div class="nb-control" onclick="openControlDetail('${c.id}')">
+            <div class="nb-control-dot" style="background:${dotColor}"></div>
+            <div class="nb-control-body">
+              <div class="nb-control-id">${c.id}</div>
+              <div class="nb-control-name">${c.name}</div>
+              <div class="nb-control-desc">${c.description || ''}</div>
+            </div>
+            ${countLabel}
+          </div>`;
+      }).join('')}
+    </div>
+  `).join('');
+}
+
+async function openControlDetail(controlId) {
+  notebookState.selectedControl = controlId;
+  const { documents, controls } = notebookState;
+
+  // Find control metadata
+  let ctrl = null;
+  for (const ctrlList of Object.values(controls)) {
+    ctrl = ctrlList.find(c => c.id === controlId);
+    if (ctrl) break;
+  }
+
+  // Docs confirmed to this control
+  const confirmed = documents.filter(d => (d.confirmed_controls || []).includes(controlId));
+  // Docs with unconfirmed suggestions for this control
+  const suggested = documents.filter(d =>
+    !d.is_confirmed && (d.suggestions || []).some(s => s.control_id === controlId)
+  );
+
+  const panel = document.getElementById('docDetailPanel');
+  document.getElementById('docDetailName').textContent = ctrl ? `${ctrl.id} — ${ctrl.name}` : controlId;
+
+  const content = document.getElementById('docDetailContent');
+  content.innerHTML = `
+    ${ctrl ? `<p style="color:var(--muted);font-size:13px;margin-bottom:20px">${ctrl.description || ''}</p>` : ''}
+
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+      <div style="font-weight:700;font-size:13px;color:var(--navy)">Evidence (${confirmed.length})</div>
+      <button class="btn btn-navy btn-sm" onclick="openUploadModal('${controlId}')">+ Upload</button>
+    </div>
+
+    ${confirmed.length === 0 ? `<div style="color:var(--muted);font-size:13px;padding:12px 0">No confirmed evidence yet.</div>` : ''}
+    ${confirmed.map(d => docCard(d, controlId, true)).join('')}
+
+    ${suggested.length > 0 ? `
+      <div style="font-weight:700;font-size:13px;color:var(--amber);margin:20px 0 12px">
+        AI Suggestions — needs review (${suggested.length})
+      </div>
+      ${suggested.map(d => docCard(d, controlId, false)).join('')}
+    ` : ''}
+  `;
+
+  panel.style.display = '';
+}
+
+function docCard(doc, forControlId, isConfirmed) {
+  const topSuggestion = (doc.suggestions || []).find(s => s.control_id === forControlId);
+  const conf = topSuggestion
+    ? `<span class="conf-badge badge-${topSuggestion.confidence_label.toLowerCase()}">${topSuggestion.confidence_label} ${Math.round(topSuggestion.confidence * 100)}%</span>`
+    : '';
+  return `
+    <div class="doc-card">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px">
+        <div>
+          <div class="doc-card-name">${doc.original_filename}</div>
+          <div class="doc-card-meta">${doc.document_type} · ${doc.created_at?.split('T')[0] || ''}</div>
+          ${topSuggestion ? `<div style="font-size:12px;color:var(--muted);margin-top:4px;font-style:italic">"${topSuggestion.reasoning}"</div>` : ''}
+        </div>
+        <div style="display:flex;flex-direction:column;gap:4px;align-items:flex-end;flex-shrink:0">
+          ${conf}
+          ${!isConfirmed ? `<button class="btn btn-sm" style="font-size:11px;padding:3px 10px;background:var(--green);color:#fff;border:none;border-radius:6px;cursor:pointer" onclick="confirmDoc('${doc.id}','${forControlId}')">Confirm</button>` : ''}
+          <button class="btn btn-sm btn-outline" style="font-size:11px;padding:3px 10px" onclick="deleteDoc('${doc.id}')">Remove</button>
+        </div>
+      </div>
+    </div>`;
+}
+
+async function confirmDoc(docId, controlId) {
+  try {
+    await api(`/api/documents/${docId}/confirm`, {
+      method: 'POST',
+      body: JSON.stringify({ control_ids: [controlId], user_overrode: false }),
+    });
+    await refreshNotebook();
+    openControlDetail(controlId);
+  } catch(e) { alert('Failed to confirm: ' + e.message); }
+}
+
+async function deleteDoc(docId) {
+  if (!confirm('Remove this document?')) return;
+  try {
+    await api(`/api/documents/${docId}`, { method: 'DELETE' });
+    await refreshNotebook();
+    if (notebookState.selectedControl) openControlDetail(notebookState.selectedControl);
+    else closeDocDetail();
+  } catch(e) { alert('Failed to delete: ' + e.message); }
+}
+
+async function refreshNotebook() {
+  const docs = await api(`/api/documents?framework=${notebookState.framework}`);
+  notebookState.documents = docs;
+  renderNotebook();
+}
+
+function closeDocDetail() {
+  document.getElementById('docDetailPanel').style.display = 'none';
+  notebookState.selectedControl = null;
+}
+
+// ── Upload Modal ──────────────────────────────────────────────────────────────
+
+function openUploadModal(preselectedControl) {
+  // Populate framework dropdown from loaded templates
+  const sel = document.getElementById('uploadFramework');
+  sel.innerHTML = '<option value="">— Skip AI classification —</option>';
+  for (const t of (state.templates || [])) {
+    const opt = document.createElement('option');
+    opt.value = t.slug;
+    opt.textContent = t.name;
+    if (t.slug === notebookState.framework) opt.selected = true;
+    sel.appendChild(opt);
+  }
+  document.getElementById('uploadModal').style.display = 'flex';
+  document.getElementById('uploadError').style.display = 'none';
+  notebookState.uploadFile = null;
+  document.getElementById('uploadFileInfo').style.display = 'none';
+  document.getElementById('dropZone').style.display = '';
+}
+
+function closeUploadModal() {
+  document.getElementById('uploadModal').style.display = 'none';
+  document.getElementById('fileInput').value = '';
+  notebookState.uploadFile = null;
+}
+
+function handleFileDrop(e) {
+  e.preventDefault();
+  document.getElementById('dropZone').style.borderColor = 'var(--border-d)';
+  const file = e.dataTransfer.files[0];
+  if (file) setUploadFile(file);
+}
+
+function handleFileSelect(input) {
+  if (input.files[0]) setUploadFile(input.files[0]);
+}
+
+function setUploadFile(file) {
+  notebookState.uploadFile = file;
+  document.getElementById('uploadFileName').textContent = file.name;
+  document.getElementById('uploadFileSize').textContent = (file.size / 1024).toFixed(1) + ' KB';
+  document.getElementById('uploadFileInfo').style.display = 'flex';
+  document.getElementById('dropZone').style.display = 'none';
+}
+
+async function submitUpload() {
+  const file = notebookState.uploadFile;
+  if (!file) { alert('Please select a file first.'); return; }
+
+  const btn = document.getElementById('uploadSubmitBtn');
+  btn.textContent = 'Uploading…';
+  btn.disabled = true;
+  document.getElementById('uploadError').style.display = 'none';
+
+  try {
+    const fd = new FormData();
+    fd.append('file', file);
+    fd.append('document_type', document.getElementById('uploadDocType').value);
+    fd.append('framework', document.getElementById('uploadFramework').value);
+
+    const res = await fetch('/api/documents', { method: 'POST', body: fd });
+    if (!res.ok) {
+      const j = await res.json().catch(() => ({}));
+      throw new Error(j.detail || `HTTP ${res.status}`);
+    }
+    const data = await res.json();
+    closeUploadModal();
+
+    // Poll for classification to complete then refresh notebook
+    if (data.status === 'classifying') {
+      pollDocStatus(data.doc_id);
+    } else {
+      await refreshNotebook();
+    }
+  } catch(e) {
+    const errEl = document.getElementById('uploadError');
+    errEl.textContent = e.message;
+    errEl.style.display = '';
+  } finally {
+    btn.textContent = 'Upload & Classify';
+    btn.disabled = false;
+  }
+}
+
+async function pollDocStatus(docId) {
+  for (let i = 0; i < 30; i++) {
+    await new Promise(r => setTimeout(r, 2000));
+    try {
+      const doc = await api(`/api/documents/${docId}`);
+      if (doc.status !== 'classifying') {
+        await refreshNotebook();
+        if (notebookState.selectedControl) openControlDetail(notebookState.selectedControl);
+        return;
+      }
+    } catch(e) { break; }
+  }
+  await refreshNotebook();
+}
+
+// Hook into showTab to load notebook when switching to it
+const _origShowTab = showTab;
+function showTab(name) {
+  _origShowTab(name);
+  if (name === 'notebook') loadNotebook();
+}
+
+
 </script>
 </body>
 </html>

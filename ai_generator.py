@@ -18,6 +18,7 @@ log = logging.getLogger("auditcaddie.ai")
 SUPPORTED_MODELS = {
     "gpt-4o": "openai",
     "gpt-4o-mini": "openai",
+    "claude-sonnet-4-6": "anthropic",
     "claude-sonnet-4-5": "anthropic",
     "claude-haiku-4-5-20251001": "anthropic",
 }
@@ -41,7 +42,7 @@ def get_model() -> tuple[str, str]:
         if os.getenv("OPENAI_API_KEY"):
             return "gpt-4o", "openai"
         if os.getenv("ANTHROPIC_API_KEY"):
-            return "claude-sonnet-4-5", "anthropic"
+            return "claude-sonnet-4-6", "anthropic"
         return "gpt-4o", "openai"  # Will fail gracefully later
     return model, provider
 

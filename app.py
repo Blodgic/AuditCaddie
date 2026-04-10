@@ -23,8 +23,8 @@ from pathlib import Path
 
 import yaml
 from dotenv import load_dotenv
-from fastapi import BackgroundTasks, FastAPI, HTTPException, Request
-from fastapi.responses import FileResponse, HTMLResponse, JSONResponse
+from fastapi import BackgroundTasks, FastAPI, File, Form, HTTPException, Request, UploadFile
+from fastapi.responses import FileResponse, HTMLResponse, JSONResponse, Response
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
@@ -91,6 +91,23 @@ def init_db():
             CREATE TABLE IF NOT EXISTS settings (
                 key   TEXT PRIMARY KEY,
                 value TEXT
+            );
+            CREATE TABLE IF NOT EXISTS documents (
+                id                TEXT PRIMARY KEY,
+                created_at        TEXT DEFAULT (datetime('now')),
+                original_filename TEXT,
+                mime_type         TEXT,
+                document_type     TEXT DEFAULT 'evidence',
+                framework         TEXT,
+                file_content      BLOB,
+                extracted_text    TEXT,
+                status            TEXT DEFAULT 'pending',
+                suggestions       TEXT,
+                confirmed_controls TEXT,
+                is_confirmed      INTEGER DEFAULT 0,
+                user_overrode     INTEGER DEFAULT 0,
+                tokens_used       INTEGER DEFAULT 0,
+                error_msg         TEXT
             );
         """)
 
@@ -162,6 +179,10 @@ class SettingsPayload(BaseModel):
     openai_api_key: str = ""
     anthropic_api_key: str = ""
     ai_model: str = "gpt-4o"
+
+class ConfirmPayload(BaseModel):
+    control_ids: list[str]
+    user_overrode: bool = False
 
 # ── Health & Meta ──────────────────────────────────────────────────────────────
 
@@ -572,6 +593,202 @@ def _render_report(scan: dict, results: dict, tmpl: dict) -> str:
 </div>
 </body>
 </html>"""
+
+# ── Framework Controls ─────────────────────────────────────────────────────────
+
+@app.get("/api/frameworks/{slug}/controls")
+def list_controls(slug: str):
+    """Return all controls for a framework template, grouped by category."""
+    path = TMPL_DIR / f"{slug}.yaml"
+    if not path.exists():
+        raise HTTPException(404, f"Framework '{slug}' not found")
+    tmpl = yaml.safe_load(path.read_text())
+    controls = tmpl.get("controls", [])
+    # Group by category
+    by_category: dict = {}
+    for c in controls:
+        cat = c.get("category", "General")
+        by_category.setdefault(cat, []).append({
+            "id": c["id"],
+            "name": c["name"],
+            "category": cat,
+            "priority": c.get("priority", ""),
+            "description": (c.get("description") or "")[:300],
+        })
+    return {"framework": slug, "name": tmpl.get("name", slug), "categories": by_category}
+
+
+# ── Documents / Evidence ───────────────────────────────────────────────────────
+
+def _classify_background(doc_id: str, framework: str):
+    """Run AI classification in the background and update the document row."""
+    from document_classifier import classify_document, extract_text
+    try:
+        with get_db() as conn:
+            row = conn.execute(
+                "SELECT original_filename, file_content FROM documents WHERE id=?", (doc_id,)
+            ).fetchone()
+        if not row:
+            return
+
+        text = extract_text(bytes(row["file_content"]), row["original_filename"])
+        result = classify_document(text, framework, TMPL_DIR)
+
+        if result["ok"]:
+            with get_db() as conn:
+                conn.execute(
+                    "UPDATE documents SET status=?, suggestions=?, extracted_text=?, tokens_used=? WHERE id=?",
+                    (
+                        "classified",
+                        json.dumps(result["suggestions"]),
+                        text[:20000],
+                        result.get("tokens", 0),
+                        doc_id,
+                    ),
+                )
+        else:
+            with get_db() as conn:
+                conn.execute(
+                    "UPDATE documents SET status=?, error_msg=? WHERE id=?",
+                    ("error", result["error"], doc_id),
+                )
+    except Exception as e:
+        log.error("Classification background task failed for %s: %s", doc_id, e)
+        with get_db() as conn:
+            conn.execute(
+                "UPDATE documents SET status=?, error_msg=? WHERE id=?",
+                ("error", str(e), doc_id),
+            )
+
+
+@app.post("/api/documents")
+async def upload_document(
+    background_tasks: BackgroundTasks,
+    file: UploadFile = File(...),
+    document_type: str = Form("evidence"),
+    framework: str = Form(""),
+):
+    """Upload an evidence or policy document and trigger AI classification."""
+    from document_classifier import ALLOWED_EXTENSIONS, MAX_FILE_BYTES
+
+    ext = Path(file.filename or "").suffix.lower()
+    if ext not in ALLOWED_EXTENSIONS:
+        raise HTTPException(400, f"Unsupported file type '{ext}'. Allowed: {', '.join(ALLOWED_EXTENSIONS)}")
+
+    content = await file.read()
+    if len(content) > MAX_FILE_BYTES:
+        raise HTTPException(400, "File exceeds 10 MB limit")
+
+    doc_id = str(uuid.uuid4())[:12]
+    with get_db() as conn:
+        conn.execute(
+            """INSERT INTO documents
+               (id, original_filename, mime_type, document_type, framework, file_content, status)
+               VALUES (?,?,?,?,?,?,?)""",
+            (doc_id, file.filename, file.content_type or "", document_type, framework, content,
+             "classifying" if framework else "pending"),
+        )
+
+    if framework:
+        background_tasks.add_task(_classify_background, doc_id, framework)
+
+    return {"doc_id": doc_id, "status": "classifying" if framework else "pending", "filename": file.filename}
+
+
+@app.get("/api/documents")
+def list_documents(framework: str = "", limit: int = 50):
+    with get_db() as conn:
+        if framework:
+            rows = conn.execute(
+                "SELECT id, created_at, original_filename, document_type, framework, "
+                "status, suggestions, confirmed_controls, is_confirmed, tokens_used "
+                "FROM documents WHERE framework=? ORDER BY created_at DESC LIMIT ?",
+                (framework, limit),
+            ).fetchall()
+        else:
+            rows = conn.execute(
+                "SELECT id, created_at, original_filename, document_type, framework, "
+                "status, suggestions, confirmed_controls, is_confirmed, tokens_used "
+                "FROM documents ORDER BY created_at DESC LIMIT ?",
+                (limit,),
+            ).fetchall()
+
+    result = []
+    for r in rows:
+        d = dict(r)
+        d["suggestions"] = json.loads(d["suggestions"]) if d["suggestions"] else []
+        d["confirmed_controls"] = json.loads(d["confirmed_controls"]) if d["confirmed_controls"] else []
+        result.append(d)
+    return result
+
+
+@app.get("/api/documents/{doc_id}")
+def get_document(doc_id: str):
+    with get_db() as conn:
+        row = conn.execute(
+            "SELECT id, created_at, original_filename, mime_type, document_type, framework, "
+            "status, suggestions, confirmed_controls, is_confirmed, user_overrode, tokens_used, error_msg "
+            "FROM documents WHERE id=?", (doc_id,)
+        ).fetchone()
+    if not row:
+        raise HTTPException(404, "Document not found")
+    d = dict(row)
+    d["suggestions"] = json.loads(d["suggestions"]) if d["suggestions"] else []
+    d["confirmed_controls"] = json.loads(d["confirmed_controls"]) if d["confirmed_controls"] else []
+    return d
+
+
+@app.get("/api/documents/{doc_id}/download")
+def download_document(doc_id: str):
+    with get_db() as conn:
+        row = conn.execute(
+            "SELECT original_filename, mime_type, file_content FROM documents WHERE id=?", (doc_id,)
+        ).fetchone()
+    if not row:
+        raise HTTPException(404, "Document not found")
+    return Response(
+        content=bytes(row["file_content"]),
+        media_type=row["mime_type"] or "application/octet-stream",
+        headers={"Content-Disposition": f'attachment; filename="{row["original_filename"]}"'},
+    )
+
+
+@app.post("/api/documents/{doc_id}/classify")
+def reclassify_document(doc_id: str, background_tasks: BackgroundTasks):
+    """Re-run AI classification on an already-uploaded document."""
+    with get_db() as conn:
+        row = conn.execute("SELECT framework FROM documents WHERE id=?", (doc_id,)).fetchone()
+    if not row:
+        raise HTTPException(404, "Document not found")
+    if not row["framework"]:
+        raise HTTPException(400, "Document has no framework assigned — cannot classify")
+    with get_db() as conn:
+        conn.execute("UPDATE documents SET status=? WHERE id=?", ("classifying", doc_id))
+    background_tasks.add_task(_classify_background, doc_id, row["framework"])
+    return {"ok": True, "status": "classifying"}
+
+
+@app.post("/api/documents/{doc_id}/confirm")
+def confirm_classification(doc_id: str, payload: ConfirmPayload):
+    """User confirms or overrides the AI-suggested control assignments."""
+    with get_db() as conn:
+        row = conn.execute("SELECT id FROM documents WHERE id=?", (doc_id,)).fetchone()
+    if not row:
+        raise HTTPException(404, "Document not found")
+    with get_db() as conn:
+        conn.execute(
+            "UPDATE documents SET confirmed_controls=?, is_confirmed=1, user_overrode=? WHERE id=?",
+            (json.dumps(payload.control_ids), int(payload.user_overrode), doc_id),
+        )
+    return {"ok": True, "confirmed_controls": payload.control_ids}
+
+
+@app.delete("/api/documents/{doc_id}")
+def delete_document(doc_id: str):
+    with get_db() as conn:
+        conn.execute("DELETE FROM documents WHERE id=?", (doc_id,))
+    return {"ok": True}
+
 
 # ── Frontend ───────────────────────────────────────────────────────────────────
 
