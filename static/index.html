@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>AuditCaddie OSS</title>
+<link rel="icon" href="/static/favicon.ico" type="image/x-icon">
 <style>
 /* ── Design tokens — enterprise palette ─────────────────────────────────── */
 :root {
@@ -63,14 +64,6 @@ body {
   text-decoration: none;
   letter-spacing: -.02em;
 }
-.logo-icon {
-  width: 32px; height: 32px;
-  background: var(--navy);
-  border-radius: 8px;
-  display: flex; align-items: center; justify-content: center;
-  flex-shrink: 0;
-}
-.logo-icon svg { width: 18px; height: 18px; }
 .logo-badge {
   background: var(--teal);
   color: #fff;
@@ -659,13 +652,8 @@ input::placeholder { color: var(--subtle); }
 <div class="setup-overlay" id="setupOverlay" style="display:none">
   <div class="setup-box">
     <div class="setup-logo">
-      <div class="setup-logo-icon">
-        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" width="20" height="20">
-          <path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-      </div>
-      <span class="setup-logo-text">AuditCaddie</span>
-      <span class="logo-badge">OSS</span>
+      <img src="/static/logo.png" alt="AuditCaddie" style="height:36px;width:auto;display:block">
+      <span class="logo-badge" style="margin-left:8px">OSS</span>
     </div>
     <div class="setup-sub">Self-hosted compliance scanning — get up and running in 2 minutes</div>
 
@@ -773,12 +761,7 @@ input::placeholder { color: var(--subtle); }
 <!-- ── Header ──────────────────────────────────────────────────────────── -->
 <div class="header">
   <a href="https://github.com/Blodgic/AuditCaddie" target="_blank" class="logo">
-    <div class="logo-icon">
-      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" width="18" height="18">
-        <path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-      </svg>
-    </div>
-    AuditCaddie
+    <img src="/static/logo.png" alt="AuditCaddie" style="height:28px;width:auto;display:block">
     <span class="logo-badge">OSS</span>
   </a>
 
