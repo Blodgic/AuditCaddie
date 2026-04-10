@@ -328,7 +328,7 @@ def _get_used_frameworks() -> list[str]:
     """Return distinct frameworks that have completed scans."""
     with get_db() as conn:
         rows = conn.execute(
-            "SELECT DISTINCT framework FROM scans WHERE status='complete' ORDER BY MIN(created_at)"
+            "SELECT framework FROM scans WHERE status='complete' GROUP BY framework ORDER BY MIN(created_at)"
         ).fetchall()
     return [r["framework"] for r in rows]
 

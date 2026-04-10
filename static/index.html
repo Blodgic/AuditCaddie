@@ -1605,11 +1605,12 @@ function prefillPolicy(controlId, prompt) {
 
 // ── Tabs ──────────────────────────────────────────────────────────────────────
 function showTab(tab) {
-  ['dashboard', 'results', 'policies', 'settings'].forEach(t => {
-    document.getElementById(`content-${t}`).style.display = t === tab ? '' : 'none';
+  ['dashboard', 'results', 'notebook', 'policies', 'settings'].forEach(t => {
+    document.getElementById(`content-${t}`)?.style && (document.getElementById(`content-${t}`).style.display = t === tab ? '' : 'none');
     document.getElementById(`tab-${t}`)?.classList.toggle('active', t === tab);
   });
   if (tab === 'policies') loadPolicies();
+  if (tab === 'notebook') loadNotebook();
 }
 
 // ── AI Policy Generation ─────────────────────────────────────────────────────
@@ -2001,12 +2002,6 @@ async function pollDocStatus(docId) {
   await refreshNotebook();
 }
 
-// Hook into showTab to load notebook when switching to it
-const _origShowTab = showTab;
-function showTab(name) {
-  _origShowTab(name);
-  if (name === 'notebook') loadNotebook();
-}
 
 
 </script>
