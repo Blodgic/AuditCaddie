@@ -60,12 +60,10 @@ for tmpl in soc2-startup nist-csf-smb iso27001-saas hipaa-healthtech vendor-asse
 done
 
 # ── Create minimal .env (no keys — configure via dashboard) ──────────────────
+# NOTE: printf instead of heredoc — heredocs break when script is piped to bash
+# because stdin is the pipe, causing the heredoc to consume script lines as values.
 if [ ! -f .env ]; then
-  cat > .env <<EOF
-# AuditCaddie OSS — add your API keys via the dashboard after startup.
-# Settings → AI / AWS / GitHub  (stored securely in the local database)
-PORT=${PORT}
-EOF
+  printf '# AuditCaddie OSS\n# Configure API keys in the dashboard after startup.\nPORT=%s\n' "$PORT" > .env
   echo -e "${GREEN}✓${NC} .env created"
 else
   echo -e "${YELLOW}→${NC} .env already exists, skipping"
