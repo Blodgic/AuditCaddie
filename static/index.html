@@ -497,6 +497,13 @@ input::placeholder { color: var(--subtle); }
 .welcome-card-desc { color: var(--muted); font-size: 12px; line-height: 1.5; }
 
 /* ── Compliance Notebook ────────────────────────────────────────────────── */
+.fw-pill {
+  padding: 6px 16px; border-radius: 20px; font-size: 13px; font-weight: 600;
+  border: 2px solid var(--border-d); background: #fff; color: var(--muted);
+  cursor: pointer; transition: all .15s; white-space: nowrap;
+}
+.fw-pill.active { border-color: var(--navy); background: var(--navy); color: #fff; }
+.fw-pill:hover:not(.active) { border-color: var(--teal); color: var(--teal); }
 .nb-category { margin-bottom: 24px; }
 .nb-category-title {
   font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em;
@@ -993,11 +1000,14 @@ input::placeholder { color: var(--subtle); }
         <button class="btn btn-navy btn-sm" onclick="openUploadModal()">+ Upload Evidence</button>
       </div>
 
+      <!-- Framework switcher pills -->
+      <div id="notebookFrameworkPills" style="display:none;gap:8px;flex-wrap:wrap;margin-bottom:20px"></div>
+
       <!-- No framework selected notice -->
       <div id="notebookNoFramework" class="empty" style="padding:40px 0">
         <div style="font-size:32px;margin-bottom:12px">📋</div>
-        <h3>Select a framework first</h3>
-        <p>Choose a compliance template from the sidebar to load its controls.</p>
+        <h3>Run a scan first</h3>
+        <p>Select a compliance framework from the sidebar and run a scan to populate the notebook.</p>
       </div>
 
       <!-- Controls by category -->
@@ -1719,14 +1729,66 @@ const notebookState = {
 
 // Called when user clicks the Notebook tab or switches framework
 async function loadNotebook() {
-  const fw = state.activeFramework;
-  if (!fw) {
+  // Get all frameworks that have been used (scanned) — these populate the switcher
+  let usedFrameworks = [];
+  try {
+    const usage = await api('/api/frameworks/usage');
+    usedFrameworks = usage.used || [];
+  } catch(e) {}
+
+  // Also include the currently active framework even if not yet scanned
+  const active = state.activeFramework;
+  if (active && !usedFrameworks.includes(active)) usedFrameworks.unshift(active);
+
+  const pillsEl = document.getElementById('notebookFrameworkPills');
+
+  if (usedFrameworks.length === 0) {
+    pillsEl.style.display = 'none';
     document.getElementById('notebookNoFramework').style.display = '';
     document.getElementById('notebookContent').style.display = 'none';
     return;
   }
-  notebookState.framework = fw;
 
+  // Build framework name map from loaded templates
+  const nameMap = {};
+  for (const t of (state.templates || [])) nameMap[t.slug] = t.name;
+
+  // Render pills — default to first used if notebookState.framework not in list
+  if (!usedFrameworks.includes(notebookState.framework)) {
+    notebookState.framework = usedFrameworks[0];
+  }
+
+  pillsEl.style.display = 'flex';
+  pillsEl.innerHTML = usedFrameworks.map(fw => `
+    <button class="fw-pill ${fw === notebookState.framework ? 'active' : ''}"
+            onclick="switchNotebookFramework('${fw}')">
+      ${nameMap[fw] || fw}
+    </button>`).join('');
+
+  await loadNotebookForFramework(notebookState.framework);
+}
+
+async function switchNotebookFramework(fw) {
+  notebookState.framework = fw;
+  // Update pill active state
+  document.querySelectorAll('.fw-pill').forEach(p => {
+    p.classList.toggle('active', p.textContent.trim() === (state.templates || []).find(t => t.slug === fw)?.name || p.onclick.toString().includes(`'${fw}'`));
+  });
+  // Simpler: just re-render pills by re-calling loadNotebook
+  const usage = await api('/api/frameworks/usage').catch(() => ({ used: [] }));
+  const usedFrameworks = usage.used || [];
+  const nameMap = {};
+  for (const t of (state.templates || [])) nameMap[t.slug] = t.name;
+  document.getElementById('notebookFrameworkPills').innerHTML = usedFrameworks.map(fw2 => `
+    <button class="fw-pill ${fw2 === fw ? 'active' : ''}"
+            onclick="switchNotebookFramework('${fw2}')">
+      ${nameMap[fw2] || fw2}
+    </button>`).join('');
+
+  await loadNotebookForFramework(fw);
+}
+
+async function loadNotebookForFramework(fw) {
   try {
     const [ctrlData, docs] = await Promise.all([
       api(`/api/frameworks/${fw}/controls`),
@@ -1738,8 +1800,10 @@ async function loadNotebook() {
     document.getElementById('notebookNoFramework').style.display = 'none';
     document.getElementById('notebookContent').style.display = '';
   } catch (e) {
+    document.getElementById('notebookNoFramework').style.display = '';
     document.getElementById('notebookNoFramework').innerHTML =
       `<div style="color:var(--red)">Failed to load notebook: ${e.message}</div>`;
+    document.getElementById('notebookContent').style.display = 'none';
   }
 }
 
@@ -1876,9 +1940,7 @@ async function deleteDoc(docId) {
 }
 
 async function refreshNotebook() {
-  const docs = await api(`/api/documents?framework=${notebookState.framework}`);
-  notebookState.documents = docs;
-  renderNotebook();
+  await loadNotebookForFramework(notebookState.framework);
 }
 
 function closeDocDetail() {
