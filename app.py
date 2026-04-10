@@ -107,7 +107,31 @@ app.mount("/static", StaticFiles(directory=str(STATIC_DIR)), name="static")
 @app.on_event("startup")
 def startup():
     init_db()
+    _load_settings_into_env()
     log.info("AuditCaddie OSS %s started — http://localhost:%s", VERSION, os.getenv("PORT", "8080"))
+
+
+def _load_settings_into_env():
+    """On startup, promote DB-saved credentials into os.environ so they survive container restarts."""
+    env_map = {
+        "aws_access_key":    "AWS_ACCESS_KEY_ID",
+        "aws_secret_key":    "AWS_SECRET_ACCESS_KEY",
+        "aws_region":        "AWS_DEFAULT_REGION",
+        "github_token":      "GITHUB_TOKEN",
+        "github_org":        "GITHUB_ORG",
+        "openai_api_key":    "OPENAI_API_KEY",
+        "anthropic_api_key": "ANTHROPIC_API_KEY",
+        "ai_model":          "AI_MODEL",
+    }
+    try:
+        with get_db() as conn:
+            rows = conn.execute("SELECT key, value FROM settings").fetchall()
+        for row in rows:
+            env_key = env_map.get(row["key"])
+            if env_key and row["value"] and not os.getenv(env_key):
+                os.environ[env_key] = row["value"]
+    except Exception as e:
+        log.warning("Could not load settings from DB: %s", e)
 
 # ── Pydantic Models ────────────────────────────────────────────────────────────
 

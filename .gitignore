@@ -1,6 +1,7 @@
 # Environment & secrets
 .env
 *.env.*
+!.env.example
 
 # Data directory (SQLite, reports, cache)
 data/

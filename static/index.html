@@ -625,8 +625,8 @@ input::placeholder { color: var(--subtle); }
 
     <!-- Step 1: AI Keys -->
     <div class="setup-step active" id="step-0">
-      <div class="setup-step-title">AI Provider</div>
-      <div class="setup-step-desc">AuditCaddie uses AI to generate policy documents. Add at least one key to continue.</div>
+      <div class="setup-step-title">AI Provider <span style="font-weight:400;color:var(--muted);font-size:12px">(optional)</span></div>
+      <div class="setup-step-desc">AuditCaddie uses AI to generate policy documents. Add a key now or skip — you can add one later in Settings.</div>
       <div class="form-group">
         <label>OpenAI API Key (GPT-4o)</label>
         <input type="password" id="s_openai" placeholder="sk-..." autocomplete="off">
@@ -635,7 +635,7 @@ input::placeholder { color: var(--subtle); }
       <div class="form-group">
         <label>Anthropic API Key (Claude Sonnet)</label>
         <input type="password" id="s_anthropic" placeholder="sk-ant-..." autocomplete="off">
-        <div class="form-hint">Get your key at <a href="https://console.anthropic.com" target="_blank">console.anthropic.com</a></div>
+        <div class="form-hint">Get your key at <a href="https://console.anthropic.com/settings/keys" target="_blank">console.anthropic.com</a></div>
       </div>
     </div>
 
@@ -908,7 +908,7 @@ input::placeholder { color: var(--subtle); }
             <select id="policyModel">
               <option value="gpt-4o">GPT-4o (OpenAI)</option>
               <option value="gpt-4o-mini">GPT-4o Mini</option>
-              <option value="claude-sonnet-4-5">Claude Sonnet (Anthropic)</option>
+              <option value="claude-sonnet-4-6">Claude Sonnet (Anthropic)</option>
             </select>
           </div>
         </div>
@@ -1015,7 +1015,7 @@ input::placeholder { color: var(--subtle); }
           <select id="cfg_ai_model">
             <option value="gpt-4o">GPT-4o (OpenAI) — Recommended</option>
             <option value="gpt-4o-mini">GPT-4o Mini (faster, cheaper)</option>
-            <option value="claude-sonnet-4-5">Claude Sonnet 4.5 (Anthropic)</option>
+            <option value="claude-sonnet-4-6">Claude Sonnet 4.5 (Anthropic)</option>
           </select>
         </div>
       </div>
@@ -1168,9 +1168,10 @@ async function setupNext() {
   if (state.setupStep === 0) {
     const openai = document.getElementById('s_openai').value.trim();
     const anthropic = document.getElementById('s_anthropic').value.trim();
-    if (!openai && !anthropic) { alert('Please add at least one AI API key to continue.'); return; }
-    await saveSettingsData({ openai_api_key: openai, anthropic_api_key: anthropic,
-      ai_model: openai ? 'gpt-4o' : 'claude-sonnet-4-5' });
+    if (openai || anthropic) {
+      await saveSettingsData({ openai_api_key: openai, anthropic_api_key: anthropic,
+        ai_model: openai ? 'gpt-4o' : 'claude-sonnet-4-6' });
+    }
   } else if (state.setupStep === 1) {
     const key = document.getElementById('s_aws_key').value.trim();
     const secret = document.getElementById('s_aws_secret').value.trim();

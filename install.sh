@@ -42,47 +42,33 @@ echo -e "${GREEN}✓${NC} Install directory: $INSTALL_DIR"
 # ── Download core files ───────────────────────────────────────────────────────
 echo -e "\n${BOLD}Downloading AuditCaddie OSS...${NC}"
 
-curl -sSfL "$REPO/docker-compose.yml" -o docker-compose.yml
-echo -e "  ${GREEN}✓${NC} docker-compose.yml"
+download_file() {
+  local url="$1" dest="$2" label="$3"
+  if curl -sSfL "$url" -o "$dest" 2>/dev/null; then
+    echo -e "  ${GREEN}✓${NC} $label"
+  else
+    echo -e "  ${RED}✗${NC} Failed to download $label"
+    echo -e "    Check your connection or open an issue: https://github.com/Blodgic/AuditCaddie/issues"
+    exit 1
+  fi
+}
+
+download_file "$REPO/docker-compose.yml" docker-compose.yml "docker-compose.yml"
 
 for tmpl in soc2-startup nist-csf-smb iso27001-saas hipaa-healthtech vendor-assessment; do
-  curl -sSfL "$REPO/templates/${tmpl}.yaml" -o "templates/${tmpl}.yaml"
-  echo -e "  ${GREEN}✓${NC} templates/${tmpl}.yaml"
+  download_file "$REPO/templates/${tmpl}.yaml" "templates/${tmpl}.yaml" "templates/${tmpl}.yaml"
 done
 
-# ── Configure .env ────────────────────────────────────────────────────────────
+# ── Create minimal .env (no keys — configure via dashboard) ──────────────────
 if [ ! -f .env ]; then
-  curl -sSfL "$REPO/.env.example" -o .env
-
-  echo ""
-  echo -e "${BOLD}Configuration${NC}"
-  echo -e "${YELLOW}You'll need at least one AI API key. You can also set these later in the UI.${NC}"
-  echo ""
-
-  read -p "  OpenAI API key (sk-...): " OPENAI_KEY
-  read -p "  Anthropic API key (sk-ant-...) [optional]: " ANTHROPIC_KEY
-  read -p "  AWS Access Key ID [optional]: " AWS_KEY
-  read -p "  AWS Secret Access Key [optional]: " AWS_SECRET
-  read -p "  GitHub Token (ghp_...) [optional]: " GH_TOKEN
-  read -p "  GitHub Org name [optional]: " GH_ORG
-  read -p "  Port (default: 8080): " CUSTOM_PORT
-  PORT="${CUSTOM_PORT:-8080}"
-
-  # Write .env
   cat > .env <<EOF
-OPENAI_API_KEY=${OPENAI_KEY}
-ANTHROPIC_API_KEY=${ANTHROPIC_KEY}
-AI_MODEL=$([ -n "$OPENAI_KEY" ] && echo "gpt-4o" || echo "claude-sonnet-4-5")
-AWS_ACCESS_KEY_ID=${AWS_KEY}
-AWS_SECRET_ACCESS_KEY=${AWS_SECRET}
-AWS_DEFAULT_REGION=us-east-1
-GITHUB_TOKEN=${GH_TOKEN}
-GITHUB_ORG=${GH_ORG}
+# AuditCaddie OSS — add your API keys via the dashboard after startup.
+# Settings → AI / AWS / GitHub  (stored securely in the local database)
 PORT=${PORT}
 EOF
-  echo -e "\n${GREEN}✓${NC} .env configured"
+  echo -e "${GREEN}✓${NC} .env created"
 else
-  echo -e "${YELLOW}→${NC} .env already exists, skipping configuration"
+  echo -e "${YELLOW}→${NC} .env already exists, skipping"
 fi
 
 # ── Pull and start ────────────────────────────────────────────────────────────
@@ -109,7 +95,10 @@ done
 
 # ── Done ──────────────────────────────────────────────────────────────────────
 echo ""
-echo -e "${BOLD}${GREEN}✓ AuditCaddie OSS is running!${NC}"
+echo -e "${BOLD}${GREEN}✓ AuditCaddie OSS is installed!${NC}"
+echo ""
+echo -e "  ${BOLD}Next step:${NC} open the dashboard and complete the setup wizard."
+echo -e "  Your API keys are entered there — nothing to configure in the terminal."
 echo ""
 echo -e "  Open:    ${BLUE}http://localhost:${PORT}${NC}"
 echo -e "  Data:    $INSTALL_DIR/data/"
