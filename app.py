@@ -99,6 +99,7 @@ def init_db():
                 mime_type         TEXT,
                 document_type     TEXT DEFAULT 'evidence',
                 framework         TEXT,
+                tags              TEXT DEFAULT '[]',
                 file_content      BLOB,
                 extracted_text    TEXT,
                 status            TEXT DEFAULT 'pending',
@@ -110,6 +111,10 @@ def init_db():
                 error_msg         TEXT
             );
         """)
+        # Migrate existing DBs — add tags column if missing
+        cols = [r[1] for r in conn.execute("PRAGMA table_info(documents)").fetchall()]
+        if "tags" not in cols:
+            conn.execute("ALTER TABLE documents ADD COLUMN tags TEXT DEFAULT '[]'")
 
 # ── FastAPI app ────────────────────────────────────────────────────────────────
 
@@ -614,8 +619,94 @@ def list_controls(slug: str):
             "category": cat,
             "priority": c.get("priority", ""),
             "description": (c.get("description") or "")[:300],
+            "free_templates": c.get("free_templates", []),
         })
     return {"framework": slug, "name": tmpl.get("name", slug), "categories": by_category}
+
+
+# ── Free Policy Templates ──────────────────────────────────────────────────────
+
+POLICIES_DIR = BASE_DIR / "docs" / "policies"
+
+def _parse_policy_frontmatter(content: str) -> dict:
+    """Parse YAML frontmatter from markdown policy files (after any leading HTML comment)."""
+    import re
+    # Strip leading HTML comments (the attribution/license header)
+    stripped = re.sub(r'^<!--[\s\S]*?-->\s*\n', '', content.strip())
+    match = re.match(r'^---\s*\n(.*?)\n---\s*\n', stripped, re.DOTALL)
+    if match:
+        try:
+            return yaml.safe_load(match.group(1)) or {}
+        except Exception:
+            pass
+    return {}
+
+
+@app.get("/api/free-policies/{framework}")
+def list_free_policies(framework: str):
+    """List all free policy templates for a given framework."""
+    policy_dir = POLICIES_DIR / framework
+    if not policy_dir.exists():
+        raise HTTPException(404, f"No free policies found for framework '{framework}'")
+    policies = []
+    for path in sorted(policy_dir.glob("*.md")):
+        content = path.read_text()
+        meta = _parse_policy_frontmatter(content)
+        policies.append({
+            "filename": path.name,
+            "title": meta.get("title", path.stem.replace("-", " ").title()),
+            "controls": meta.get("controls", []),
+            "framework": meta.get("framework", framework),
+            "version": meta.get("version", "1.0"),
+            "review_cycle": meta.get("review_cycle", "Annual"),
+            "attribution": meta.get("attribution", "Free template provided by AuditCaddie OSS | auditcaddie.com"),
+            "download_url": f"/api/free-policies/{framework}/{path.name}",
+        })
+    return {
+        "framework": framework,
+        "count": len(policies),
+        "policies": policies,
+        "attribution": "AuditCaddie OSS | auditcaddie.com | Apache 2.0",
+    }
+
+
+@app.get("/api/free-policies/{framework}/{filename}")
+def get_free_policy(framework: str, filename: str):
+    """Return the content of a free policy template as markdown."""
+    # Sanitize filename to prevent path traversal
+    if "/" in filename or "\\" in filename or ".." in filename:
+        raise HTTPException(400, "Invalid filename")
+    if not filename.endswith(".md"):
+        raise HTTPException(400, "Only .md policy files are served here")
+    path = POLICIES_DIR / framework / filename
+    if not path.exists():
+        raise HTTPException(404, f"Policy '{filename}' not found for framework '{framework}'")
+    content = path.read_text()
+    meta = _parse_policy_frontmatter(content)
+    return {
+        "filename": filename,
+        "title": meta.get("title", filename),
+        "controls": meta.get("controls", []),
+        "content": content,
+        "attribution": "AuditCaddie OSS | auditcaddie.com | Apache 2.0",
+    }
+
+
+@app.get("/api/free-policies/{framework}/{filename}/download")
+def download_free_policy(framework: str, filename: str):
+    """Download a free policy template as a .md file."""
+    if "/" in filename or "\\" in filename or ".." in filename:
+        raise HTTPException(400, "Invalid filename")
+    if not filename.endswith(".md"):
+        raise HTTPException(400, "Only .md policy files can be downloaded")
+    path = POLICIES_DIR / framework / filename
+    if not path.exists():
+        raise HTTPException(404, f"Policy '{filename}' not found")
+    return Response(
+        content=path.read_bytes(),
+        media_type="text/markdown",
+        headers={"Content-Disposition": f'attachment; filename="{filename}"'},
+    )
 
 
 # ── Documents / Evidence ───────────────────────────────────────────────────────
@@ -667,6 +758,7 @@ async def upload_document(
     file: UploadFile = File(...),
     document_type: str = Form("evidence"),
     framework: str = Form(""),
+    tags: str = Form(""),
 ):
     """Upload an evidence or policy document and trigger AI classification."""
     from document_classifier import ALLOWED_EXTENSIONS, MAX_FILE_BYTES
@@ -679,14 +771,18 @@ async def upload_document(
     if len(content) > MAX_FILE_BYTES:
         raise HTTPException(400, "File exceeds 10 MB limit")
 
+    # Parse tags — comma-separated string → JSON array
+    tag_list = [t.strip() for t in tags.split(",") if t.strip()] if tags else []
+    tags_json = json.dumps(tag_list)
+
     doc_id = str(uuid.uuid4())[:12]
     with get_db() as conn:
         conn.execute(
             """INSERT INTO documents
-               (id, original_filename, mime_type, document_type, framework, file_content, status)
-               VALUES (?,?,?,?,?,?,?)""",
-            (doc_id, file.filename, file.content_type or "", document_type, framework, content,
-             "classifying" if framework else "pending"),
+               (id, original_filename, mime_type, document_type, framework, tags, file_content, status)
+               VALUES (?,?,?,?,?,?,?,?)""",
+            (doc_id, file.filename, file.content_type or "", document_type, framework, tags_json,
+             content, "classifying" if framework else "pending"),
         )
 
     if framework:
@@ -700,14 +796,14 @@ def list_documents(framework: str = "", limit: int = 50):
     with get_db() as conn:
         if framework:
             rows = conn.execute(
-                "SELECT id, created_at, original_filename, document_type, framework, "
+                "SELECT id, created_at, original_filename, document_type, framework, tags, "
                 "status, suggestions, confirmed_controls, is_confirmed, tokens_used "
                 "FROM documents WHERE framework=? ORDER BY created_at DESC LIMIT ?",
                 (framework, limit),
             ).fetchall()
         else:
             rows = conn.execute(
-                "SELECT id, created_at, original_filename, document_type, framework, "
+                "SELECT id, created_at, original_filename, document_type, framework, tags, "
                 "status, suggestions, confirmed_controls, is_confirmed, tokens_used "
                 "FROM documents ORDER BY created_at DESC LIMIT ?",
                 (limit,),
@@ -718,6 +814,7 @@ def list_documents(framework: str = "", limit: int = 50):
         d = dict(r)
         d["suggestions"] = json.loads(d["suggestions"]) if d["suggestions"] else []
         d["confirmed_controls"] = json.loads(d["confirmed_controls"]) if d["confirmed_controls"] else []
+        d["tags"] = json.loads(d["tags"]) if d["tags"] else []
         result.append(d)
     return result
 
@@ -726,7 +823,7 @@ def list_documents(framework: str = "", limit: int = 50):
 def get_document(doc_id: str):
     with get_db() as conn:
         row = conn.execute(
-            "SELECT id, created_at, original_filename, mime_type, document_type, framework, "
+            "SELECT id, created_at, original_filename, mime_type, document_type, framework, tags, "
             "status, suggestions, confirmed_controls, is_confirmed, user_overrode, tokens_used, error_msg "
             "FROM documents WHERE id=?", (doc_id,)
         ).fetchone()
@@ -735,6 +832,7 @@ def get_document(doc_id: str):
     d = dict(row)
     d["suggestions"] = json.loads(d["suggestions"]) if d["suggestions"] else []
     d["confirmed_controls"] = json.loads(d["confirmed_controls"]) if d["confirmed_controls"] else []
+    d["tags"] = json.loads(d["tags"]) if d["tags"] else []
     return d
 
 

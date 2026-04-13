@@ -1,0 +1,1493 @@
+# ─────────────────────────────────────────────────────────────────────────────
+#  AuditCaddie OSS — Compliance Template
+#  Template:    SOC 2 — Full Trust Services Criteria
+#  Version:     2.0
+#  Generated:   auditcaddie.com | github.com/Blodgic/AuditCaddie
+#  License:     Apache 2.0 — free to use, share, and modify
+#  Attribution: If you share this template, please keep this header intact.
+#               Every shared template helps grow the open source GRC community.
+# ─────────────────────────────────────────────────────────────────────────────
+
+name: "SOC 2 — Full Trust Services Criteria"
+slug: soc2-full
+version: "2.0"
+author: "AuditCaddie OSS | auditcaddie.com"
+framework: soc2
+framework_version: "2017"
+target_audience: "Organizations seeking SOC 2 Type I or Type II readiness across all Trust Services Criteria"
+estimated_hours_manual: 200
+estimated_hours_with_caddie: 20
+description: >
+  The complete SOC 2 Trust Services Criteria template covering all 80 controls
+  across Security (CC), Availability (A), Confidentiality (C), Privacy (P), and
+  Processing Integrity (PI) categories. Built from the AICPA 2017 Trust Services
+  Criteria. Includes free policy templates for every major control category.
+
+  Generated and maintained by AuditCaddie OSS — the free, open source compliance
+  engine. Learn more: github.com/Blodgic/AuditCaddie
+
+attribution:
+  product: "AuditCaddie OSS"
+  url: "https://github.com/Blodgic/AuditCaddie"
+  commercial: "https://auditcaddie.com"
+  tagline: "Free compliance infrastructure for everyone."
+
+# ── AWS Scan Configuration ────────────────────────────────────────────────────
+aws_checks:
+  - iam_mfa_all_users
+  - iam_password_policy_strength
+  - iam_access_key_rotation_90days
+  - iam_no_root_access_keys
+  - s3_bucket_encryption_at_rest
+  - s3_bucket_public_access_blocked
+  - cloudtrail_enabled_all_regions
+  - cloudwatch_alarms_configured
+  - guardduty_enabled
+  - rds_encryption_enabled
+  - rds_automated_backups_enabled
+  - vpc_flow_logs_enabled
+  - acm_certificates_valid
+  - kms_key_rotation_enabled
+  - security_hub_enabled
+  - config_service_enabled
+
+# ── Controls ──────────────────────────────────────────────────────────────────
+controls:
+
+  # ── CC1 — Control Environment ──────────────────────────────────────────────
+
+  - id: CC1.1
+    name: "COSO Principle 1: Integrity and Ethical Values"
+    category: "CC1 — Control Environment"
+    priority: high
+    description: >
+      The entity demonstrates a commitment to integrity and ethical values.
+      Establishes standards of conduct and enforces them consistently.
+    required_evidence:
+      - type: policy_doc
+        name: "Code of Conduct"
+        ai_generate: true
+      - type: manual_upload
+        label: "Signed acknowledgments from employees"
+    free_templates:
+      - filename: code-of-conduct.md
+        name: "Code of Conduct"
+      - filename: information-security-program.md
+        name: "Information Security Program Overview"
+    ai_hint: >
+      Look for a documented Code of Conduct that employees have signed.
+      Evidence includes signed acknowledgment logs, onboarding checklists, and
+      training completion records. The "tone at the top" should be demonstrable.
+
+  - id: CC1.2
+    name: "COSO Principle 2: Board Independence and Oversight"
+    category: "CC1 — Control Environment"
+    priority: high
+    description: >
+      The board of directors demonstrates independence from management and
+      exercises oversight over the development and performance of internal controls.
+    required_evidence:
+      - type: policy_doc
+        name: "Organizational Governance Policy"
+        ai_generate: true
+      - type: manual_upload
+        label: "Board/advisory board charter or meeting minutes"
+    free_templates:
+      - filename: organizational-structure-policy.md
+        name: "Organizational Structure & Reporting Lines Policy"
+    ai_hint: >
+      For startups, an advisory board charter or documented governance structure
+      satisfies this control. Evidence of executive oversight of security
+      decisions (e.g., board-level security briefings) is ideal.
+
+  - id: CC1.3
+    name: "COSO Principle 3: Structures, Reporting Lines, and Authorities"
+    category: "CC1 — Control Environment"
+    priority: medium
+    description: >
+      Management establishes reporting structures, assigns responsibility, and
+      delegates authority to achieve the entity's objectives, including control
+      objectives.
+    required_evidence:
+      - type: policy_doc
+        name: "Organizational Structure Policy"
+        ai_generate: true
+      - type: manual_upload
+        label: "Org chart showing security/compliance reporting lines"
+    free_templates:
+      - filename: organizational-structure-policy.md
+        name: "Organizational Structure & Reporting Lines Policy"
+    ai_hint: >
+      An org chart and a documented RACI matrix for security roles satisfies
+      this control. For startups, a documented list of who owns each security
+      function is sufficient for Type I.
+
+  - id: CC1.4
+    name: "COSO Principle 4: Attracting and Retaining Competent Individuals"
+    category: "CC1 — Control Environment"
+    priority: medium
+    description: >
+      The entity demonstrates a commitment to attract, develop, and retain
+      competent individuals in alignment with its objectives.
+    required_evidence:
+      - type: policy_doc
+        name: "HR and Competency Policy"
+        ai_generate: true
+      - type: manual_upload
+        label: "Job descriptions with security responsibilities, training records"
+    free_templates:
+      - filename: organizational-structure-policy.md
+        name: "Organizational Structure & Reporting Lines Policy"
+    ai_hint: >
+      Evidence includes job descriptions with security requirements, training
+      records, background check procedures, and security awareness training
+      completion logs.
+
+  - id: CC1.5
+    name: "COSO Principle 5: Accountability for Internal Control"
+    category: "CC1 — Control Environment"
+    priority: medium
+    description: >
+      The entity holds individuals accountable for their internal control
+      responsibilities in the pursuit of objectives.
+    required_evidence:
+      - type: policy_doc
+        name: "Accountability and Performance Management Policy"
+        ai_generate: true
+      - type: manual_upload
+        label: "Performance review records that include security KPIs"
+    free_templates:
+      - filename: organizational-structure-policy.md
+        name: "Organizational Structure & Reporting Lines Policy"
+    ai_hint: >
+      Performance reviews that include security-related responsibilities,
+      documented escalation procedures, and disciplinary processes satisfy
+      this control.
+
+  # ── CC2 — Communication and Information ────────────────────────────────────
+
+  - id: CC2.1
+    name: "COSO Principle 13: Quality Information for Internal Control"
+    category: "CC2 — Communication and Information"
+    priority: medium
+    description: >
+      The entity obtains or generates and uses relevant, quality information to
+      support the functioning of internal controls.
+    required_evidence:
+      - type: policy_doc
+        name: "Information Quality Policy"
+        ai_generate: true
+      - type: manual_upload
+        label: "Security reporting dashboards, metrics, or KPI reports"
+    free_templates:
+      - filename: information-security-program.md
+        name: "Information Security Program Overview"
+    ai_hint: >
+      Security dashboards, regular vulnerability scan reports, and threat
+      intelligence feeds demonstrate quality information management.
+
+  - id: CC2.2
+    name: "COSO Principle 14: Internal Communication of Control Information"
+    category: "CC2 — Communication and Information"
+    priority: medium
+    description: >
+      The entity internally communicates information, including objectives and
+      responsibilities for internal control, necessary to support the functioning
+      of internal controls.
+    required_evidence:
+      - type: policy_doc
+        name: "Internal Security Communication Policy"
+        ai_generate: true
+      - type: manual_upload
+        label: "Security awareness training materials or all-hands communications"
+    free_templates:
+      - filename: information-security-program.md
+        name: "Information Security Program Overview"
+    ai_hint: >
+      Security awareness training records, internal security newsletters,
+      or documented security briefings demonstrate internal communication.
+
+  - id: CC2.3
+    name: "COSO Principle 15: External Communication on Control Matters"
+    category: "CC2 — Communication and Information"
+    priority: medium
+    description: >
+      The entity communicates with external parties regarding matters affecting
+      the functioning of internal controls.
+    required_evidence:
+      - type: policy_doc
+        name: "External Communication Policy"
+        ai_generate: true
+      - type: manual_upload
+        label: "Customer security FAQs, trust center, or security disclosure policy"
+    free_templates:
+      - filename: information-security-program.md
+        name: "Information Security Program Overview"
+      - filename: vendor-risk-management-policy.md
+        name: "Vendor & Third-Party Risk Management Policy"
+    ai_hint: >
+      A public trust center, security FAQ, or documented process for responding
+      to customer security questionnaires satisfies this control.
+
+  # ── CC3 — Risk Assessment ───────────────────────────────────────────────────
+
+  - id: CC3.1
+    name: "COSO Principle 6: Clarity in Objectives for Risk Identification"
+    category: "CC3 — Risk Assessment"
+    priority: high
+    description: >
+      The entity specifies objectives with sufficient clarity to enable the
+      identification and assessment of risks relating to objectives.
+    required_evidence:
+      - type: policy_doc
+        name: "Risk Assessment Policy"
+        ai_generate: true
+      - type: manual_upload
+        label: "Documented organizational objectives and risk appetite statement"
+    free_templates:
+      - filename: risk-assessment-policy.md
+        name: "Risk Assessment Policy"
+    ai_hint: >
+      A documented risk appetite statement and security objectives aligned
+      to business goals. For startups, a one-page risk appetite document
+      and asset inventory with risk ratings suffices.
+
+  - id: CC3.2
+    name: "COSO Principle 7: Risk Identification and Management"
+    category: "CC3 — Risk Assessment"
+    priority: high
+    description: >
+      The entity identifies risks to the achievement of its objectives across
+      the entity and analyzes risks as a basis for determining how risks should
+      be managed.
+    required_evidence:
+      - type: policy_doc
+        name: "Risk Assessment Policy"
+        ai_generate: true
+      - type: manual_upload
+        label: "Risk register with identified risks, likelihood, and impact ratings"
+    free_templates:
+      - filename: risk-assessment-policy.md
+        name: "Risk Assessment Policy"
+    ai_hint: >
+      A risk register is the core evidence artifact. It should include asset
+      identification, threat enumeration, likelihood/impact scoring, and
+      assigned risk owners.
+
+  - id: CC3.3
+    name: "COSO Principle 8: Fraud Risk Assessment"
+    category: "CC3 — Risk Assessment"
+    priority: high
+    description: >
+      The entity considers the potential for fraud in assessing risks to the
+      achievement of objectives.
+    required_evidence:
+      - type: policy_doc
+        name: "Fraud Risk Assessment Policy"
+        ai_generate: true
+      - type: manual_upload
+        label: "Fraud risk assessment or anti-fraud controls documentation"
+    free_templates:
+      - filename: risk-assessment-policy.md
+        name: "Risk Assessment Policy"
+    ai_hint: >
+      A fraud risk assessment should identify fraud schemes relevant to the
+      entity (e.g., financial misstatement, unauthorized access, insider
+      threat) and document controls to mitigate each.
+
+  - id: CC3.4
+    name: "COSO Principle 9: Assessment of Impactful Changes"
+    category: "CC3 — Risk Assessment"
+    priority: medium
+    description: >
+      The entity identifies and assesses changes that could significantly impact
+      the system of internal controls.
+    required_evidence:
+      - type: policy_doc
+        name: "Change Risk Assessment Procedure"
+        ai_generate: true
+      - type: manual_upload
+        label: "Change management log with risk assessments for major changes"
+    free_templates:
+      - filename: change-management-policy.md
+        name: "Change Management Policy"
+    ai_hint: >
+      Change management tickets or a change log that includes a risk assessment
+      field for significant changes demonstrates this control.
+
+  # ── CC4 — Monitoring Activities ────────────────────────────────────────────
+
+  - id: CC4.1
+    name: "COSO Principle 16: Evaluation of Internal Control"
+    category: "CC4 — Monitoring Activities"
+    priority: medium
+    description: >
+      The entity selects, develops, and performs ongoing and/or separate
+      evaluations to ascertain whether the components of internal control are
+      present and functioning.
+    required_evidence:
+      - type: policy_doc
+        name: "Internal Audit Policy"
+        ai_generate: true
+      - type: manual_upload
+        label: "Internal audit reports, vulnerability scan results, or pen test reports"
+    free_templates:
+      - filename: internal-audit-policy.md
+        name: "Internal Audit & Control Evaluation Policy"
+    ai_hint: >
+      Annual vulnerability assessments, security reviews, or internal audits
+      with documented findings demonstrate this control.
+
+  - id: CC4.2
+    name: "COSO Principle 17: Communication of Control Deficiencies"
+    category: "CC4 — Monitoring Activities"
+    priority: medium
+    description: >
+      The entity evaluates and communicates internal control deficiencies in a
+      timely manner to those parties responsible for taking corrective action.
+    required_evidence:
+      - type: policy_doc
+        name: "Control Deficiency Management Policy"
+        ai_generate: true
+      - type: manual_upload
+        label: "Deficiency tracking log or remediation tickets"
+    free_templates:
+      - filename: internal-audit-policy.md
+        name: "Internal Audit & Control Evaluation Policy"
+    ai_hint: >
+      A deficiency log or issue tracker showing identified control gaps and
+      their remediation status demonstrates this control.
+
+  # ── CC5 — Control Activities ───────────────────────────────────────────────
+
+  - id: CC5.1
+    name: "COSO Principle 10: Development of Control Activities"
+    category: "CC5 — Control Activities"
+    priority: medium
+    description: >
+      The entity selects and develops control activities that contribute to the
+      mitigation of risks to the achievement of objectives to acceptable levels.
+    required_evidence:
+      - type: policy_doc
+        name: "Information Security Policy"
+        ai_generate: true
+      - type: manual_upload
+        label: "Control matrix or security policy suite"
+    free_templates:
+      - filename: change-management-policy.md
+        name: "Change Management Policy"
+      - filename: secure-development-policy.md
+        name: "Secure Software Development Policy"
+    ai_hint: >
+      A documented set of security policies and procedures aligned to identified
+      risks demonstrates this control. A policy inventory mapping policies to
+      risk areas is ideal.
+
+  - id: CC5.2
+    name: "COSO Principle 11: Technology Control Activities"
+    category: "CC5 — Control Activities"
+    priority: medium
+    description: >
+      The entity also selects and develops general control activities over
+      technology to support the achievement of objectives.
+    required_evidence:
+      - type: policy_doc
+        name: "Technology Controls Policy"
+        ai_generate: true
+      - type: manual_upload
+        label: "Infrastructure security configuration documentation"
+    free_templates:
+      - filename: secure-development-policy.md
+        name: "Secure Software Development Policy"
+    ai_hint: >
+      Configuration management documentation, hardened system baselines,
+      and automated security controls in CI/CD pipelines demonstrate this.
+
+  - id: CC5.3
+    name: "COSO Principle 12: Deployment of Control Activities"
+    category: "CC5 — Control Activities"
+    priority: medium
+    description: >
+      The entity deploys control activities through policies that establish what
+      is expected and procedures that put policies into action.
+    required_evidence:
+      - type: policy_doc
+        name: "Policy Deployment and Compliance Monitoring Policy"
+        ai_generate: true
+      - type: manual_upload
+        label: "Procedure documents tied to security policies"
+    free_templates:
+      - filename: change-management-policy.md
+        name: "Change Management Policy"
+      - filename: secure-development-policy.md
+        name: "Secure Software Development Policy"
+    ai_hint: >
+      Procedures (not just policies) with defined owners, review cycles, and
+      documented operating cadence demonstrate policy deployment.
+
+  # ── CC6 — Logical and Physical Access Controls ─────────────────────────────
+
+  - id: CC6.1
+    name: "Logical Access Security Implementation"
+    category: "CC6 — Logical & Physical Access"
+    priority: critical
+    description: >
+      The entity implements logical access security software, infrastructure,
+      and architectures over protected information assets to protect them from
+      security events.
+    aws_checks:
+      - iam_mfa_all_users
+      - iam_password_policy_strength
+      - iam_no_root_access_keys
+    required_evidence:
+      - type: aws_scan
+        checks: [iam_mfa_all_users, iam_password_policy_strength, iam_no_root_access_keys]
+        label: "AWS IAM configuration evidence"
+      - type: policy_doc
+        name: "Access Control Policy"
+        ai_generate: true
+    free_templates:
+      - filename: access-control-policy.md
+        name: "Access Control Policy"
+      - filename: data-classification-policy.md
+        name: "Data Classification & Information Handling Policy"
+    ai_hint: >
+      MFA enforced for all IAM users with console access, a NIST-compliant
+      password policy, and no root account access keys. IAM users should be
+      assigned to groups with least-privilege policies.
+    remediation:
+      fail_guidance: >
+        1. Enable MFA: AWS Console → IAM → Users → Security credentials → Assign MFA
+        2. Password policy: IAM → Account settings → min 14 chars, require uppercase, number, symbol
+        3. Delete root keys: IAM → Security credentials (root) → Access keys → Delete
+
+  - id: CC6.2
+    name: "User Registration and Access Control"
+    category: "CC6 — Logical & Physical Access"
+    priority: high
+    description: >
+      Prior to issuing system credentials and granting system access, the entity
+      registers and authorizes new internal and external users.
+    aws_checks:
+      - iam_access_key_rotation_90days
+    required_evidence:
+      - type: aws_scan
+        checks: [iam_access_key_rotation_90days]
+        label: "IAM access key age report"
+      - type: policy_doc
+        name: "User Access Provisioning Procedure"
+        ai_generate: true
+      - type: manual_upload
+        label: "Onboarding/offboarding checklist including IAM steps"
+    free_templates:
+      - filename: access-control-policy.md
+        name: "Access Control Policy"
+    ai_hint: >
+      Access keys older than 90 days indicate a gap. HR offboarding process
+      must include IAM deactivation. Document who approves access requests.
+    remediation:
+      fail_guidance: >
+        1. Rotate keys older than 90 days: IAM → Users → Security credentials → Create new key, deactivate old
+        2. Document onboarding/offboarding checklist with IAM steps
+        3. Consider AWS IAM Identity Center for centralized access
+
+  - id: CC6.3
+    name: "Role-Based Access Management"
+    category: "CC6 — Logical & Physical Access"
+    priority: high
+    description: >
+      The entity authorizes, modifies, or removes access to data, software,
+      functions, and other protected information assets based on roles.
+    aws_checks:
+      - iam_mfa_all_users
+    required_evidence:
+      - type: policy_doc
+        name: "Role-Based Access Control Policy"
+        ai_generate: true
+      - type: aws_scan
+        checks: [iam_mfa_all_users]
+    free_templates:
+      - filename: access-control-policy.md
+        name: "Access Control Policy"
+    ai_hint: >
+      IAM roles with least-privilege policies. Users assigned to groups, not
+      direct policies. No wildcard Action or Resource in attached policies.
+      Quarterly access reviews documented.
+
+  - id: CC6.4
+    name: "Physical Access Restrictions"
+    category: "CC6 — Logical & Physical Access"
+    priority: medium
+    description: >
+      The entity restricts physical access to facilities and protected
+      information assets to authorized personnel.
+    required_evidence:
+      - type: policy_doc
+        name: "Physical Security Policy"
+        ai_generate: true
+      - type: manual_upload
+        label: "AWS/cloud provider physical security documentation or SOC 2 bridging letter"
+    free_templates:
+      - filename: physical-security-policy.md
+        name: "Physical Security Policy"
+    ai_hint: >
+      For cloud-native organizations, AWS SOC 2 reports (available via AWS
+      Artifact) satisfy physical access controls for the infrastructure layer.
+      Office physical access controls should be documented separately.
+
+  - id: CC6.5
+    name: "Decommissioning of Logical and Physical Assets"
+    category: "CC6 — Logical & Physical Access"
+    priority: medium
+    description: >
+      The entity discontinues logical and physical protections over physical
+      assets only after the ability to read or recover data and software from
+      those assets has been diminished and is no longer required.
+    required_evidence:
+      - type: policy_doc
+        name: "Asset Decommissioning Policy"
+        ai_generate: true
+      - type: manual_upload
+        label: "Asset disposal records or device wipe procedures"
+    free_templates:
+      - filename: asset-decommissioning-policy.md
+        name: "Asset Decommissioning & Disposal Policy"
+    ai_hint: >
+      A documented procedure for wiping/destroying devices before disposal,
+      and records of decommissioned assets. S3 bucket deletion policies and
+      RDS snapshot deletion procedures also apply.
+
+  - id: CC6.6
+    name: "External Threat Protection"
+    category: "CC6 — Logical & Physical Access"
+    priority: critical
+    description: >
+      The entity implements controls to prevent or detect and act upon the
+      introduction of unauthorized or malicious software.
+    aws_checks:
+      - guardduty_enabled
+      - vpc_flow_logs_enabled
+    required_evidence:
+      - type: aws_scan
+        checks: [guardduty_enabled, vpc_flow_logs_enabled]
+        label: "GuardDuty and VPC flow log configuration"
+      - type: policy_doc
+        name: "Network Security Policy"
+        ai_generate: true
+    free_templates:
+      - filename: network-security-policy.md
+        name: "Network & Communications Security Policy"
+    ai_hint: >
+      GuardDuty enabled and VPC flow logs active. Security groups should
+      follow least-privilege network access. WAF on public-facing applications.
+    remediation:
+      fail_guidance: >
+        Enable GuardDuty: AWS Console → GuardDuty → Get started → Enable
+        Enable VPC Flow Logs: VPC → Your VPC → Flow logs → Create flow log
+
+  - id: CC6.7
+    name: "Information Transmission Security"
+    category: "CC6 — Logical & Physical Access"
+    priority: critical
+    description: >
+      The entity restricts the transmission, movement, and removal of information
+      to authorized internal and external users and processes.
+    aws_checks:
+      - acm_certificates_valid
+    required_evidence:
+      - type: aws_scan
+        checks: [acm_certificates_valid]
+        label: "ACM certificate status"
+      - type: policy_doc
+        name: "Data Transmission Security Policy"
+        ai_generate: true
+      - type: manual_upload
+        label: "Screenshot confirming HTTPS on all public endpoints"
+    free_templates:
+      - filename: network-security-policy.md
+        name: "Network & Communications Security Policy"
+      - filename: data-classification-policy.md
+        name: "Data Classification & Information Handling Policy"
+    ai_hint: >
+      All ACM certificates valid. HTTPS enforced on all endpoints. Data
+      transfer procedures documented. Removable media policy in place.
+    remediation:
+      fail_guidance: >
+        Renew expiring certificates in ACM Console → Certificates
+        Enable HTTPS redirect on load balancers/CloudFront
+
+  - id: CC6.8
+    name: "Malware Prevention and Detection"
+    category: "CC6 — Logical & Physical Access"
+    priority: high
+    description: >
+      The entity implements controls to prevent or detect and act upon the
+      introduction of unauthorized or malicious software.
+    aws_checks:
+      - guardduty_enabled
+    required_evidence:
+      - type: aws_scan
+        checks: [guardduty_enabled]
+        label: "GuardDuty malware detection status"
+      - type: policy_doc
+        name: "Endpoint Protection Policy"
+        ai_generate: true
+      - type: manual_upload
+        label: "Endpoint protection tool configuration (e.g., CrowdStrike, Malwarebytes)"
+    free_templates:
+      - filename: endpoint-malware-protection-policy.md
+        name: "Endpoint Protection & Anti-Malware Policy"
+    ai_hint: >
+      GuardDuty provides malware detection for EC2/ECS. Endpoint agents on
+      developer machines should also be documented.
+
+  # ── CC7 — System Operations ────────────────────────────────────────────────
+
+  - id: CC7.1
+    name: "Vulnerability Detection and Monitoring"
+    category: "CC7 — System Operations"
+    priority: critical
+    description: >
+      The entity identifies and evaluates vulnerabilities and security threats
+      that could affect achieving objectives.
+    aws_checks:
+      - guardduty_enabled
+    required_evidence:
+      - type: aws_scan
+        checks: [guardduty_enabled]
+        label: "GuardDuty status and findings review"
+      - type: policy_doc
+        name: "Vulnerability Management Policy"
+        ai_generate: true
+      - type: manual_upload
+        label: "Vulnerability scan results or pen test report"
+    free_templates:
+      - filename: vulnerability-management-policy.md
+        name: "Vulnerability & Threat Management Policy"
+    ai_hint: >
+      GuardDuty enabled is minimum. AWS Inspector for EC2/ECR vulnerabilities.
+      Evidence that findings are reviewed regularly (monthly cadence minimum).
+    remediation:
+      fail_guidance: >
+        Enable GuardDuty: AWS Console → GuardDuty → Get started → Enable GuardDuty
+
+  - id: CC7.2
+    name: "System Anomaly Monitoring"
+    category: "CC7 — System Operations"
+    priority: critical
+    description: >
+      The entity monitors system components and the operation of those controls
+      for anomalies that are indicative of malicious acts, natural disasters, and
+      errors affecting the entity's ability to meet its objectives.
+    aws_checks:
+      - cloudtrail_enabled_all_regions
+      - cloudwatch_alarms_configured
+    required_evidence:
+      - type: aws_scan
+        checks: [cloudtrail_enabled_all_regions, cloudwatch_alarms_configured]
+        label: "CloudTrail and CloudWatch evidence"
+      - type: policy_doc
+        name: "Security Monitoring Policy"
+        ai_generate: true
+    free_templates:
+      - filename: vulnerability-management-policy.md
+        name: "Vulnerability & Threat Management Policy"
+    ai_hint: >
+      CloudTrail must be enabled in ALL regions. CloudWatch should have alarms
+      for unauthorized API calls, root account usage, and MFA changes.
+    remediation:
+      fail_guidance: >
+        Enable CloudTrail in all regions: CloudTrail → Create trail → Apply to all regions
+        Create CloudWatch alarm for root usage via metric filter on CloudTrail
+
+  - id: CC7.3
+    name: "Security Event Evaluation"
+    category: "CC7 — System Operations"
+    priority: high
+    description: >
+      The entity evaluates security events to determine whether they could or
+      have resulted in a failure of the entity to meet its objectives.
+    aws_checks:
+      - cloudtrail_enabled_all_regions
+    required_evidence:
+      - type: aws_scan
+        checks: [cloudtrail_enabled_all_regions]
+        label: "CloudTrail event log evidence"
+      - type: policy_doc
+        name: "Security Event Management Policy"
+        ai_generate: true
+      - type: manual_upload
+        label: "Security event triage procedure or runbook"
+    free_templates:
+      - filename: incident-response-policy.md
+        name: "Incident Response Policy"
+    ai_hint: >
+      An incident classification matrix and a documented triage procedure
+      demonstrate this control. Severity levels (P1–P4) with response SLAs
+      are a strong signal.
+
+  - id: CC7.4
+    name: "Incident Response Program"
+    category: "CC7 — System Operations"
+    priority: critical
+    description: >
+      The entity responds to identified security incidents by executing a
+      defined incident response program to understand, contain, remediate, and
+      communicate security incidents.
+    aws_checks:
+      - guardduty_enabled
+    required_evidence:
+      - type: aws_scan
+        checks: [guardduty_enabled]
+        label: "GuardDuty findings response capability"
+      - type: policy_doc
+        name: "Incident Response Policy"
+        ai_generate: true
+      - type: manual_upload
+        label: "Incident response runbook or tabletop exercise record"
+    free_templates:
+      - filename: incident-response-policy.md
+        name: "Incident Response Policy"
+    ai_hint: >
+      A documented incident response plan with defined roles, communication
+      procedures, and evidence of at least one tabletop exercise satisfies
+      this control for Type I.
+
+  - id: CC7.5
+    name: "Security Incident Recovery"
+    category: "CC7 — System Operations"
+    priority: critical
+    description: >
+      The entity identifies, develops, and implements activities to recover from
+      identified security incidents.
+    required_evidence:
+      - type: policy_doc
+        name: "Security Incident Recovery Policy"
+        ai_generate: true
+      - type: manual_upload
+        label: "Post-incident review template or documented recovery procedures"
+    free_templates:
+      - filename: incident-response-policy.md
+        name: "Incident Response Policy"
+      - filename: business-continuity-dr-policy.md
+        name: "Business Continuity & Disaster Recovery Policy"
+    ai_hint: >
+      Post-incident review process, lessons-learned documentation, and
+      recovery time objectives (RTOs) defined for critical systems.
+
+  # ── CC8 — Change Management ────────────────────────────────────────────────
+
+  - id: CC8.1
+    name: "Change Management Process"
+    category: "CC8 — Change Management"
+    priority: high
+    description: >
+      The entity authorizes, designs, develops or acquires, configures,
+      documents, tests, approves, and implements changes to infrastructure,
+      data, software, and procedures.
+    required_evidence:
+      - type: policy_doc
+        name: "Change Management Policy"
+        ai_generate: true
+      - type: manual_upload
+        label: "GitHub branch protection rules or change management tickets"
+    free_templates:
+      - filename: change-management-policy.md
+        name: "Change Management Policy"
+      - filename: secure-development-policy.md
+        name: "Secure Software Development Policy"
+    ai_hint: >
+      PR review process requiring at least one reviewer before merge.
+      Branch protection rules on main/production branches. Change log
+      with approvals for infrastructure changes.
+
+  # ── CC9 — Risk Mitigation ──────────────────────────────────────────────────
+
+  - id: CC9.1
+    name: "Business Disruption Risk Mitigation"
+    category: "CC9 — Risk Mitigation"
+    priority: high
+    description: >
+      The entity identifies, selects, and develops risk mitigation activities
+      for risks arising from potential business disruptions.
+    required_evidence:
+      - type: policy_doc
+        name: "Business Continuity Policy"
+        ai_generate: true
+      - type: manual_upload
+        label: "BCP/DR plan document and test results"
+    free_templates:
+      - filename: business-continuity-dr-policy.md
+        name: "Business Continuity & Disaster Recovery Policy"
+    ai_hint: >
+      Documented RTO/RPO targets, backup configuration, and DR runbook.
+      AWS multi-region architecture or cross-region replication evidence.
+
+  - id: CC9.2
+    name: "Vendor and Partner Risk Management"
+    category: "CC9 — Risk Mitigation"
+    priority: high
+    description: >
+      The entity assesses and manages risks associated with vendors and business
+      partners.
+    required_evidence:
+      - type: policy_doc
+        name: "Vendor Risk Management Policy"
+        ai_generate: true
+      - type: manual_upload
+        label: "Vendor inventory with risk tiers and security questionnaire results"
+    free_templates:
+      - filename: vendor-risk-management-policy.md
+        name: "Vendor & Third-Party Risk Management Policy"
+    ai_hint: >
+      A vendor inventory with assigned risk tiers, evidence of security reviews
+      (SOC 2 reports, security questionnaires) for critical vendors, and
+      contractual security requirements (DPAs, security addenda).
+
+  # ── A1 — Availability ──────────────────────────────────────────────────────
+
+  - id: A1.1
+    name: "Capacity Management"
+    category: "A1 — Availability"
+    priority: high
+    description: >
+      Current processing capacity and usage are maintained, monitored, and
+      evaluated to manage capacity and meet availability commitments and
+      system requirements.
+    aws_checks:
+      - rds_automated_backups_enabled
+    required_evidence:
+      - type: aws_scan
+        checks: [rds_automated_backups_enabled]
+        label: "RDS backup configuration"
+      - type: policy_doc
+        name: "Capacity Management Policy"
+        ai_generate: true
+      - type: manual_upload
+        label: "Uptime monitoring dashboard or SLA documentation"
+    free_templates:
+      - filename: business-continuity-dr-policy.md
+        name: "Business Continuity & Disaster Recovery Policy"
+    ai_hint: >
+      Auto-scaling configurations, CloudWatch capacity alarms, RDS storage
+      auto-scaling, and uptime monitoring (e.g., UptimeRobot) demonstrate
+      capacity management.
+
+  - id: A1.2
+    name: "Environmental and Recovery Infrastructure"
+    category: "A1 — Availability"
+    priority: high
+    description: >
+      Environmental protections, software, data backup processes, and recovery
+      infrastructure are authorized, designed, developed, implemented, operated,
+      approved, maintained, and monitored.
+    aws_checks:
+      - rds_automated_backups_enabled
+    required_evidence:
+      - type: aws_scan
+        checks: [rds_automated_backups_enabled]
+        label: "RDS automated backup configuration"
+      - type: policy_doc
+        name: "Backup and Recovery Policy"
+        ai_generate: true
+      - type: manual_upload
+        label: "AWS Backup configuration or backup verification records"
+    free_templates:
+      - filename: business-continuity-dr-policy.md
+        name: "Business Continuity & Disaster Recovery Policy"
+    ai_hint: >
+      RDS automated backups with 7+ day retention. AWS Backup policies for
+      EC2/EBS. S3 versioning on critical data buckets. Recovery procedures
+      tested and documented.
+
+  - id: A1.3
+    name: "Recovery Plan Testing"
+    category: "A1 — Availability"
+    priority: medium
+    description: >
+      Recovery plan procedures supporting system recovery are tested to help
+      ensure that systems recovery will meet the entity's objectives.
+    required_evidence:
+      - type: policy_doc
+        name: "DR Testing Policy"
+        ai_generate: true
+      - type: manual_upload
+        label: "DR test results or tabletop exercise record"
+    free_templates:
+      - filename: business-continuity-dr-policy.md
+        name: "Business Continuity & Disaster Recovery Policy"
+    ai_hint: >
+      At least one documented DR test per year, with results showing systems
+      recovered within defined RTOs. Tabletop exercises are acceptable for
+      a Type I assessment.
+
+  # ── C1 — Confidentiality ───────────────────────────────────────────────────
+
+  - id: C1.1
+    name: "Confidential Information Identification"
+    category: "C1 — Confidentiality"
+    priority: critical
+    description: >
+      Confidential information is protected during the system design,
+      development, testing, and change management processes.
+    aws_checks:
+      - s3_bucket_encryption_at_rest
+      - rds_encryption_enabled
+      - kms_key_rotation_enabled
+    required_evidence:
+      - type: aws_scan
+        checks: [s3_bucket_encryption_at_rest, rds_encryption_enabled, kms_key_rotation_enabled]
+        label: "Encryption at rest evidence"
+      - type: policy_doc
+        name: "Data Classification Policy"
+        ai_generate: true
+    free_templates:
+      - filename: data-classification-policy.md
+        name: "Data Classification & Information Handling Policy"
+    ai_hint: >
+      All S3 buckets with default encryption (SSE-S3 or SSE-KMS). All RDS
+      instances with storage encryption enabled. KMS key rotation enabled.
+      A data classification policy defining what is "confidential."
+    remediation:
+      fail_guidance: >
+        S3: Select bucket → Properties → Default encryption → Enable (SSE-S3)
+        RDS: Encryption only at creation — create encrypted snapshot and restore
+        KMS: Enable key rotation in KMS console
+
+  - id: C1.2
+    name: "Confidential Information Disposal"
+    category: "C1 — Confidentiality"
+    priority: high
+    description: >
+      Confidential information is protected from erasure or destruction at the
+      end of the specified retention period or when it is no longer required.
+    aws_checks:
+      - s3_bucket_encryption_at_rest
+    required_evidence:
+      - type: policy_doc
+        name: "Data Retention and Disposal Policy"
+        ai_generate: true
+      - type: manual_upload
+        label: "Data retention schedule and secure deletion procedures"
+    free_templates:
+      - filename: data-retention-disposal-policy.md
+        name: "Data Retention & Secure Disposal Policy"
+      - filename: asset-decommissioning-policy.md
+        name: "Asset Decommissioning & Disposal Policy"
+    ai_hint: >
+      S3 lifecycle policies for data expiration. RDS snapshot retention limits.
+      Documented procedures for secure deletion of customer data upon request.
+
+  # ── P1 — Privacy Notice ────────────────────────────────────────────────────
+
+  - id: P1.1
+    name: "Privacy Notice to Data Subjects"
+    category: "P1 — Privacy Notice"
+    priority: medium
+    description: >
+      The entity provides notice to data subjects about its privacy practices,
+      including the types of personal information collected, how it is used, and
+      how individuals may exercise their rights.
+    required_evidence:
+      - type: policy_doc
+        name: "Privacy Policy"
+        ai_generate: true
+      - type: manual_upload
+        label: "Public privacy policy URL and last-reviewed date"
+    free_templates:
+      - filename: privacy-policy.md
+        name: "Privacy Policy & Data Subject Rights"
+    ai_hint: >
+      A publicly accessible privacy policy that covers data collection, use,
+      sharing, and individual rights (access, deletion, correction). Should
+      be reviewed and updated at least annually.
+
+  - id: P1.2
+    name: "Privacy Commitments Communication"
+    category: "P1 — Privacy Notice"
+    priority: medium
+    description: >
+      The entity communicates privacy commitments to data subjects and other
+      parties as required.
+    required_evidence:
+      - type: policy_doc
+        name: "Privacy Communications Policy"
+        ai_generate: true
+      - type: manual_upload
+        label: "Customer-facing privacy communications or consent flows"
+    free_templates:
+      - filename: privacy-policy.md
+        name: "Privacy Policy & Data Subject Rights"
+    ai_hint: >
+      In-product privacy notice at point of data collection, email communications
+      about material privacy changes, and DPA/BAA agreements with customers.
+
+  - id: P2.1
+    name: "Privacy Choices and Consent"
+    category: "P2 — Privacy Choice"
+    priority: medium
+    description: >
+      The entity communicates choices available regarding the collection, use,
+      retention, disclosure, and disposal of personal information to the data
+      subjects.
+    required_evidence:
+      - type: policy_doc
+        name: "Consent Management Policy"
+        ai_generate: true
+      - type: manual_upload
+        label: "Opt-out mechanisms and consent management documentation"
+    free_templates:
+      - filename: privacy-policy.md
+        name: "Privacy Policy & Data Subject Rights"
+    ai_hint: >
+      Cookie consent banners, email unsubscribe mechanisms, and documented
+      processes for honoring opt-out requests.
+
+  - id: P3.1
+    name: "Personal Information Collection"
+    category: "P3 — Privacy Collection"
+    priority: medium
+    description: >
+      Personal information is collected consistent with the entity's objectives
+      related to privacy.
+    required_evidence:
+      - type: policy_doc
+        name: "Data Collection Policy"
+        ai_generate: true
+      - type: manual_upload
+        label: "Data inventory or records of processing activities"
+    free_templates:
+      - filename: data-retention-disposal-policy.md
+        name: "Data Retention & Secure Disposal Policy"
+    ai_hint: >
+      A data inventory (Record of Processing Activities per GDPR Article 30)
+      documenting what personal data is collected, its purpose, legal basis,
+      and retention period.
+
+  - id: P3.2
+    name: "Consent Communication and Collection"
+    category: "P3 — Privacy Collection"
+    priority: medium
+    description: >
+      For personal information collected, explicit consent is obtained where
+      required.
+    required_evidence:
+      - type: policy_doc
+        name: "Consent Policy"
+        ai_generate: true
+      - type: manual_upload
+        label: "Consent records or consent management platform logs"
+    free_templates:
+      - filename: privacy-policy.md
+        name: "Privacy Policy & Data Subject Rights"
+    ai_hint: >
+      Documented consent flows, consent management platform (CMP) configuration,
+      and records of consent for marketing communications.
+
+  - id: P4.1
+    name: "Limited Use of Personal Information"
+    category: "P4 — Privacy Use, Retention, and Disposal"
+    priority: medium
+    description: >
+      Personal information is used, retained, and disposed of only to meet
+      the entity's objectives related to privacy.
+    required_evidence:
+      - type: policy_doc
+        name: "Data Use Limitation Policy"
+        ai_generate: true
+      - type: manual_upload
+        label: "Data processing agreements and internal data use procedures"
+    free_templates:
+      - filename: data-retention-disposal-policy.md
+        name: "Data Retention & Secure Disposal Policy"
+    ai_hint: >
+      Documented data use limitation procedures and DPAs with sub-processors
+      that restrict secondary use of customer data.
+
+  - id: P4.2
+    name: "Personal Information Retention"
+    category: "P4 — Privacy Use, Retention, and Disposal"
+    priority: medium
+    description: >
+      Personal information is retained for no longer than necessary to fulfill
+      the stated purposes or as required by laws or regulations.
+    required_evidence:
+      - type: policy_doc
+        name: "Data Retention Policy"
+        ai_generate: true
+      - type: manual_upload
+        label: "Data retention schedule with retention periods by data category"
+    free_templates:
+      - filename: data-retention-disposal-policy.md
+        name: "Data Retention & Secure Disposal Policy"
+    ai_hint: >
+      A data retention schedule specifying retention periods for each data
+      category, automated deletion mechanisms (S3 lifecycle, database purge
+      jobs), and customer data deletion procedures.
+
+  - id: P4.3
+    name: "Secure Disposal of Personal Information"
+    category: "P4 — Privacy Use, Retention, and Disposal"
+    priority: medium
+    description: >
+      Personal information no longer retained is anonymized, disposed of, or
+      otherwise discarded in a manner that prevents loss, theft, misuse, or
+      unauthorized access.
+    required_evidence:
+      - type: policy_doc
+        name: "Secure Data Disposal Policy"
+        ai_generate: true
+      - type: manual_upload
+        label: "Data deletion verification records or automated purge job logs"
+    free_templates:
+      - filename: data-retention-disposal-policy.md
+        name: "Data Retention & Secure Disposal Policy"
+      - filename: asset-decommissioning-policy.md
+        name: "Asset Decommissioning & Disposal Policy"
+    ai_hint: >
+      Documented procedures for cryptographic erasure or secure deletion of
+      customer data. Device wipe procedures for end-of-life hardware.
+
+  - id: P5.1
+    name: "Data Subject Access to Personal Information"
+    category: "P5 — Privacy Access"
+    priority: medium
+    description: >
+      The entity provides data subjects with access to their personal information
+      for review and update based on a documented access request process.
+    required_evidence:
+      - type: policy_doc
+        name: "Data Subject Rights Policy"
+        ai_generate: true
+      - type: manual_upload
+        label: "Data subject access request (DSAR) process and response log"
+    free_templates:
+      - filename: privacy-policy.md
+        name: "Privacy Policy & Data Subject Rights"
+    ai_hint: >
+      A documented DSAR process with defined response SLAs (typically 30 days
+      under GDPR/CCPA). Evidence of at least one request handled demonstrates
+      the process is operational.
+
+  - id: P5.2
+    name: "Personal Information Correction and Amendment"
+    category: "P5 — Privacy Access"
+    priority: low
+    description: >
+      The entity allows data subjects to update or correct personal information
+      in a timely manner.
+    required_evidence:
+      - type: policy_doc
+        name: "Data Correction Policy"
+        ai_generate: true
+      - type: manual_upload
+        label: "In-product data correction mechanisms or support procedures"
+    free_templates:
+      - filename: privacy-policy.md
+        name: "Privacy Policy & Data Subject Rights"
+    ai_hint: >
+      In-product profile editing capabilities or a documented support process
+      for data correction requests with response SLA.
+
+  - id: P6.1
+    name: "Personal Information Disclosure"
+    category: "P6 — Privacy Disclosure"
+    priority: medium
+    description: >
+      The entity discloses personal information to third parties with the
+      knowledge and consent of data subjects or as required by law.
+    required_evidence:
+      - type: policy_doc
+        name: "Third-Party Data Disclosure Policy"
+        ai_generate: true
+      - type: manual_upload
+        label: "Sub-processor list and DPAs with third-party vendors"
+    free_templates:
+      - filename: vendor-risk-management-policy.md
+        name: "Vendor & Third-Party Risk Management Policy"
+    ai_hint: >
+      A published sub-processor list, DPAs with all data processors, and
+      procedures for authorizing new third-party data sharing.
+
+  - id: P6.2
+    name: "Record of Authorized Disclosures"
+    category: "P6 — Privacy Disclosure"
+    priority: low
+    description: >
+      The entity creates and retains a complete, accurate, and timely record of
+      authorized disclosures of personal information.
+    required_evidence:
+      - type: policy_doc
+        name: "Data Disclosure Logging Policy"
+        ai_generate: true
+      - type: manual_upload
+        label: "Data sharing log or audit trail of third-party data transfers"
+    free_templates:
+      - filename: vendor-risk-management-policy.md
+        name: "Vendor & Third-Party Risk Management Policy"
+    ai_hint: >
+      A log of authorized data transfers to third parties, automated audit
+      trails of data access and export events.
+
+  - id: P6.3
+    name: "Record of Unauthorized Disclosures"
+    category: "P6 — Privacy Disclosure"
+    priority: low
+    description: >
+      The entity creates and retains a complete, accurate, and timely record of
+      unauthorized disclosures of personal information.
+    required_evidence:
+      - type: policy_doc
+        name: "Breach Notification Policy"
+        ai_generate: true
+      - type: manual_upload
+        label: "Incident log including privacy incidents"
+    free_templates:
+      - filename: incident-response-policy.md
+        name: "Incident Response Policy"
+    ai_hint: >
+      Incident tracking system that captures privacy incidents separately.
+      Evidence that breach classification includes privacy impact assessment.
+
+  - id: P6.4
+    name: "Privacy Commitments from Vendors and Third Parties"
+    category: "P6 — Privacy Disclosure"
+    priority: medium
+    description: >
+      The entity obtains privacy commitments from vendors and other third parties
+      who have access to personal information.
+    required_evidence:
+      - type: policy_doc
+        name: "Vendor Privacy Requirements Policy"
+        ai_generate: true
+      - type: manual_upload
+        label: "Executed DPAs and vendor security addenda"
+    free_templates:
+      - filename: vendor-risk-management-policy.md
+        name: "Vendor & Third-Party Risk Management Policy"
+    ai_hint: >
+      DPAs executed with all sub-processors. Vendor contracts containing
+      security and privacy requirements. Sub-processor list maintained and
+      communicated to customers.
+
+  - id: P6.5
+    name: "Third-Party Breach Notification Commitment"
+    category: "P6 — Privacy Disclosure"
+    priority: medium
+    description: >
+      The entity obtains commitments from vendors and third parties to notify
+      the entity in the event of privacy breaches.
+    required_evidence:
+      - type: policy_doc
+        name: "Vendor Breach Notification Requirements"
+        ai_generate: true
+      - type: manual_upload
+        label: "Vendor contracts with breach notification SLA clauses"
+    free_templates:
+      - filename: vendor-risk-management-policy.md
+        name: "Vendor & Third-Party Risk Management Policy"
+    ai_hint: >
+      Vendor contracts should require breach notification within 72 hours
+      (or as required by applicable regulations). DPAs should specify this.
+
+  - id: P6.6
+    name: "Breach and Incident Notification"
+    category: "P6 — Privacy Disclosure"
+    priority: high
+    description: >
+      The entity provides notification of breaches and incidents to affected
+      data subjects, regulators, and others as required by law, regulation,
+      or agreement.
+    required_evidence:
+      - type: policy_doc
+        name: "Breach Notification Policy"
+        ai_generate: true
+      - type: manual_upload
+        label: "Documented breach notification procedure with regulatory timelines"
+    free_templates:
+      - filename: incident-response-policy.md
+        name: "Incident Response Policy"
+    ai_hint: >
+      Breach notification procedure with regulatory timelines (GDPR: 72 hours
+      to supervisory authority; CCPA: without unreasonable delay). Role
+      responsible for breach assessment and notification should be defined.
+
+  - id: P6.7
+    name: "Personal Information Accounting"
+    category: "P6 — Privacy Disclosure"
+    priority: low
+    description: >
+      The entity provides an accounting of personal information held to data
+      subjects upon request.
+    required_evidence:
+      - type: policy_doc
+        name: "Data Inventory Policy"
+        ai_generate: true
+      - type: manual_upload
+        label: "Records of processing activities (ROPA)"
+    free_templates:
+      - filename: data-retention-disposal-policy.md
+        name: "Data Retention & Secure Disposal Policy"
+    ai_hint: >
+      A maintained Record of Processing Activities (ROPA) that can be provided
+      to regulators or data subjects upon request.
+
+  - id: P7.1
+    name: "Accurate and Complete Personal Information"
+    category: "P7 — Privacy Quality"
+    priority: low
+    description: >
+      The entity collects and maintains personal information that is accurate,
+      up to date, complete, and relevant for the purposes identified in the notice.
+    required_evidence:
+      - type: policy_doc
+        name: "Data Quality Policy"
+        ai_generate: true
+      - type: manual_upload
+        label: "Data validation procedures or data quality controls documentation"
+    free_templates:
+      - filename: privacy-policy.md
+        name: "Privacy Policy & Data Subject Rights"
+    ai_hint: >
+      Data validation at collection points, user profile update mechanisms,
+      and periodic data quality reviews demonstrate this control.
+
+  - id: P8.1
+    name: "Privacy Inquiry and Dispute Resolution"
+    category: "P8 — Privacy Monitoring & Enforcement"
+    priority: low
+    description: >
+      The entity implements a process for receiving, addressing, and resolving
+      complaints about the entity's privacy practices.
+    required_evidence:
+      - type: policy_doc
+        name: "Privacy Complaint Handling Policy"
+        ai_generate: true
+      - type: manual_upload
+        label: "Privacy contact email, complaint intake process, and resolution log"
+    free_templates:
+      - filename: privacy-policy.md
+        name: "Privacy Policy & Data Subject Rights"
+    ai_hint: >
+      A documented privacy contact (privacy@company.com), defined SLA for
+      responding to privacy inquiries, and a log of privacy complaints and
+      resolutions.
+
+  # ── PI1 — Processing Integrity ─────────────────────────────────────────────
+
+  - id: PI1.1
+    name: "Quality Information for Processing Objectives"
+    category: "PI1 — Processing Integrity"
+    priority: medium
+    description: >
+      The entity obtains or generates and uses relevant, quality information
+      to support the use of the other components of internal control.
+    required_evidence:
+      - type: policy_doc
+        name: "Data Processing Quality Policy"
+        ai_generate: true
+      - type: manual_upload
+        label: "Input validation documentation or data quality monitoring reports"
+    free_templates:
+      - filename: secure-development-policy.md
+        name: "Secure Software Development Policy"
+    ai_hint: >
+      Input validation controls, data quality monitoring dashboards, and
+      exception handling procedures demonstrate processing integrity.
+
+  - id: PI1.2
+    name: "Input Controls Policies and Procedures"
+    category: "PI1 — Processing Integrity"
+    priority: medium
+    description: >
+      The entity implements policies and procedures over system inputs,
+      including authorization and error-handling procedures.
+    required_evidence:
+      - type: policy_doc
+        name: "Input Controls Policy"
+        ai_generate: true
+      - type: manual_upload
+        label: "Input validation design documentation or code review records"
+    free_templates:
+      - filename: secure-development-policy.md
+        name: "Secure Software Development Policy"
+    ai_hint: >
+      Input sanitization and validation in application code. Error handling
+      that prevents information leakage. Documented input control requirements
+      in development standards.
+
+  - id: PI1.3
+    name: "Processing Controls Policies and Procedures"
+    category: "PI1 — Processing Integrity"
+    priority: medium
+    description: >
+      The entity implements policies and procedures over system processing to
+      result in products, services, and reporting meeting the entity's objectives.
+    required_evidence:
+      - type: policy_doc
+        name: "Processing Controls Policy"
+        ai_generate: true
+      - type: manual_upload
+        label: "Transaction processing controls or reconciliation procedures"
+    free_templates:
+      - filename: secure-development-policy.md
+        name: "Secure Software Development Policy"
+    ai_hint: >
+      Automated reconciliation jobs, data pipeline monitoring, and audit
+      logs of processing activities.
+
+  - id: PI1.4
+    name: "Output Delivery Controls"
+    category: "PI1 — Processing Integrity"
+    priority: medium
+    description: >
+      The entity implements policies and procedures over system output including
+      identification and correction of processing errors.
+    required_evidence:
+      - type: policy_doc
+        name: "Output Controls Policy"
+        ai_generate: true
+      - type: manual_upload
+        label: "Output validation procedures or report generation controls"
+    free_templates:
+      - filename: secure-development-policy.md
+        name: "Secure Software Development Policy"
+    ai_hint: >
+      Output validation, error detection and correction in reporting pipelines,
+      and documented procedures for handling output exceptions.
+
+  - id: PI1.5
+    name: "Storage Policies for Inputs, Processing, and Outputs"
+    category: "PI1 — Processing Integrity"
+    priority: low
+    description: >
+      The entity implements policies and procedures to store inputs, items in
+      processing, and outputs completely, accurately, and timely.
+    required_evidence:
+      - type: policy_doc
+        name: "Data Storage Policy"
+        ai_generate: true
+      - type: manual_upload
+        label: "Storage architecture documentation and retention procedures"
+    free_templates:
+      - filename: data-retention-disposal-policy.md
+        name: "Data Retention & Secure Disposal Policy"
+    ai_hint: >
+      Documented storage architecture, data retention policies applied to
+      all storage tiers, and backup verification procedures.
+
+# ── Report Configuration ──────────────────────────────────────────────────────
+report:
+  title: "SOC 2 Trust Services Criteria — Full Assessment"
+  subtitle: "Powered by AuditCaddie OSS"
+  footer: "Generated by AuditCaddie OSS | auditcaddie.com | github.com/Blodgic/AuditCaddie"
+  include_remediation: true
+  include_evidence_citations: true
+  include_auditcaddie_attribution: true
+  sections:
+    - executive_summary
+    - readiness_score
+    - control_results
+    - evidence_summary
+    - remediation_roadmap
+    - about_auditcaddie

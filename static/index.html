@@ -496,6 +496,77 @@ input::placeholder { color: var(--subtle); }
 .welcome-card-title { font-weight: 700; margin-bottom: 4px; color: var(--navy); font-size: 13px; }
 .welcome-card-desc { color: var(--muted); font-size: 12px; line-height: 1.5; }
 
+/* ── Free Policy Templates ───────────────────────────────────────────────── */
+.free-templates-section {
+  margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--border);
+}
+.free-templates-header {
+  display: flex; align-items: center; gap: 8px; margin-bottom: 12px;
+}
+.free-templates-title {
+  font-weight: 700; font-size: 13px; color: var(--navy); flex: 1;
+}
+.free-templates-badge {
+  font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 10px;
+  background: linear-gradient(135deg, #0ea5e9, #2563eb); color: #fff;
+  letter-spacing: .04em; text-transform: uppercase;
+}
+.free-template-card {
+  border: 1px solid #bfdbfe; border-radius: 8px; padding: 10px 12px;
+  margin-bottom: 8px; background: #f0f9ff; display: flex;
+  align-items: center; gap: 10px;
+}
+.free-template-card:hover { border-color: #3b82f6; background: #dbeafe; }
+.free-template-info { flex: 1; min-width: 0; }
+.free-template-name { font-weight: 600; color: #1e3a5f; font-size: 13px; }
+.free-template-meta { font-size: 11px; color: #64748b; margin-top: 2px; }
+.free-template-controls { display: flex; gap: 4px; flex-wrap: wrap; margin-top: 4px; }
+.free-template-control-tag {
+  font-size: 10px; font-weight: 700; padding: 1px 6px; border-radius: 8px;
+  background: #dbeafe; color: #1d4ed8;
+}
+.free-template-actions { display: flex; gap: 6px; flex-shrink: 0; }
+.btn-download {
+  font-size: 11px; padding: 4px 10px; border-radius: 6px; font-weight: 600;
+  background: #2563eb; color: #fff; border: none; cursor: pointer; text-decoration: none;
+  display: inline-flex; align-items: center; gap: 4px;
+}
+.btn-download:hover { background: #1d4ed8; }
+.btn-preview {
+  font-size: 11px; padding: 4px 10px; border-radius: 6px; font-weight: 600;
+  background: #fff; color: #2563eb; border: 1px solid #bfdbfe; cursor: pointer;
+}
+.btn-preview:hover { background: #eff6ff; }
+.auditcaddie-attribution {
+  font-size: 11px; color: #64748b; text-align: center; margin-top: 12px;
+  padding: 8px; background: #f8fafc; border-radius: 6px; border: 1px solid var(--border);
+}
+.auditcaddie-attribution a { color: #2563eb; text-decoration: none; font-weight: 600; }
+/* ── Policy Preview Modal ────────────────────────────────────────────────── */
+#policyPreviewModal {
+  position: fixed; inset: 0; background: rgba(0,0,0,.5); z-index: 3000;
+  display: flex; align-items: flex-start; justify-content: center; padding: 40px 20px;
+  overflow-y: auto;
+}
+#policyPreviewContent {
+  background: #fff; border-radius: 12px; width: 100%; max-width: 760px;
+  padding: 32px; position: relative;
+}
+#policyPreviewContent .close-btn {
+  position: absolute; top: 16px; right: 16px; background: none; border: none;
+  font-size: 22px; cursor: pointer; color: var(--muted);
+}
+#policyPreviewContent .policy-markdown {
+  font-size: 14px; line-height: 1.7; color: var(--navy);
+}
+#policyPreviewContent .policy-markdown h1 { font-size: 20px; margin-bottom: 12px; }
+#policyPreviewContent .policy-markdown h2 { font-size: 16px; margin: 20px 0 8px; color: #1e3a5f; }
+#policyPreviewContent .policy-markdown h3 { font-size: 14px; margin: 14px 0 6px; }
+#policyPreviewContent .policy-markdown table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 13px; }
+#policyPreviewContent .policy-markdown th { background: #f1f5f9; padding: 8px; text-align: left; border: 1px solid #e2e8f0; }
+#policyPreviewContent .policy-markdown td { padding: 8px; border: 1px solid #e2e8f0; }
+#policyPreviewContent .policy-markdown code { background: #f1f5f9; padding: 1px 5px; border-radius: 4px; font-size: 12px; }
+#policyPreviewContent .policy-markdown blockquote { border-left: 3px solid #3b82f6; margin: 0; padding: 8px 12px; background: #eff6ff; color: #1e3a5f; border-radius: 0 6px 6px 0; }
 /* ── Compliance Notebook ────────────────────────────────────────────────── */
 .fw-pill {
   padding: 6px 16px; border-radius: 20px; font-size: 13px; font-weight: 600;
@@ -541,6 +612,18 @@ input::placeholder { color: var(--subtle); }
 }
 .doc-card-name { font-weight: 600; color: var(--navy); font-size: 13px; margin-bottom: 4px; }
 .doc-card-meta { font-size: 12px; color: var(--muted); }
+.tag-chip {
+  display: inline-block; font-size: 11px; font-weight: 600; padding: 2px 8px;
+  border-radius: 10px; background: #e0f2fe; color: #0369a1; margin: 2px 2px 0 0;
+}
+.upload-file-list { margin-bottom: 12px; max-height: 160px; overflow-y: auto; }
+.upload-file-item {
+  display: flex; align-items: center; gap: 10px; padding: 8px 10px;
+  background: var(--bg); border-radius: 8px; margin-bottom: 6px; font-size: 13px;
+}
+.upload-file-item-name { flex: 1; font-weight: 600; color: var(--navy); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.upload-file-item-size { color: var(--muted); font-size: 11px; flex-shrink: 0; }
+.upload-file-item-remove { background: none; border: none; cursor: pointer; color: var(--muted); font-size: 16px; flex-shrink: 0; }
 .suggestion-item {
   background: var(--bg); border-radius: 8px; padding: 10px 12px; margin-bottom: 8px; cursor: pointer;
   border: 2px solid transparent; transition: border-color .15s;
@@ -1018,31 +1101,26 @@ input::placeholder { color: var(--subtle); }
 
     <!-- Upload Evidence Modal -->
     <div id="uploadModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:500;display:none;align-items:center;justify-content:center">
-      <div style="background:#fff;border-radius:16px;padding:32px;width:500px;max-width:95vw;box-shadow:0 20px 60px rgba(0,0,0,.3)">
+      <div style="background:#fff;border-radius:16px;padding:32px;width:540px;max-width:95vw;box-shadow:0 20px 60px rgba(0,0,0,.3)">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px">
           <h3 style="font-size:16px;font-weight:700;color:var(--navy)">Upload Evidence or Policy</h3>
           <button onclick="closeUploadModal()" style="background:none;border:none;font-size:20px;cursor:pointer;color:var(--muted)">×</button>
         </div>
 
         <!-- Drop zone -->
-        <div id="dropZone" style="border:2px dashed var(--border-d);border-radius:12px;padding:32px;text-align:center;cursor:pointer;transition:all .2s;margin-bottom:16px"
+        <div id="dropZone" style="border:2px dashed var(--border-d);border-radius:12px;padding:28px;text-align:center;cursor:pointer;transition:all .2s;margin-bottom:12px"
              ondragover="event.preventDefault();this.style.borderColor='var(--teal)'"
              ondragleave="this.style.borderColor='var(--border-d)'"
              ondrop="handleFileDrop(event)"
              onclick="document.getElementById('fileInput').click()">
           <div style="font-size:28px;margin-bottom:8px">📄</div>
-          <div style="font-weight:600;color:var(--navy);margin-bottom:4px">Drop file here or click to browse</div>
-          <div style="font-size:12px;color:var(--muted)">PDF, DOCX, TXT — up to 10 MB</div>
-          <input type="file" id="fileInput" accept=".pdf,.docx,.doc,.txt,.md,.csv" style="display:none" onchange="handleFileSelect(this)">
+          <div style="font-weight:600;color:var(--navy);margin-bottom:4px">Drop files here or click to browse</div>
+          <div style="font-size:12px;color:var(--muted)">PDF, DOCX, TXT, MD, CSV — up to 10 MB each · multiple files OK</div>
+          <input type="file" id="fileInput" accept=".pdf,.docx,.doc,.txt,.md,.csv" multiple style="display:none" onchange="handleFileSelect(this)">
         </div>
 
-        <div id="uploadFileInfo" style="display:none;background:var(--bg);border-radius:8px;padding:12px;margin-bottom:16px;font-size:13px;display:flex;gap:12px;align-items:center">
-          <span style="font-size:20px">📄</span>
-          <div>
-            <div id="uploadFileName" style="font-weight:600;color:var(--navy)"></div>
-            <div id="uploadFileSize" style="color:var(--muted);font-size:12px"></div>
-          </div>
-        </div>
+        <!-- Multi-file list -->
+        <div id="uploadFileList" class="upload-file-list" style="display:none"></div>
 
         <div class="form-group" style="margin-bottom:12px">
           <label>Document Type</label>
@@ -1053,13 +1131,19 @@ input::placeholder { color: var(--subtle); }
           </select>
         </div>
 
-        <div class="form-group" style="margin-bottom:20px">
+        <div class="form-group" style="margin-bottom:12px">
           <label>Framework <span style="font-weight:400;color:var(--muted)">(for AI mapping)</span></label>
           <select id="uploadFramework">
             <option value="">— Skip AI classification —</option>
           </select>
         </div>
 
+        <div class="form-group" style="margin-bottom:20px">
+          <label>Tags <span style="font-weight:400;color:var(--muted)">(comma-separated, optional)</span></label>
+          <input type="text" id="uploadTags" placeholder="e.g. access-control, annual-review, SOC2">
+        </div>
+
+        <div id="uploadProgress" style="display:none;font-size:13px;color:var(--muted);margin-bottom:12px;padding:8px 12px;background:var(--bg);border-radius:8px"></div>
         <div id="uploadError" style="display:none;color:var(--red);font-size:13px;margin-bottom:12px;padding:8px 12px;background:var(--red-bg);border-radius:8px"></div>
 
         <div style="display:flex;gap:10px">
@@ -1076,6 +1160,25 @@ input::placeholder { color: var(--subtle); }
         <button onclick="closeDocDetail()" style="background:none;border:none;font-size:20px;cursor:pointer;color:var(--muted)">×</button>
       </div>
       <div id="docDetailContent" style="padding:20px"></div>
+    </div>
+
+    <!-- Policy Preview Modal -->
+    <div id="policyPreviewModal" style="display:none" onclick="if(event.target===this)closePolicyPreview()">
+      <div id="policyPreviewContent">
+        <button class="close-btn" onclick="closePolicyPreview()">×</button>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;padding-right:24px">
+          <div>
+            <div id="policyPreviewTitle" style="font-size:18px;font-weight:700;color:var(--navy)"></div>
+            <div id="policyPreviewMeta" style="font-size:12px;color:var(--muted);margin-top:4px"></div>
+          </div>
+          <a id="policyDownloadBtn" class="btn-download" download>⬇ Download .md</a>
+        </div>
+        <div id="policyPreviewBody" class="policy-markdown"></div>
+        <div class="auditcaddie-attribution" style="margin-top:20px">
+          Free template by <a href="https://auditcaddie.com" target="_blank">AuditCaddie OSS</a> — Apache 2.0 License.
+          Keep the attribution header when you share this template.
+        </div>
+      </div>
     </div>
 
     <!-- Settings tab -->
@@ -1723,8 +1826,9 @@ const notebookState = {
   controls: {},       // { category: [control, ...] }
   documents: [],      // all docs for this framework
   selectedControl: null,
-  uploadFile: null,
+  uploadFiles: [],    // pending upload queue (multi-file)
   templateOptions: [],
+  freePolicies: [],   // cached free policy templates for current framework
 };
 
 // Called when user clicks the Notebook tab or switches framework
@@ -1790,12 +1894,16 @@ async function switchNotebookFramework(fw) {
 
 async function loadNotebookForFramework(fw) {
   try {
-    const [ctrlData, docs] = await Promise.all([
+    // Determine the framework base name for free policies (e.g. "soc2-full" → "soc2")
+    const fwBase = fw.replace(/-full$/, '').replace(/-startup$/, '').replace(/-smb$/, '').replace(/-saas$/, '').replace(/-healthtech$/, '');
+    const [ctrlData, docs, freePoliciesRes] = await Promise.all([
       api(`/api/frameworks/${fw}/controls`),
       api(`/api/documents?framework=${fw}`),
+      fetch(`/api/free-policies/${fwBase}`).then(r => r.ok ? r.json() : { policies: [] }).catch(() => ({ policies: [] })),
     ]);
     notebookState.controls = ctrlData.categories;
     notebookState.documents = docs;
+    notebookState.freePolicies = freePoliciesRes.policies || [];
     renderNotebook();
     document.getElementById('notebookNoFramework').style.display = 'none';
     document.getElementById('notebookContent').style.display = '';
@@ -1825,18 +1933,30 @@ function renderNotebook() {
   }
 
   const container = document.getElementById('notebookCategories');
+  // Build control → free template count map
+  const freeByControl = {};
+  for (const p of (notebookState.freePolicies || [])) {
+    for (const cid of (p.controls || [])) {
+      freeByControl[cid] = (freeByControl[cid] || 0) + 1;
+    }
+  }
+
   container.innerHTML = Object.entries(controls).map(([cat, ctrlList]) => `
     <div class="nb-category">
       <div class="nb-category-title">${cat}</div>
       ${ctrlList.map(c => {
         const confirmed = (docsByControl[c.id] || []).length;
         const pending   = (pendingByControl[c.id] || []).length;
+        const freeCount = freeByControl[c.id] || 0;
         const dotColor  = confirmed > 0 ? 'var(--green)' : pending > 0 ? 'var(--amber)' : 'var(--border-d)';
         const countLabel = confirmed > 0
           ? `<span class="nb-doc-count badge-high">${confirmed} doc${confirmed > 1 ? 's' : ''}</span>`
           : pending > 0
           ? `<span class="nb-doc-count badge-medium">${pending} pending</span>`
           : `<span class="nb-doc-count badge-none">No evidence</span>`;
+        const templateBadge = freeCount > 0
+          ? `<span style="font-size:10px;font-weight:700;padding:2px 7px;border-radius:9px;background:#dbeafe;color:#1d4ed8;margin-left:4px;flex-shrink:0" title="${freeCount} free template${freeCount>1?'s':''} available">${freeCount} template${freeCount>1?'s':''}</span>`
+          : '';
         return `
           <div class="nb-control" onclick="openControlDetail('${c.id}')">
             <div class="nb-control-dot" style="background:${dotColor}"></div>
@@ -1845,7 +1965,10 @@ function renderNotebook() {
               <div class="nb-control-name">${c.name}</div>
               <div class="nb-control-desc">${c.description || ''}</div>
             </div>
-            ${countLabel}
+            <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex-shrink:0">
+              ${countLabel}
+              ${templateBadge}
+            </div>
           </div>`;
       }).join('')}
     </div>
@@ -1854,7 +1977,7 @@ function renderNotebook() {
 
 async function openControlDetail(controlId) {
   notebookState.selectedControl = controlId;
-  const { documents, controls } = notebookState;
+  const { documents, controls, freePolicies } = notebookState;
 
   // Find control metadata
   let ctrl = null;
@@ -1868,6 +1991,11 @@ async function openControlDetail(controlId) {
   // Docs with unconfirmed suggestions for this control
   const suggested = documents.filter(d =>
     !d.is_confirmed && (d.suggestions || []).some(s => s.control_id === controlId)
+  );
+
+  // Free templates applicable to this control
+  const applicableTemplates = (freePolicies || []).filter(p =>
+    (p.controls || []).includes(controlId)
   );
 
   const panel = document.getElementById('docDetailPanel');
@@ -1891,6 +2019,38 @@ async function openControlDetail(controlId) {
       </div>
       ${suggested.map(d => docCard(d, controlId, false)).join('')}
     ` : ''}
+
+    ${applicableTemplates.length > 0 ? `
+      <div class="free-templates-section">
+        <div class="free-templates-header">
+          <div class="free-templates-title">Free Policy Templates</div>
+          <span class="free-templates-badge">AuditCaddie OSS</span>
+        </div>
+        <p style="font-size:12px;color:var(--muted);margin-bottom:12px">
+          Download and customize these free templates to satisfy this control.
+          Each template is pre-tagged with the AuditCaddie OSS attribution.
+        </p>
+        ${applicableTemplates.map(t => `
+          <div class="free-template-card">
+            <div class="free-template-info">
+              <div class="free-template-name">${t.title}</div>
+              <div class="free-template-meta">Apache 2.0 · Markdown · ${t.review_cycle} review</div>
+              <div class="free-template-controls">
+                ${(t.controls || []).map(cid => `<span class="free-template-control-tag">${cid}</span>`).join('')}
+              </div>
+            </div>
+            <div class="free-template-actions">
+              <button class="btn-preview" onclick="previewFreePolicy('${t.download_url.replace('/download','')}','${t.title}')">Preview</button>
+              <a class="btn-download" href="${t.download_url}" download="${t.filename}">⬇</a>
+            </div>
+          </div>
+        `).join('')}
+        <div class="auditcaddie-attribution">
+          Free templates by <a href="https://auditcaddie.com" target="_blank">AuditCaddie OSS</a>.
+          Replace [PLACEHOLDERS] before use. Keep attribution when sharing.
+        </div>
+      </div>
+    ` : ''}
   `;
 
   panel.style.display = '';
@@ -1901,12 +2061,14 @@ function docCard(doc, forControlId, isConfirmed) {
   const conf = topSuggestion
     ? `<span class="conf-badge badge-${topSuggestion.confidence_label.toLowerCase()}">${topSuggestion.confidence_label} ${Math.round(topSuggestion.confidence * 100)}%</span>`
     : '';
+  const tags = (doc.tags || []).map(t => `<span class="tag-chip">${t}</span>`).join('');
   return `
     <div class="doc-card">
       <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px">
-        <div>
+        <div style="flex:1;min-width:0">
           <div class="doc-card-name">${doc.original_filename}</div>
           <div class="doc-card-meta">${doc.document_type} · ${doc.created_at?.split('T')[0] || ''}</div>
+          ${tags ? `<div style="margin-top:5px">${tags}</div>` : ''}
           ${topSuggestion ? `<div style="font-size:12px;color:var(--muted);margin-top:4px;font-style:italic">"${topSuggestion.reasoning}"</div>` : ''}
         </div>
         <div style="display:flex;flex-direction:column;gap:4px;align-items:flex-end;flex-shrink:0">
@@ -1948,6 +2110,104 @@ function closeDocDetail() {
   notebookState.selectedControl = null;
 }
 
+// ── Free Policy Preview ───────────────────────────────────────────────────────
+
+async function previewFreePolicy(apiUrl, title) {
+  try {
+    const data = await api(apiUrl);
+    const modal = document.getElementById('policyPreviewModal');
+    document.getElementById('policyPreviewTitle').textContent = data.title || title;
+    document.getElementById('policyPreviewMeta').textContent =
+      `Controls: ${(data.controls || []).join(', ')} · Apache 2.0 · AuditCaddie OSS`;
+    document.getElementById('policyPreviewBody').innerHTML = mdToHtml(data.content || '');
+    document.getElementById('policyDownloadBtn').href = apiUrl + '/download';
+    document.getElementById('policyDownloadBtn').download = apiUrl.split('/').pop() + '.md';
+    modal.style.display = 'flex';
+    modal.scrollTop = 0;
+  } catch (e) {
+    alert('Could not load template preview: ' + e.message);
+  }
+}
+
+function closePolicyPreview() {
+  document.getElementById('policyPreviewModal').style.display = 'none';
+}
+
+// Minimal markdown → HTML for policy previews (headings, bold, tables, lists, blockquotes, code)
+function mdToHtml(md) {
+  // Strip YAML frontmatter
+  md = md.replace(/^---[\s\S]*?---\s*\n/, '');
+  // Strip HTML comments
+  md = md.replace(/<!--[\s\S]*?-->/g, '');
+  const lines = md.split('\n');
+  const out = [];
+  let inTable = false, inUl = false, inOl = false;
+
+  for (let i = 0; i < lines.length; i++) {
+    let line = lines[i];
+
+    // Headings
+    if (/^### /.test(line)) { closeLists(); out.push(`<h3>${inlineHtml(line.slice(4))}</h3>`); continue; }
+    if (/^## /.test(line))  { closeLists(); out.push(`<h2>${inlineHtml(line.slice(3))}</h2>`); continue; }
+    if (/^# /.test(line))   { closeLists(); out.push(`<h1>${inlineHtml(line.slice(2))}</h1>`); continue; }
+
+    // Blockquote
+    if (/^> /.test(line)) { closeLists(); out.push(`<blockquote>${inlineHtml(line.slice(2))}</blockquote>`); continue; }
+
+    // HR
+    if (/^---+$/.test(line.trim())) { closeLists(); out.push('<hr>'); continue; }
+
+    // Table
+    if (/^\|/.test(line)) {
+      if (!inTable) { inTable = true; out.push('<table>'); }
+      if (/^[\|:\- ]+$/.test(line.replace(/\|/g, ''))) continue; // separator row
+      const cells = line.split('|').slice(1, -1).map(c => c.trim());
+      const isHeader = lines[i+1] && /^[\|:\- ]+$/.test(lines[i+1].replace(/\|/g,''));
+      if (isHeader) {
+        out.push('<thead><tr>' + cells.map(c => `<th>${inlineHtml(c)}</th>`).join('') + '</tr></thead><tbody>');
+      } else {
+        out.push('<tr>' + cells.map(c => `<td>${inlineHtml(c)}</td>`).join('') + '</tr>');
+      }
+      continue;
+    } else if (inTable) { inTable = false; out.push('</tbody></table>'); }
+
+    // Unordered list
+    if (/^[-*] /.test(line)) {
+      if (inOl) { out.push('</ol>'); inOl = false; }
+      if (!inUl) { out.push('<ul>'); inUl = true; }
+      out.push(`<li>${inlineHtml(line.slice(2))}</li>`);
+      continue;
+    }
+    // Ordered list
+    if (/^\d+\. /.test(line)) {
+      if (inUl) { out.push('</ul>'); inUl = false; }
+      if (!inOl) { out.push('<ol>'); inOl = true; }
+      out.push(`<li>${inlineHtml(line.replace(/^\d+\. /, ''))}</li>`);
+      continue;
+    }
+
+    closeLists();
+    if (line.trim() === '') { out.push('<br>'); continue; }
+    out.push(`<p>${inlineHtml(line)}</p>`);
+  }
+  closeLists();
+  return out.join('\n');
+
+  function closeLists() {
+    if (inTable) { out.push('</tbody></table>'); inTable = false; }
+    if (inUl) { out.push('</ul>'); inUl = false; }
+    if (inOl) { out.push('</ol>'); inOl = false; }
+  }
+  function inlineHtml(t) {
+    return t
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+      .replace(/`([^`]+)`/g, '<code>$1</code>')
+      .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+      .replace(/\*([^*]+)\*/g, '<em>$1</em>')
+      .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank">$1</a>');
+  }
+}
+
 // ── Upload Modal ──────────────────────────────────────────────────────────────
 
 function openUploadModal(preselectedControl) {
@@ -1963,72 +2223,127 @@ function openUploadModal(preselectedControl) {
   }
   document.getElementById('uploadModal').style.display = 'flex';
   document.getElementById('uploadError').style.display = 'none';
-  notebookState.uploadFile = null;
-  document.getElementById('uploadFileInfo').style.display = 'none';
-  document.getElementById('dropZone').style.display = '';
+  document.getElementById('uploadProgress').style.display = 'none';
+  document.getElementById('uploadTags').value = '';
+  notebookState.uploadFiles = [];
+  renderUploadFileList();
 }
 
 function closeUploadModal() {
   document.getElementById('uploadModal').style.display = 'none';
   document.getElementById('fileInput').value = '';
-  notebookState.uploadFile = null;
+  notebookState.uploadFiles = [];
 }
 
 function handleFileDrop(e) {
   e.preventDefault();
   document.getElementById('dropZone').style.borderColor = 'var(--border-d)';
-  const file = e.dataTransfer.files[0];
-  if (file) setUploadFile(file);
+  addUploadFiles(Array.from(e.dataTransfer.files));
 }
 
 function handleFileSelect(input) {
-  if (input.files[0]) setUploadFile(input.files[0]);
+  if (input.files.length) addUploadFiles(Array.from(input.files));
+  input.value = ''; // reset so same file can be re-selected
 }
 
-function setUploadFile(file) {
-  notebookState.uploadFile = file;
-  document.getElementById('uploadFileName').textContent = file.name;
-  document.getElementById('uploadFileSize').textContent = (file.size / 1024).toFixed(1) + ' KB';
-  document.getElementById('uploadFileInfo').style.display = 'flex';
-  document.getElementById('dropZone').style.display = 'none';
+function addUploadFiles(files) {
+  const ALLOWED = ['.pdf', '.docx', '.doc', '.txt', '.md', '.csv'];
+  for (const f of files) {
+    const ext = f.name.slice(f.name.lastIndexOf('.')).toLowerCase();
+    if (!ALLOWED.includes(ext)) continue;
+    if (f.size > 10 * 1024 * 1024) continue; // skip > 10 MB silently
+    if (!notebookState.uploadFiles.find(x => x.name === f.name && x.size === f.size)) {
+      notebookState.uploadFiles.push(f);
+    }
+  }
+  renderUploadFileList();
 }
+
+function removeUploadFile(index) {
+  notebookState.uploadFiles.splice(index, 1);
+  renderUploadFileList();
+}
+
+function renderUploadFileList() {
+  const files = notebookState.uploadFiles || [];
+  const listEl = document.getElementById('uploadFileList');
+  const dropEl = document.getElementById('dropZone');
+  if (files.length === 0) {
+    listEl.style.display = 'none';
+    dropEl.style.display = '';
+    return;
+  }
+  dropEl.style.display = '';  // keep drop zone visible for adding more
+  listEl.style.display = '';
+  listEl.innerHTML = files.map((f, i) => `
+    <div class="upload-file-item">
+      <span style="font-size:18px">📄</span>
+      <span class="upload-file-item-name" title="${f.name}">${f.name}</span>
+      <span class="upload-file-item-size">${(f.size/1024).toFixed(1)} KB</span>
+      <button class="upload-file-item-remove" onclick="removeUploadFile(${i})" title="Remove">×</button>
+    </div>
+  `).join('');
+}
+
+// legacy shim — some callers used setUploadFile
+function setUploadFile(file) { addUploadFiles([file]); }
 
 async function submitUpload() {
-  const file = notebookState.uploadFile;
-  if (!file) { alert('Please select a file first.'); return; }
+  const files = notebookState.uploadFiles || [];
+  if (!files.length) { alert('Please select at least one file.'); return; }
 
   const btn = document.getElementById('uploadSubmitBtn');
-  btn.textContent = 'Uploading…';
   btn.disabled = true;
   document.getElementById('uploadError').style.display = 'none';
 
-  try {
-    const fd = new FormData();
-    fd.append('file', file);
-    fd.append('document_type', document.getElementById('uploadDocType').value);
-    fd.append('framework', document.getElementById('uploadFramework').value);
+  const docType  = document.getElementById('uploadDocType').value;
+  const framework = document.getElementById('uploadFramework').value;
+  const tags     = document.getElementById('uploadTags').value.trim();
+  const progEl   = document.getElementById('uploadProgress');
+  progEl.style.display = '';
 
-    const res = await fetch('/api/documents', { method: 'POST', body: fd });
-    if (!res.ok) {
-      const j = await res.json().catch(() => ({}));
-      throw new Error(j.detail || `HTTP ${res.status}`);
-    }
-    const data = await res.json();
-    closeUploadModal();
+  const docIds = [];
+  let errorMsg = '';
 
-    // Poll for classification to complete then refresh notebook
-    if (data.status === 'classifying') {
-      pollDocStatus(data.doc_id);
-    } else {
-      await refreshNotebook();
+  for (let i = 0; i < files.length; i++) {
+    const f = files[i];
+    progEl.textContent = `Uploading ${i + 1} of ${files.length}: ${f.name}…`;
+    try {
+      const fd = new FormData();
+      fd.append('file', f);
+      fd.append('document_type', docType);
+      fd.append('framework', framework);
+      fd.append('tags', tags);
+
+      const res = await fetch('/api/documents', { method: 'POST', body: fd });
+      if (!res.ok) {
+        const j = await res.json().catch(() => ({}));
+        errorMsg += `${f.name}: ${j.detail || 'HTTP ' + res.status}\n`;
+        continue;
+      }
+      const data = await res.json();
+      if (data.doc_id) docIds.push({ id: data.doc_id, status: data.status });
+    } catch(e) {
+      errorMsg += `${f.name}: ${e.message}\n`;
     }
-  } catch(e) {
+  }
+
+  if (errorMsg) {
     const errEl = document.getElementById('uploadError');
-    errEl.textContent = e.message;
+    errEl.textContent = errorMsg.trim();
     errEl.style.display = '';
-  } finally {
-    btn.textContent = 'Upload & Classify';
-    btn.disabled = false;
+  }
+
+  closeUploadModal();
+  progEl.style.display = 'none';
+  btn.disabled = false;
+
+  // Poll classification for docs that need it, then refresh
+  const classifying = docIds.filter(d => d.status === 'classifying');
+  if (classifying.length > 0) {
+    classifying.forEach(d => pollDocStatus(d.id));
+  } else {
+    await refreshNotebook();
   }
 }
 
