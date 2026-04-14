@@ -1746,7 +1746,10 @@ async function runToolboxCheck() {
   btn.innerHTML = '<div class="spinner" style="width:13px;height:13px;border-top-color:#fff"></div> Checking toolkit...';
 
   try {
-    const data = await api('/api/toolbox/check');
+    // Pass the configured region — prefer main settings form, fall back to setup wizard
+    const savedRegion = document.getElementById('cfg_aws_region')?.value ||
+                        document.getElementById('s_aws_region')?.value || '';
+    const data = await api(`/api/toolbox/check${savedRegion ? '?aws_region=' + encodeURIComponent(savedRegion) : ''}`);
     toolboxState.tools = data.tools || [];
 
     // If all tools are already enabled, skip the modal

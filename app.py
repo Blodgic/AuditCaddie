@@ -718,7 +718,7 @@ class ToolboxEnableRequest(BaseModel):
     aws_region: str = "us-east-1"
 
 
-def _make_boto3_session(access_key: str = "", secret_key: str = "", region: str = "us-east-1"):
+def _make_boto3_session(access_key: str = "", secret_key: str = "", region: str = ""):
     """Build a boto3 Session from request params, falling back to env/DB credentials."""
     import boto3 as _boto3
     ak = access_key or os.getenv("AWS_ACCESS_KEY_ID") or _get_setting("aws_access_key")
@@ -730,11 +730,12 @@ def _make_boto3_session(access_key: str = "", secret_key: str = "", region: str 
 
 
 @app.get("/api/toolbox/check")
-def toolbox_check(aws_region: str = "us-east-1"):
+def toolbox_check(aws_region: str = ""):
     """
     Non-destructive pre-scan check: which security tools are currently active?
     Called before a scan starts to surface gaps the user can fill in one click.
     No write operations — read-only checks only.
+    aws_region is optional — falls back to saved settings or AWS_DEFAULT_REGION env var.
     """
     from scanner.aws_enabler import check_toolbox_status
     try:
