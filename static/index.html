@@ -1746,10 +1746,9 @@ async function runToolboxCheck() {
   btn.innerHTML = '<div class="spinner" style="width:13px;height:13px;border-top-color:#fff"></div> Checking toolkit...';
 
   try {
-    // Pass the configured region — prefer main settings form, fall back to setup wizard
-    const savedRegion = document.getElementById('cfg_aws_region')?.value ||
-                        document.getElementById('s_aws_region')?.value || '';
-    const data = await api(`/api/toolbox/check${savedRegion ? '?aws_region=' + encodeURIComponent(savedRegion) : ''}`);
+    // Let the backend resolve the region from its DB settings — DOM dropdowns
+    // default to us-east-1 and are not reliably populated before this fires.
+    const data = await api('/api/toolbox/check');
     toolboxState.tools = data.tools || [];
 
     // Skip modal only on errors or empty results — always show when we have tool data
