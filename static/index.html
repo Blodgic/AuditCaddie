@@ -93,7 +93,9 @@ body {
   background: var(--border-d);
   display: inline-block;
 }
-.status-dot.ok { background: var(--green); }
+.status-dot.ok   { background: var(--green); }
+.status-dot.warn { background: var(--amber); }
+.status-dot.err  { background: var(--red); }
 .status-item { display: flex; align-items: center; gap: 5px; }
 
 .header-btn {
@@ -1618,20 +1620,56 @@ async function loadConfig() {
     const cfg = await api('/api/config/status');
     document.getElementById('awsDot').className = 'status-dot ' + (cfg.aws ? 'ok' : '');
     document.getElementById('ghDot').className  = 'status-dot ' + (cfg.github ? 'ok' : '');
-    document.getElementById('aiDot').className  = 'status-dot ' + (cfg.ai?.configured ? 'ok' : '');
     if (!cfg.aws && !cfg.github && !cfg.ai?.configured) showSetup();
 
-    // Surface a persistent banner if AI isn't configured — classification silently fails without it
+    // Live-verify AI keys and update the dot (runs async, doesn't block page load)
+    verifyAiKeys();
+  } catch(e) {}
+}
+
+async function verifyAiKeys() {
+  try {
+    const v = await api('/api/config/verify-ai');
+    const dot = document.getElementById('aiDot');
+    const item = dot?.closest('.status-item');
+
+    if (v.working_count === 2) {
+      dot.className = 'status-dot ok';
+      dot.title = 'OpenAI ✓  Anthropic ✓';
+    } else if (v.working_count === 1) {
+      dot.className = 'status-dot warn';
+      const failMsg = !v.openai.ok
+        ? `OpenAI: ${v.openai.error}`
+        : `Anthropic: ${v.anthropic.error}`;
+      dot.title = `1 of 2 AI providers working — ${failMsg}`;
+    } else {
+      // No keys at all vs keys set but all invalid
+      const anySet = !v.openai.error.includes('No key') || !v.anthropic.error.includes('No key');
+      dot.className = 'status-dot ' + (anySet ? 'err' : '');
+      if (anySet) {
+        const errs = [
+          v.openai.error  !== 'No key configured' ? `OpenAI: ${v.openai.error}`    : '',
+          v.anthropic.error !== 'No key configured' ? `Anthropic: ${v.anthropic.error}` : '',
+        ].filter(Boolean).join(' | ');
+        dot.title = errs || 'AI keys not working';
+        showToast('AI key error', errs, 'error', 0);
+      } else {
+        dot.title = 'No AI key configured';
+      }
+    }
+
+    // Update/remove the notebook warning banner based on live result
     const bannerId = 'aiMissingBanner';
     let banner = document.getElementById(bannerId);
-    if (!cfg.ai?.configured) {
+    if (v.working_count === 0) {
       if (!banner) {
         banner = document.createElement('div');
         banner.id = bannerId;
         banner.className = 'config-warning-banner';
-        banner.innerHTML = `⚠ <strong>AI key not configured</strong> — document classification is disabled.
-          <a href="#" onclick="showView('settings');return false">Add a key in Settings</a> to enable AI evidence mapping.`;
-        // Insert at top of notebook tab, before the framework pills
+        const anySet = !v.openai.error.includes('No key') || !v.anthropic.error.includes('No key');
+        banner.innerHTML = anySet
+          ? `⚠ <strong>AI key invalid</strong> — document classification will fail. <a href="#" onclick="showView('settings');return false">Fix in Settings</a>`
+          : `⚠ <strong>AI key not configured</strong> — document classification is disabled. <a href="#" onclick="showView('settings');return false">Add a key in Settings</a>`;
         const pillsEl = document.getElementById('notebookFrameworkPills');
         if (pillsEl) pillsEl.parentElement.insertBefore(banner, pillsEl);
       }
@@ -2347,6 +2385,8 @@ async function saveSettings() {
   saved.style.display = '';
   setTimeout(() => { saved.style.display = 'none'; }, 2000);
   await loadConfig();
+  // Re-verify AI keys after saving (backend already busted cache on save)
+  verifyAiKeys();
 }
 
 async function saveSettingsData(data) {

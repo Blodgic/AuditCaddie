@@ -211,6 +211,79 @@ def config_status():
         "upgrade_url": UPGRADE_URL,
     }
 
+
+# ── AI key verification (live test, cached 5 min) ─────────────────────────────
+_ai_verify_cache: dict = {}   # { "openai": {ok, error, ts}, "anthropic": {ok, error, ts} }
+_AI_VERIFY_TTL = 300          # seconds
+
+def _verify_openai_key() -> dict:
+    import time
+    cached = _ai_verify_cache.get("openai", {})
+    if cached and time.time() - cached.get("ts", 0) < _AI_VERIFY_TTL:
+        return cached
+    key = os.getenv("OPENAI_API_KEY") or _get_setting("openai_api_key")
+    if not key:
+        result = {"ok": False, "error": "No key configured", "ts": time.time()}
+    else:
+        try:
+            from openai import OpenAI
+            OpenAI(api_key=key).models.list()
+            result = {"ok": True, "error": "", "ts": time.time()}
+        except Exception as e:
+            msg = str(e)
+            if "401" in msg or "invalid_api_key" in msg or "Incorrect API key" in msg:
+                msg = "Invalid API key"
+            elif "429" in msg or "quota" in msg:
+                msg = "Rate limit / quota exceeded"
+            elif "billing" in msg:
+                msg = "Billing issue — check OpenAI account"
+            result = {"ok": False, "error": msg, "ts": time.time()}
+    _ai_verify_cache["openai"] = result
+    return result
+
+def _verify_anthropic_key() -> dict:
+    import time
+    cached = _ai_verify_cache.get("anthropic", {})
+    if cached and time.time() - cached.get("ts", 0) < _AI_VERIFY_TTL:
+        return cached
+    key = os.getenv("ANTHROPIC_API_KEY") or _get_setting("anthropic_api_key")
+    if not key:
+        result = {"ok": False, "error": "No key configured", "ts": time.time()}
+    else:
+        try:
+            from anthropic import Anthropic
+            Anthropic(api_key=key).models.list()
+            result = {"ok": True, "error": "", "ts": time.time()}
+        except Exception as e:
+            msg = str(e)
+            if "401" in msg or "invalid_x_api_key" in msg or "authentication" in msg.lower():
+                msg = "Invalid API key"
+            elif "429" in msg or "quota" in msg or "rate_limit" in msg:
+                msg = "Rate limit / quota exceeded"
+            elif "billing" in msg:
+                msg = "Billing issue — check Anthropic account"
+            result = {"ok": False, "error": msg, "ts": time.time()}
+    _ai_verify_cache["anthropic"] = result
+    return result
+
+@app.get("/api/config/verify-ai")
+def verify_ai():
+    """Live-test both AI keys. Cached for 5 minutes to avoid repeated API calls."""
+    openai   = _verify_openai_key()
+    anthropic = _verify_anthropic_key()
+    working = sum(1 for r in [openai, anthropic] if r["ok"])
+    return {
+        "openai":    {"ok": openai["ok"],    "error": openai["error"]},
+        "anthropic": {"ok": anthropic["ok"], "error": anthropic["error"]},
+        "working_count": working,
+    }
+
+@app.post("/api/config/verify-ai/invalidate")
+def invalidate_ai_cache():
+    """Clear the AI verification cache (called after saving new keys)."""
+    _ai_verify_cache.clear()
+    return {"ok": True}
+
 # ── Settings ───────────────────────────────────────────────────────────────────
 
 def _get_setting(key: str) -> str:
@@ -226,6 +299,7 @@ def _set_setting(key: str, value: str):
 def save_settings(payload: SettingsPayload):
     """Save credentials to local SQLite (encrypted at rest by OS filesystem)."""
     fields = payload.dict()
+    ai_keys_changed = False
     for key, val in fields.items():
         if val:
             _set_setting(key, val)
@@ -241,6 +315,11 @@ def save_settings(payload: SettingsPayload):
             }
             if key in env_map:
                 os.environ[env_map[key]] = val
+            if key in ("openai_api_key", "anthropic_api_key"):
+                ai_keys_changed = True
+    # Bust the verification cache so the next status check re-tests the new keys
+    if ai_keys_changed:
+        _ai_verify_cache.clear()
     return {"ok": True}
 
 @app.get("/api/settings")
