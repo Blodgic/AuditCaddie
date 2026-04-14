@@ -933,9 +933,54 @@ input::placeholder { color: var(--subtle); }
   font-size: 36px;
   margin-bottom: 8px;
 }
+
+/* ── Toast notifications ────────────────────────────────────────────────── */
+#toastContainer {
+  position: fixed; bottom: 24px; right: 24px; z-index: 9999;
+  display: flex; flex-direction: column; gap: 10px; pointer-events: none;
+}
+.toast {
+  display: flex; align-items: flex-start; gap: 10px;
+  padding: 12px 16px; border-radius: 10px; min-width: 280px; max-width: 420px;
+  box-shadow: 0 4px 24px rgba(0,0,0,.18); pointer-events: all;
+  font-size: 13px; line-height: 1.45; animation: toastIn .2s ease;
+}
+.toast-success { background: #fff; border-left: 4px solid var(--green); }
+.toast-warning { background: #fff; border-left: 4px solid var(--amber); }
+.toast-error   { background: #fff; border-left: 4px solid var(--red); }
+.toast-info    { background: #fff; border-left: 4px solid var(--blue); }
+.toast-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+.toast-body { flex: 1; color: var(--text); }
+.toast-title { font-weight: 700; margin-bottom: 2px; }
+.toast-msg { color: var(--muted); }
+.toast-close { background: none; border: none; cursor: pointer; color: var(--muted);
+  font-size: 16px; padding: 0; flex-shrink: 0; align-self: flex-start; }
+@keyframes toastIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+
+/* ── Config warning banner ──────────────────────────────────────────────── */
+.config-warning-banner {
+  background: var(--amber-bg); border: 1px solid #fcd34d; border-radius: 10px;
+  padding: 10px 14px; display: flex; align-items: center; gap: 10px;
+  font-size: 13px; margin-bottom: 16px;
+}
+.config-warning-banner a { color: var(--navy); font-weight: 600; }
+
+/* ── Notebook error docs ────────────────────────────────────────────────── */
+.nb-error-section {
+  background: var(--red-bg); border: 1px solid #fca5a5; border-radius: 10px;
+  padding: 14px 16px; margin-bottom: 20px;
+}
+.nb-error-section-title { font-weight: 700; font-size: 13px; color: var(--red); margin-bottom: 10px; }
+.nb-error-doc-row {
+  display: flex; align-items: center; gap: 10px; padding: 8px 0;
+  border-top: 1px solid #fecaca; font-size: 13px;
+}
+.nb-error-doc-name { flex: 1; font-weight: 600; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.nb-error-doc-msg  { color: var(--muted); font-size: 11px; flex: 2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 </style>
 </head>
 <body>
+<div id="toastContainer"></div>
 
 <!-- Setup Wizard -->
 <div class="setup-overlay" id="setupOverlay" style="display:none">
@@ -1318,6 +1363,7 @@ input::placeholder { color: var(--subtle); }
 
       <!-- Controls by category -->
       <div id="notebookContent" style="display:none">
+        <div id="notebookErrorDocs" style="display:none"></div>
         <div id="notebookCategories"></div>
       </div>
     </div>
@@ -1574,6 +1620,24 @@ async function loadConfig() {
     document.getElementById('ghDot').className  = 'status-dot ' + (cfg.github ? 'ok' : '');
     document.getElementById('aiDot').className  = 'status-dot ' + (cfg.ai?.configured ? 'ok' : '');
     if (!cfg.aws && !cfg.github && !cfg.ai?.configured) showSetup();
+
+    // Surface a persistent banner if AI isn't configured — classification silently fails without it
+    const bannerId = 'aiMissingBanner';
+    let banner = document.getElementById(bannerId);
+    if (!cfg.ai?.configured) {
+      if (!banner) {
+        banner = document.createElement('div');
+        banner.id = bannerId;
+        banner.className = 'config-warning-banner';
+        banner.innerHTML = `⚠ <strong>AI key not configured</strong> — document classification is disabled.
+          <a href="#" onclick="showView('settings');return false">Add a key in Settings</a> to enable AI evidence mapping.`;
+        // Insert at top of notebook tab, before the framework pills
+        const pillsEl = document.getElementById('notebookFrameworkPills');
+        if (pillsEl) pillsEl.parentElement.insertBefore(banner, pillsEl);
+      }
+    } else if (banner) {
+      banner.remove();
+    }
   } catch(e) {}
 }
 
@@ -1586,6 +1650,43 @@ async function api(url, opts = {}) {
     throw new Error(msg);
   }
   return res.json();
+}
+
+// ── Toast notifications ──────────────────────────────────────────────────────
+function showToast(title, msg = '', type = 'info', duration = 6000) {
+  const icons = { success: '✓', warning: '⚠', error: '✗', info: 'ℹ' };
+  const el = document.createElement('div');
+  el.className = `toast toast-${type}`;
+  el.innerHTML = `
+    <span class="toast-icon">${icons[type] || 'ℹ'}</span>
+    <div class="toast-body">
+      <div class="toast-title">${title}</div>
+      ${msg ? `<div class="toast-msg">${msg}</div>` : ''}
+    </div>
+    <button class="toast-close" onclick="this.closest('.toast').remove()">×</button>`;
+  document.getElementById('toastContainer').appendChild(el);
+  if (duration > 0) setTimeout(() => el.remove(), duration);
+  return el;
+}
+
+// ── Classify-error parser — turns raw API errors into plain English ──────────
+function friendlyClassifyError(rawError) {
+  if (!rawError) return 'Unknown classification error.';
+  const s = String(rawError);
+  if (s.includes('401') || s.includes('invalid_api_key') || s.includes('Incorrect API key'))
+    return 'Invalid API key — update it in Settings.';
+  if (s.includes('429') || s.includes('rate_limit') || s.includes('quota'))
+    return 'API rate limit / quota exceeded — try again later or check your plan.';
+  if (s.includes('insufficient_quota') || s.includes('billing'))
+    return 'API billing issue — check your OpenAI/Anthropic account.';
+  if (s.includes('No AI provider') || s.includes('not set'))
+    return 'No AI key configured — add one in Settings.';
+  if (s.includes('Framework') && s.includes('not found'))
+    return 'Framework not found — re-run a scan to create it.';
+  if (s.includes('No controls'))
+    return 'Framework has no controls defined.';
+  if (s.length > 120) return s.slice(0, 117) + '…';
+  return s;
 }
 
 // ── Setup wizard ────────────────────────────────────────────────────────────
@@ -2379,6 +2480,29 @@ function renderNotebook() {
     }
   }
 
+  // Show error docs as a banner above the control list
+  const errorDocs = documents.filter(d => d.status === 'error');
+  const notebookError = document.getElementById('notebookErrorDocs');
+  if (errorDocs.length > 0) {
+    notebookError.innerHTML = `
+      <div class="nb-error-section">
+        <div class="nb-error-section-title">⚠ ${errorDocs.length} document${errorDocs.length > 1 ? 's' : ''} failed AI classification</div>
+        ${errorDocs.map(d => `
+          <div class="nb-error-doc-row">
+            <span class="nb-error-doc-name" title="${d.original_filename}">${d.original_filename}</span>
+            <span class="nb-error-doc-msg">${friendlyClassifyError(d.error_msg)}</span>
+            <button class="btn btn-sm btn-outline" style="font-size:11px;padding:3px 8px;flex-shrink:0"
+              onclick="retryClassify('${d.id}')">Retry</button>
+            <button class="btn btn-sm btn-outline" style="font-size:11px;padding:3px 8px;flex-shrink:0;color:var(--red)"
+              onclick="deleteDoc('${d.id}')">Remove</button>
+          </div>`).join('')}
+      </div>`;
+    notebookError.style.display = '';
+  } else {
+    notebookError.innerHTML = '';
+    notebookError.style.display = 'none';
+  }
+
   container.innerHTML = Object.entries(controls).map(([cat, ctrlList]) => `
     <div class="nb-category">
       <div class="nb-category-title">${cat}</div>
@@ -2537,6 +2661,16 @@ async function deleteDoc(docId) {
     if (notebookState.selectedControl) openControlDetail(notebookState.selectedControl);
     else closeDocDetail();
   } catch(e) { alert('Failed to delete: ' + e.message); }
+}
+
+async function retryClassify(docId) {
+  try {
+    await api(`/api/documents/${docId}/classify`, { method: 'POST' });
+    showToast('Re-classifying', 'AI is re-processing the document — results will appear shortly.', 'info');
+    pollDocStatus(docId);
+  } catch(e) {
+    showToast('Retry failed', friendlyClassifyError(e.message), 'error', 0);
+  }
 }
 
 async function refreshNotebook() {
@@ -2776,6 +2910,21 @@ async function submitUpload() {
   progEl.style.display = 'none';
   btn.disabled = false;
 
+  const ok = docIds.length;
+  const failed = files.length - ok;
+  if (ok > 0 && failed === 0) {
+    const classifying = docIds.filter(d => d.status === 'classifying');
+    showToast(
+      `${ok} file${ok > 1 ? 's' : ''} uploaded`,
+      classifying.length > 0 ? 'AI classification running — results will appear shortly.' : 'Saved. Select a framework to enable AI classification.',
+      'success'
+    );
+  } else if (ok > 0 && failed > 0) {
+    showToast(`${ok} uploaded, ${failed} failed`, errorMsg.split('\n')[0], 'warning');
+  } else {
+    showToast('Upload failed', errorMsg.split('\n')[0], 'error');
+  }
+
   // Poll classification for docs that need it, then refresh
   const classifying = docIds.filter(d => d.status === 'classifying');
   if (classifying.length > 0) {
@@ -2793,6 +2942,17 @@ async function pollDocStatus(docId) {
       if (doc.status !== 'classifying') {
         await refreshNotebook();
         if (notebookState.selectedControl) openControlDetail(notebookState.selectedControl);
+        if (doc.status === 'error') {
+          const friendly = friendlyClassifyError(doc.error_msg);
+          showToast(
+            'Classification failed',
+            `${doc.original_filename}: ${friendly}`,
+            'error',
+            0  // sticky — user must dismiss manually
+          );
+        } else if (doc.status === 'classified') {
+          showToast('Classification complete', `${doc.original_filename} mapped to ${(doc.suggestions||[]).length} control${(doc.suggestions||[]).length !== 1 ? 's' : ''}.`, 'success');
+        }
         return;
       }
     } catch(e) { break; }
