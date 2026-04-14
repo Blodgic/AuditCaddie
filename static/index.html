@@ -1833,7 +1833,7 @@ function renderToolCard(tool) {
       <div class="toolbox-card-controls">${controlTags}</div>
       <div class="toolbox-card-actions">
         <button class="btn-toolbox-enable" id="enable-btn-${tool.id}"
-          onclick="enableTool('${tool.id}', '${tool.name.replace(/'/g, &quot;'&quot;)}')">Enable Now</button>
+          onclick="enableTool('${tool.id}', '${tool.name}')">Enable Now</button>
         <button class="btn-toolbox-skip" onclick="skipTool('${tool.id}')">Skip — Document Gap</button>
       </div>
     </div>
