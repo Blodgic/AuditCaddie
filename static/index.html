@@ -734,6 +734,205 @@ input::placeholder { color: var(--subtle); }
   .form-row { grid-template-columns: 1fr; }
   .score-grid { grid-template-columns: 1fr; }
 }
+
+/* ── Security Toolbox Modal ─────────────────────────────────────────────── */
+#toolboxModal {
+  position: fixed; inset: 0;
+  background: rgba(12,41,121,.55);
+  display: none;
+  align-items: flex-start;
+  justify-content: center;
+  z-index: 2000;
+  padding: 40px 16px 24px;
+  overflow-y: auto;
+}
+.toolbox-modal-box {
+  background: #fff;
+  border-radius: 16px;
+  width: 100%;
+  max-width: 720px;
+  box-shadow: 0 24px 80px rgba(0,0,0,.22);
+  overflow: hidden;
+}
+.toolbox-modal-header {
+  background: var(--navy);
+  color: #fff;
+  padding: 24px 28px 20px;
+}
+.toolbox-modal-header h2 {
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+.toolbox-modal-header p {
+  font-size: 13px;
+  color: rgba(255,255,255,.75);
+  line-height: 1.5;
+}
+.toolbox-modal-body { padding: 20px 24px; }
+.toolbox-modal-footer {
+  padding: 16px 24px 20px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+/* Tool cards */
+.toolbox-card {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 16px 18px;
+  margin-bottom: 10px;
+  transition: border-color .15s;
+}
+.toolbox-card:last-child { margin-bottom: 0; }
+.toolbox-card--enabled {
+  border-color: #86efac;
+  background: #f0fdf4;
+}
+.toolbox-card--skipped {
+  border-color: var(--border);
+  background: #f8fafc;
+  opacity: .7;
+}
+.toolbox-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+.toolbox-card-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.toolbox-card-title strong { font-size: 14px; color: var(--text); }
+.toolbox-status-dot {
+  width: 20px; height: 20px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+.toolbox-category {
+  background: var(--bg);
+  color: var(--muted);
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+}
+.toolbox-card-meta { font-size: 12px; color: var(--muted); white-space: nowrap; }
+.toolbox-status-label { font-size: 12px; font-weight: 600; white-space: nowrap; }
+.toolbox-card-detail { font-size: 12px; color: var(--muted); margin-bottom: 8px; }
+.toolbox-auditor-ask, .toolbox-risk {
+  font-size: 12px;
+  color: var(--text);
+  line-height: 1.5;
+  margin-bottom: 6px;
+}
+.toolbox-label {
+  font-weight: 600;
+  color: var(--navy);
+}
+.toolbox-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 12px;
+  flex-wrap: wrap;
+}
+.toolbox-card-controls {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+  flex: 1;
+}
+.toolbox-control-tag {
+  background: #eff6ff;
+  color: var(--blue);
+  border: 1px solid #bfdbfe;
+  border-radius: 4px;
+  font-size: 11px;
+  padding: 2px 6px;
+  font-weight: 600;
+}
+.toolbox-card-actions {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+  flex-wrap: wrap;
+}
+.btn-toolbox-enable {
+  background: var(--navy);
+  color: #fff;
+  border: none;
+  padding: 7px 14px;
+  border-radius: 7px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background .15s;
+}
+.btn-toolbox-enable:hover:not(:disabled) { background: var(--navy-l); }
+.btn-toolbox-enable:disabled { opacity: .6; cursor: default; }
+.btn-toolbox-skip {
+  background: transparent;
+  color: var(--muted);
+  border: 1px solid var(--border);
+  padding: 7px 12px;
+  border-radius: 7px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all .15s;
+}
+.btn-toolbox-skip:hover { border-color: var(--border-d); color: var(--text); }
+.btn-toolbox-enable-all {
+  background: var(--teal);
+  color: var(--navy);
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background .15s;
+  flex: 1;
+}
+.btn-toolbox-enable-all:hover:not(:disabled) { background: var(--teal-d); }
+.btn-toolbox-enable-all:disabled { opacity: .5; cursor: default; }
+.btn-toolbox-proceed {
+  background: transparent;
+  color: var(--muted);
+  border: 1px solid var(--border);
+  padding: 10px 18px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all .15s;
+  white-space: nowrap;
+}
+.btn-toolbox-proceed:hover { border-color: var(--border-d); color: var(--text); }
+.toolbox-all-clear {
+  text-align: center;
+  padding: 28px 0 8px;
+  color: var(--muted);
+  font-size: 13px;
+}
+.toolbox-all-clear-icon {
+  font-size: 36px;
+  margin-bottom: 8px;
+}
 </style>
 </head>
 <body>
@@ -818,6 +1017,30 @@ input::placeholder { color: var(--subtle); }
     <div class="setup-actions">
       <button class="btn btn-outline" id="setupBack" onclick="setupPrev()" style="display:none">← Back</button>
       <button class="btn btn-navy btn-full" id="setupNext" onclick="setupNext()">Continue →</button>
+    </div>
+  </div>
+</div>
+
+<!-- Security Toolbox Modal -->
+<div id="toolboxModal" onclick="if(event.target===this)closeToolboxModal()">
+  <div class="toolbox-modal-box">
+    <div class="toolbox-modal-header">
+      <h2>Security Toolkit Check</h2>
+      <p id="toolboxHeaderDesc">We found <strong id="toolboxDisabledCount">0</strong> security tools not yet enabled in your AWS account.<br>
+        Turn them on now to generate live audit evidence — or skip to document the gaps.</p>
+    </div>
+    <div class="toolbox-modal-body">
+      <div id="toolboxToolList">
+        <!-- Tool cards rendered by JS -->
+      </div>
+    </div>
+    <div class="toolbox-modal-footer">
+      <button class="btn-toolbox-enable-all" id="toolboxEnableAllBtn" onclick="enableAllTools()">
+        Enable All Missing Tools
+      </button>
+      <button class="btn-toolbox-proceed" id="toolboxProceedBtn" onclick="closeToolboxAndScan()">
+        Scan Anyway →
+      </button>
     </div>
   </div>
 </div>
@@ -1496,9 +1719,221 @@ function showFrameworkUpgrade(slug, name) {
 }
 
 // ── Scan ──────────────────────────────────────────────────────────────────────
+
+// Toolbox state — tracks whether the user has seen the toolkit check this session
+const toolboxState = {
+  acknowledged: false,  // Set true once user has resolved the toolbox (or had no issues)
+  tools: [],
+};
+
+const SCAN_BTN_LABEL = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg> Run Scan';
+
 async function startScan() {
   if (!state.activeFramework) return alert('Select a framework first');
 
+  // If toolbox hasn't been checked yet this session, run the check first
+  if (!toolboxState.acknowledged) {
+    await runToolboxCheck();
+    return;
+  }
+
+  await executeScan();
+}
+
+async function runToolboxCheck() {
+  const btn = document.getElementById('runScanBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<div class="spinner" style="width:13px;height:13px;border-top-color:#fff"></div> Checking toolkit...';
+
+  try {
+    const data = await api('/api/toolbox/check');
+    toolboxState.tools = data.tools || [];
+
+    // If all tools are already enabled, skip the modal
+    if (data.all_enabled || data.error || toolboxState.tools.length === 0) {
+      toolboxState.acknowledged = true;
+      await executeScan();
+      return;
+    }
+
+    // Show toolbox modal — reset button while user makes choices
+    btn.disabled = false;
+    btn.innerHTML = SCAN_BTN_LABEL;
+    showToolboxModal(toolboxState.tools, data.disabled_count || 0);
+
+  } catch(e) {
+    // Toolbox check failure (no creds, network error) — skip gracefully
+    toolboxState.acknowledged = true;
+    await executeScan();
+  }
+}
+
+function showToolboxModal(tools, disabledCount) {
+  document.getElementById('toolboxDisabledCount').textContent = disabledCount;
+
+  const enableAllBtn = document.getElementById('toolboxEnableAllBtn');
+  const autoEnableCount = tools.filter(t => t.status !== 'enabled' && t.can_auto_enable).length;
+  enableAllBtn.textContent = `Enable All ${autoEnableCount} Missing Tools`;
+  enableAllBtn.style.display = autoEnableCount > 0 ? '' : 'none';
+
+  document.getElementById('toolboxHeaderDesc').innerHTML =
+    `We found <strong>${disabledCount}</strong> security tool${disabledCount === 1 ? '' : 's'} not yet enabled in your AWS account.<br>
+     Enable them now to generate live audit evidence — or skip to document the gaps.`;
+
+  document.getElementById('toolboxToolList').innerHTML = tools.map(renderToolCard).join('');
+  document.getElementById('toolboxModal').style.display = 'flex';
+}
+
+function renderToolCard(tool) {
+  const isEnabled = tool.status === 'enabled';
+  const isWarn    = tool.status === 'warn';
+  const isError   = tool.status === 'error';
+  const statusColor = isEnabled ? '#22c55e' : isWarn ? '#f59e0b' : isError ? '#94a3b8' : '#ef4444';
+  const statusIcon  = isEnabled ? '✓' : isWarn ? '!' : '✗';
+  const statusLabel = isEnabled ? 'Active' : isWarn ? 'Partial' : isError ? 'Check failed' : 'Not enabled';
+
+  const controlTags = (tool.controls || []).map(c =>
+    `<span class="toolbox-control-tag">${c}</span>`
+  ).join('');
+
+  if (isEnabled) {
+    return `<div class="toolbox-card toolbox-card--enabled" id="toolcard-${tool.id}">
+      <div class="toolbox-card-header">
+        <div class="toolbox-card-title">
+          <span class="toolbox-status-dot" style="background:${statusColor}">${statusIcon}</span>
+          <strong>${tool.name}</strong>
+          <span class="toolbox-category">${tool.category}</span>
+        </div>
+        <span class="toolbox-status-label" style="color:${statusColor}">${statusLabel}</span>
+      </div>
+      <div class="toolbox-card-detail" style="color:#16a34a">${tool.detail || ''}</div>
+      <div class="toolbox-card-controls" style="margin-top:6px">${controlTags}</div>
+    </div>`;
+  }
+
+  return `<div class="toolbox-card" id="toolcard-${tool.id}">
+    <div class="toolbox-card-header">
+      <div class="toolbox-card-title">
+        <span class="toolbox-status-dot" style="background:${statusColor}">${statusIcon}</span>
+        <strong>${tool.name}</strong>
+        <span class="toolbox-category">${tool.category}</span>
+      </div>
+      <div class="toolbox-card-meta">${tool.cost_estimate || ''} · ${tool.setup_time || ''}</div>
+    </div>
+    <div class="toolbox-auditor-ask">
+      <span class="toolbox-label">Auditor will ask:</span> ${tool.auditor_ask || ''}
+    </div>
+    <div class="toolbox-risk" style="color:#b45309">
+      <span class="toolbox-label" style="color:#92400e">Risk if skipped:</span> ${tool.security_risk || ''}
+    </div>
+    <div class="toolbox-card-footer">
+      <div class="toolbox-card-controls">${controlTags}</div>
+      <div class="toolbox-card-actions">
+        <button class="btn-toolbox-enable" id="enable-btn-${tool.id}"
+          onclick="enableTool('${tool.id}', ${JSON.stringify(tool.name)})">Enable Now</button>
+        <button class="btn-toolbox-skip" onclick="skipTool('${tool.id}')">Skip — Document Gap</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+async function enableTool(toolId, toolName) {
+  const btn  = document.getElementById(`enable-btn-${toolId}`);
+  const card = document.getElementById(`toolcard-${toolId}`);
+  if (!btn || !card) return;
+  btn.disabled = true;
+  btn.textContent = 'Enabling...';
+
+  try {
+    const res = await fetch('/api/toolbox/enable', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ tool_id: toolId }),
+    });
+    const result = await res.json();
+
+    if (res.ok && result.ok) {
+      card.className = 'toolbox-card toolbox-card--enabled';
+      card.innerHTML = `
+        <div class="toolbox-card-header">
+          <div class="toolbox-card-title">
+            <span class="toolbox-status-dot" style="background:#22c55e">✓</span>
+            <strong>${toolName}</strong>
+          </div>
+          <span class="toolbox-status-label" style="color:#16a34a">
+            ${result.already_enabled ? 'Already Active' : 'Just Enabled — Evidence Generated'}
+          </span>
+        </div>
+        <div class="toolbox-card-detail" style="color:#16a34a">${result.detail || result.message || ''}</div>`;
+      updateToolboxFooter();
+    } else {
+      const errMsg = result.detail || result.error || 'Enable failed';
+      btn.disabled = false;
+      btn.textContent = 'Retry';
+      const riskEl = card.querySelector('.toolbox-risk');
+      if (riskEl) riskEl.innerHTML = `<span class="toolbox-label" style="color:#dc2626">Error:</span> ${errMsg}`;
+    }
+  } catch(e) {
+    btn.disabled = false;
+    btn.textContent = 'Retry';
+  }
+}
+
+function skipTool(toolId) {
+  const card = document.getElementById(`toolcard-${toolId}`);
+  if (!card) return;
+  card.classList.add('toolbox-card--skipped');
+  const actionsEl = card.querySelector('.toolbox-card-actions');
+  if (actionsEl) {
+    actionsEl.innerHTML = '<span style="color:#64748b;font-size:12px;font-style:italic">Gap documented — will appear in scan report</span>';
+  }
+  updateToolboxFooter();
+}
+
+function updateToolboxFooter() {
+  // Count cards still needing action (not enabled, not skipped)
+  const pending = document.querySelectorAll(
+    '#toolboxToolList .toolbox-card:not(.toolbox-card--enabled):not(.toolbox-card--skipped)'
+  ).length;
+  const enableAllBtn = document.getElementById('toolboxEnableAllBtn');
+  const proceedBtn   = document.getElementById('toolboxProceedBtn');
+  enableAllBtn.style.display = pending > 0 ? '' : 'none';
+  if (pending === 0) {
+    proceedBtn.textContent = 'Proceed to Scan →';
+    proceedBtn.style.color = 'var(--navy)';
+    proceedBtn.style.borderColor = 'var(--navy)';
+  }
+}
+
+async function enableAllTools() {
+  const btn = document.getElementById('toolboxEnableAllBtn');
+  btn.disabled = true;
+
+  const pending = [...document.querySelectorAll(
+    '#toolboxToolList .toolbox-card:not(.toolbox-card--enabled):not(.toolbox-card--skipped)'
+  )];
+
+  btn.textContent = `Enabling ${pending.length} tools...`;
+
+  for (const card of pending) {
+    const toolId   = card.id.replace('toolcard-', '');
+    const nameEl   = card.querySelector('strong');
+    const toolName = nameEl ? nameEl.textContent : toolId;
+    await enableTool(toolId, toolName);
+  }
+}
+
+function closeToolboxModal() {
+  document.getElementById('toolboxModal').style.display = 'none';
+}
+
+function closeToolboxAndScan() {
+  closeToolboxModal();
+  toolboxState.acknowledged = true;
+  executeScan();
+}
+
+async function executeScan() {
   const btn = document.getElementById('runScanBtn');
   btn.disabled = true;
   btn.innerHTML = '<div class="spinner" style="width:13px;height:13px;border-top-color:#fff"></div> Scanning...';
@@ -1517,7 +1952,7 @@ async function startScan() {
       document.getElementById('upgradeModalUsed').textContent = (detail.used || state.usedFrameworks).join(' + ');
       document.getElementById('upgradeModal').style.display = 'flex';
       btn.disabled = false;
-      btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg> Run Scan';
+      btn.innerHTML = SCAN_BTN_LABEL;
       return;
     }
     if (!res.ok) {
@@ -1531,7 +1966,7 @@ async function startScan() {
   } catch(e) {
     alert('Scan failed: ' + e.message);
     btn.disabled = false;
-    btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg> Run Scan';
+    btn.innerHTML = SCAN_BTN_LABEL;
   }
 }
 
@@ -1546,7 +1981,7 @@ async function pollScan(scanId) {
         state.scanData = data;
         renderScanResults(data);
         document.getElementById('runScanBtn').disabled = false;
-        document.getElementById('runScanBtn').innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg> Run Scan';
+        document.getElementById('runScanBtn').innerHTML = SCAN_BTN_LABEL;
         await loadFrameworkUsage();
         const templates = await api('/api/templates').catch(() => []);
         if (templates.length) renderFrameworkList(templates);

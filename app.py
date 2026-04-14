@@ -709,6 +709,74 @@ def download_free_policy(framework: str, filename: str):
     )
 
 
+# ── Security Toolbox ──────────────────────────────────────────────────────────
+
+class ToolboxEnableRequest(BaseModel):
+    tool_id: str
+    aws_access_key: str = ""
+    aws_secret_key: str = ""
+    aws_region: str = "us-east-1"
+
+
+def _make_boto3_session(access_key: str = "", secret_key: str = "", region: str = "us-east-1"):
+    """Build a boto3 Session from request params, falling back to env/DB credentials."""
+    import boto3 as _boto3
+    ak = access_key or os.getenv("AWS_ACCESS_KEY_ID") or _get_setting("aws_access_key")
+    sk = secret_key or os.getenv("AWS_SECRET_ACCESS_KEY") or _get_setting("aws_secret_key")
+    rg = region or os.getenv("AWS_DEFAULT_REGION") or _get_setting("aws_region") or "us-east-1"
+    if ak and sk:
+        return _boto3.Session(aws_access_key_id=ak, aws_secret_access_key=sk, region_name=rg)
+    return _boto3.Session(region_name=rg)
+
+
+@app.get("/api/toolbox/check")
+def toolbox_check(aws_region: str = "us-east-1"):
+    """
+    Non-destructive pre-scan check: which security tools are currently active?
+    Called before a scan starts to surface gaps the user can fill in one click.
+    No write operations — read-only checks only.
+    """
+    from scanner.aws_enabler import check_toolbox_status
+    try:
+        session = _make_boto3_session(region=aws_region)
+        tools = check_toolbox_status(session)
+        disabled_count = sum(
+            1 for t in tools
+            if t.get("status") in ("disabled", "warn") and t.get("status") != "error"
+        )
+        return {
+            "tools": tools,
+            "disabled_count": disabled_count,
+            "all_enabled": disabled_count == 0,
+        }
+    except Exception as e:
+        # Toolbox check is best-effort — scan can always proceed without it
+        log.warning("Toolbox check failed: %s", e)
+        return {"tools": [], "disabled_count": 0, "all_enabled": True, "error": str(e)}
+
+
+@app.post("/api/toolbox/enable")
+def toolbox_enable(req: ToolboxEnableRequest):
+    """
+    Enable a specific security tool. ONLY called when the user explicitly clicks 'Enable'.
+    Dispatches to the appropriate enabler function via ENABLER_REGISTRY.
+    Generates audit evidence on success.
+    """
+    from scanner.aws_enabler import ENABLER_REGISTRY
+    if req.tool_id not in ENABLER_REGISTRY:
+        raise HTTPException(400, f"Unknown tool ID: '{req.tool_id}'")
+    try:
+        session = _make_boto3_session(req.aws_access_key, req.aws_secret_key, req.aws_region)
+        result = ENABLER_REGISTRY[req.tool_id](session)
+        if not result.get("ok"):
+            raise HTTPException(500, result.get("error", "Enable operation failed"))
+        return result
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(500, str(e))
+
+
 # ── Documents / Evidence ───────────────────────────────────────────────────────
 
 def _classify_background(doc_id: str, framework: str):
