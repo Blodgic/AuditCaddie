@@ -1752,14 +1752,14 @@ async function runToolboxCheck() {
     const data = await api(`/api/toolbox/check${savedRegion ? '?aws_region=' + encodeURIComponent(savedRegion) : ''}`);
     toolboxState.tools = data.tools || [];
 
-    // If all tools are already enabled, skip the modal
-    if (data.all_enabled || data.error || toolboxState.tools.length === 0) {
+    // Skip modal only on errors or empty results — always show when we have tool data
+    if (data.error || toolboxState.tools.length === 0) {
       toolboxState.acknowledged = true;
       await executeScan();
       return;
     }
 
-    // Show toolbox modal — reset button while user makes choices
+    // Always show toolbox modal so user can review status before scanning
     btn.disabled = false;
     btn.innerHTML = SCAN_BTN_LABEL;
     showToolboxModal(toolboxState.tools, data.disabled_count || 0);
@@ -1779,9 +1779,10 @@ function showToolboxModal(tools, disabledCount) {
   enableAllBtn.textContent = `Enable All ${autoEnableCount} Missing Tools`;
   enableAllBtn.style.display = autoEnableCount > 0 ? '' : 'none';
 
-  document.getElementById('toolboxHeaderDesc').innerHTML =
-    `We found <strong>${disabledCount}</strong> security tool${disabledCount === 1 ? '' : 's'} not yet enabled in your AWS account.<br>
-     Enable them now to generate live audit evidence — or skip to document the gaps.`;
+  document.getElementById('toolboxHeaderDesc').innerHTML = disabledCount === 0
+    ? `All security tools are active in your AWS account. You're ready to scan.`
+    : `We found <strong>${disabledCount}</strong> security tool${disabledCount === 1 ? '' : 's'} not yet enabled in your AWS account.<br>
+       Enable them now to generate live audit evidence — or skip to document the gaps.`;
 
   document.getElementById('toolboxToolList').innerHTML = tools.map(renderToolCard).join('');
   document.getElementById('toolboxModal').style.display = 'flex';
